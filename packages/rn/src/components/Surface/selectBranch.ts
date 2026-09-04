@@ -7,6 +7,23 @@ import {
 } from './surface.markers';
 import type { SurfaceCaseProps, SurfaceFallbackProps } from './surface.types';
 
+/** What the matcher found: the winning branch, and every branch by key. */
+export interface BranchSelection {
+  /** The branch to show, or `null` for nothing. */
+  selected: SelectedBranch | null;
+  /**
+   * Every branch, by key.
+   *
+   * The transition needs the outgoing branch's content after it has
+   * stopped winning, and it is still right here: a case that no longer
+   * applies says so with `when`, it does not stop being written. So the
+   * outgoing content is looked up rather than remembered, and the
+   * component holds keys instead of a copy of a subtree that may have
+   * gone stale.
+   */
+  byKey: ReadonlyMap<string, ReactNode>;
+}
+
 /** The branch a `Surface` should be showing, or `null` for nothing. */
 export interface SelectedBranch {
   /**
@@ -50,9 +67,10 @@ function markerOf(type: unknown): symbol | undefined {
  *
  * @internal
  */
-export function selectBranch(children: ReactNode): SelectedBranch | null {
+export function selectBranch(children: ReactNode): BranchSelection {
   const items = Children.toArray(children);
 
+  const byKey = new Map<string, ReactNode>();
   let winner: SelectedBranch | null = null;
   let fallback: SelectedBranch | null = null;
   let sawFallback = false;
@@ -81,11 +99,13 @@ export function selectBranch(children: ReactNode): SelectedBranch | null {
             'misleading. Move the fallback last.',
         );
       }
+      const key = `case:${index}`;
+      byKey.set(key, (child.props as SurfaceCaseProps).children);
       // First match wins, so later cases are not even inspected once one
       // has. This is what makes `A && !B` unnecessary to write: putting
       // B's case above A's says it.
       if (winner === null && (child.props as SurfaceCaseProps).when) {
-        winner = { key: `case:${index}`, node: (child.props as SurfaceCaseProps).children };
+        winner = { key, node: (child.props as SurfaceCaseProps).children };
       }
       continue;
     }
@@ -96,6 +116,7 @@ export function selectBranch(children: ReactNode): SelectedBranch | null {
           key: 'fallback',
           node: (child.props as SurfaceFallbackProps).children,
         };
+        byKey.set('fallback', fallback.node);
       } else if (__DEV__) {
         console.warn(
           '[@dashforge/rn] <Surface> has more than one <Surface.Fallback>. The first is ' +
@@ -114,5 +135,5 @@ export function selectBranch(children: ReactNode): SelectedBranch | null {
     }
   }
 
-  return winner ?? fallback;
+  return { selected: winner ?? fallback, byKey };
 }

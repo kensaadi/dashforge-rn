@@ -2,13 +2,17 @@ import { RbacProvider } from '@dashforge/rbac';
 import type { RbacPolicy } from '@dashforge/rbac';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
-import { render, screen } from '@testing-library/react-native';
+import { AccessibilityInfo } from 'react-native';
+import { render, screen, waitFor } from '@testing-library/react-native';
 import { Surface } from './Surface';
 
 /**
- * The matcher, on its own. No transition and no commit policy yet: those
- * decide *when* an answer is applied and are tested separately, because
- * the answer itself has to be provable without a clock.
+ * The matcher and the transition. The commit policy, which decides *when*
+ * an answer is applied rather than what it is, is not written yet.
+ *
+ * Most of this file passes `transition="none"`: which branch wins has to
+ * be provable without a clock, and a cross-fade only makes those
+ * assertions wait for no reason. The fade has its own group at the end.
  */
 
 const Label = ({ children }: { children: string }) => <Text>{children}</Text>;
@@ -26,7 +30,7 @@ afterEach(() => {
 describe('choosing a branch', () => {
   it('shows the case whose condition holds', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={false}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -42,7 +46,7 @@ describe('choosing a branch', () => {
 
   it('gives source order the priority when two cases hold', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={true}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -58,7 +62,7 @@ describe('choosing a branch', () => {
 
   it('falls back when no case holds', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={false}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -73,7 +77,7 @@ describe('choosing a branch', () => {
 
   it('leaves the fallback alone when a case holds', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={true}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -89,7 +93,7 @@ describe('choosing a branch', () => {
 
   it('renders nothing at all when nothing matches and no fallback was written', () => {
     const { toJSON } = render(
-      <Surface sx={{ padding: 24 }}>
+      <Surface transition="none" sx={{ padding: 24 }}>
         <Surface.Case when={false}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -108,7 +112,7 @@ describe('cost', () => {
     const Winner = jest.fn(() => <Text>vincente</Text>);
 
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={true}>
           <Winner />
         </Surface.Case>
@@ -139,7 +143,7 @@ describe('cost', () => {
     };
 
     const view = (ready: boolean) => (
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={ready}>
           <Card label="personalizzato" />
         </Surface.Case>
@@ -158,11 +162,12 @@ describe('cost', () => {
     expect(mounted).toHaveBeenNthCalledWith(1, 'generico');
     expect(mounted).toHaveBeenNthCalledWith(2, 'personalizzato');
     expect(mounted).toHaveBeenCalledTimes(2);
+
   });
 
   it('gives the place back when the condition becomes true again', () => {
     const view = (ready: boolean) => (
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={ready}>
           <Label>personalizzato</Label>
         </Surface.Case>
@@ -201,7 +206,7 @@ describe('the Dashforge props', () => {
     );
 
   const region = (
-    <Surface access={{ resource: 'invoice', action: 'delete' }}>
+    <Surface transition="none" access={{ resource: 'invoice', action: 'delete' }}>
       <Surface.Case when={true}>
         <Label>riservato</Label>
       </Surface.Case>
@@ -220,7 +225,7 @@ describe('the Dashforge props', () => {
 
   it('honours visibleWhen', () => {
     render(
-      <Surface visibleWhen={() => false}>
+      <Surface transition="none" visibleWhen={() => false}>
         <Surface.Case when={true}>
           <Label>nascosto</Label>
         </Surface.Case>
@@ -234,7 +239,7 @@ describe('the Dashforge props', () => {
 describe('authoring mistakes', () => {
   it('ignores a child that is not a branch, and says so', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Label>sciolto</Label>
         <Surface.Case when={true}>
           <Label>dentro</Label>
@@ -249,7 +254,7 @@ describe('authoring mistakes', () => {
 
   it('still applies a case written after the fallback, but warns', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Fallback>
           <Label>scheletro</Label>
         </Surface.Fallback>
@@ -265,7 +270,7 @@ describe('authoring mistakes', () => {
 
   it('uses the first of several fallbacks', () => {
     render(
-      <Surface>
+      <Surface transition="none">
         <Surface.Case when={false}>
           <Label>dettagli</Label>
         </Surface.Case>
@@ -292,5 +297,74 @@ describe('authoring mistakes', () => {
 
     expect(screen.queryByText('orfano')).toBeNull();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('outside a <Surface>'));
+  });
+});
+
+describe('the transition', () => {
+  const view = (ready: boolean, props = {}) => (
+    <Surface {...props}>
+      <Surface.Case when={ready}>
+        <Label>personalizzato</Label>
+      </Surface.Case>
+      <Surface.Fallback>
+        <Label>generico</Label>
+      </Surface.Fallback>
+    </Surface>
+  );
+
+  it('keeps the outgoing branch on screen while it fades, then drops it', async () => {
+    const { rerender } = render(view(false));
+    rerender(view(true));
+
+    // Both, briefly: the outgoing leaves faster than the incoming
+    // arrives but they overlap, so there is never a frame showing
+    // neither.
+    expect(screen.getByText('personalizzato')).toBeTruthy();
+    expect(screen.getByText('generico')).toBeTruthy();
+
+    await waitFor(() => expect(screen.queryByText('generico')).toBeNull());
+  });
+
+  it('swaps outright when asked to', () => {
+    const { rerender } = render(view(false, { transition: 'none' }));
+    rerender(view(true, { transition: 'none' }));
+
+    expect(screen.getByText('personalizzato')).toBeTruthy();
+    expect(screen.queryByText('generico')).toBeNull();
+  });
+
+  it('swaps outright when the platform asks for reduced motion', async () => {
+    const enabled = jest
+      .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+      .mockResolvedValue(true);
+
+    const { rerender } = render(view(false));
+    // The platform answer is asynchronous, so let it land before the
+    // first change has any reason to move.
+    await waitFor(() => expect(enabled).toHaveBeenCalled());
+
+    rerender(view(true));
+    expect(screen.getByText('personalizzato')).toBeTruthy();
+    expect(screen.queryByText('generico')).toBeNull();
+
+    // Put it back by re-mocking rather than restoring: the React Native
+    // jest preset already mocks AccessibilityInfo, and restoring the spy
+    // leaves the method returning undefined for whatever runs next.
+    enabled.mockResolvedValue(false);
+  });
+
+  it('leaves nothing behind when the region collapses', async () => {
+    const collapsing = (show: boolean) => (
+      <Surface>
+        <Surface.Case when={show}>
+          <Label>contenuto</Label>
+        </Surface.Case>
+      </Surface>
+    );
+
+    const { rerender, toJSON } = render(collapsing(true));
+    rerender(collapsing(false));
+
+    await waitFor(() => expect(toJSON()).toBeNull());
   });
 });

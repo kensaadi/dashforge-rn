@@ -14,6 +14,24 @@ export interface SurfaceProps extends Omit<ViewProps, 'style'>, DashforgeProps {
    */
   children?: ReactNode;
   /**
+   * How a change of branch is shown.
+   *
+   * `'fade'` cross-fades: the outgoing branch leaves a little faster
+   * than the incoming arrives, the incoming settles in from a hair
+   * smaller, and the region's height is animated to the new content. A
+   * dissolve rather than a slide, because nothing travelled from
+   * anywhere: the region changed its mind.
+   *
+   * `'none'` swaps outright.
+   *
+   * The platform's reduce-motion setting overrides this to `'none'` on
+   * its own. That is not a refinement: for some people the motion is
+   * physically unpleasant, and the content still changes either way.
+   *
+   * @default 'fade'
+   */
+  transition?: 'fade' | 'none';
+  /**
    * Style override on the region itself. Applied last, so it wins.
    * @default undefined
    */

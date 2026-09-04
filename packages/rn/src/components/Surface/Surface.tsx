@@ -1,8 +1,10 @@
-import { Fragment } from 'react';
-import { View } from 'react-native';
+import { Animated } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useVisibility } from '../../hooks/useVisibility';
+import { useTheme } from '../../theme/useTheme';
 import { selectBranch } from './selectBranch';
+import { useBranchTransition } from './useBranchTransition';
 import {
   BRANCH_MARKER,
   SURFACE_CASE,
@@ -93,26 +95,78 @@ Fallback.displayName = 'Surface.Fallback';
  * ```
  */
 export function Surface(props: SurfaceProps) {
-  const { children, access, visibleWhen, sx, ...rest } = props;
+  const { children, access, visibleWhen, transition = 'fade', sx, ...rest } = props;
 
+  const theme = useTheme();
   const isVisible = useVisibility(visibleWhen);
   const accessState = useAccessState(access);
+  const reduceMotion = useReduceMotion();
 
   // Matching runs regardless, because it is cheap and because skipping it
   // would make the development warnings depend on who is looking.
-  const branch = selectBranch(children);
+  const { selected, byKey } = selectBranch(children);
+  const hidden = !isVisible || !accessState.visible;
 
-  if (!isVisible || !accessState.visible) return null;
+  const t = useBranchTransition(
+    hidden ? null : (selected?.key ?? null),
+    transition === 'fade' && !reduceMotion,
+    // The incoming branch is the slower of the two, so the outgoing is
+    // gone well before the new content has finished settling and there
+    // is never a frame showing neither. A refinement is a real event and
+    // wants to be read, which is why the entry is `deliberate` rather
+    // than the `standard` used for a control reacting to a touch.
+    { exit: theme.semantic.motion.standard, enter: theme.semantic.motion.deliberate },
+  );
 
-  // Nothing matched and no fallback was written: the region is not there
-  // at all. Rendering an empty view instead would still apply whatever
-  // spacing `sx` carries, which is the opposite of taking no space.
-  if (branch === null) return null;
+  const shown = t.shownKey === null ? null : byKey.get(t.shownKey);
+  const outgoing = t.outgoingKey === null ? null : byKey.get(t.outgoingKey);
+
+  if (hidden) return null;
+
+  // Nothing matched, no fallback was written, and nothing is still
+  // leaving: the region is not there at all. Rendering an empty view
+  // instead would still apply whatever spacing `sx` carries, which is
+  // the opposite of taking no space.
+  if (t.shownKey === null && outgoing == null) return null;
 
   return (
-    <View {...rest} style={sx}>
-      <Fragment key={branch.key}>{branch.node}</Fragment>
-    </View>
+    <Animated.View
+      {...rest}
+      style={[sx, t.animating ? { height: t.height, overflow: 'hidden' } : null]}
+    >
+      <Animated.View
+        // The key is the branch's position, so changing branch replaces
+        // the subtree rather than reconciling into it. Without it two
+        // branches rendering the same component type would update in
+        // place and the outgoing one would never unmount.
+        key={t.shownKey ?? 'empty'}
+        onLayout={t.onIncomingLayout}
+        style={{
+          opacity: t.incomingOpacity,
+          transform: [{ scale: t.incomingScale }],
+        }}
+      >
+        {shown}
+      </Animated.View>
+      {outgoing == null ? null : (
+        // Overlaid rather than in flow, so the incoming branch can be
+        // measured at its natural height while this one is still on
+        // screen. Inert, because it is already gone as far as the user
+        // is concerned.
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            opacity: t.outgoingOpacity,
+          }}
+        >
+          {outgoing}
+        </Animated.View>
+      )}
+    </Animated.View>
   );
 }
 

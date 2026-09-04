@@ -407,11 +407,11 @@ no re-render.
 
 ## 6. `Surface`, the reactive region
 
-**Partly shipped.** The matcher exists and is covered by tests: ordered
-cases, first match wins, optional fallback, hard swap. The transition
-(6.8) and the commit policy (6.6, 6.7) are the agreed contract and have
-not been written yet, so those two sections describe what the region
-will do, not what it does today. Everything else reports on code.
+**Partly shipped.** The matcher and the transition exist and are covered
+by tests. The commit policy (6.6, 6.7), which decides *when* an answer is
+applied rather than what it is, has not been written yet, so those two
+sections describe what the region will do rather than what it does today.
+The stagger in 6.8 is not written either, and is marked where it appears.
 
 ### 6.1 The problem it exists for
 
@@ -622,31 +622,51 @@ somewhere else, which is false: nothing travelled, the region changed
 its mind. The dissolve is the only motion that describes what actually
 happened.
 
-- Cross-fade, roughly 220ms, decelerating.
+- Cross-fade, decelerating, on the motion tokens rather than on numbers
+  of its own: the outgoing branch leaves over `motion.standard` (200ms)
+  and the incoming arrives over `motion.deliberate` (320ms).
+- The incoming being the slower of the two is what produces the overlap,
+  so the outgoing is long gone before the new content has settled and
+  there is never a frame showing neither.
+- `deliberate` rather than `standard` for the entry because a refinement
+  is a real event and wants to be read. `standard` is the speed of a
+  control reacting to a touch, and at that pace the change registers as
+  a flicker rather than as something having arrived.
 - Incoming content scales 0.98 to 1, which reads as settling rather than
   appearing.
-- The outgoing branch leaves slightly faster than the incoming arrives,
-  with a short overlap so the gap is never visible.
 - No rotation, no flip. Showy, ages badly, and this has to be able to
   happen twenty times in a session without being noticed as an effect.
 
 **Height is the tedious part.** If the new branch is taller, the
 container has to grow, and height is not free to animate in React
-Native. The incoming content is measured before it is shown, and the
-container height is animated from old to new alongside the fade so it
-arrives already correct. One frame of measurement, no extra dependency,
-and it avoids the hard jump that would undo everything else.
+Native. The incoming branch is laid out at its natural height while the
+container is still clipped to the old one, so its `onLayout` reports the
+target and the container is animated to it. One frame of measurement, no
+extra dependency, and it avoids the hard jump that would undo everything
+else.
 
-**Adjacent surfaces stagger.** Two regions committing in the same tick
-are not perceived as two changes, they are perceived as the app
-blinking. A delay of about 100ms on the second makes them two legible
-events. This is automatic and has no API: surfaces committing in the same
-tick are ordered by a module-level scheduler.
+Height cannot go on the native driver, which is why it is a value of its
+own on a view of its own: the container animates height on the JS thread
+while opacity and scale stay native on the content inside it.
+
+**The end of the change hangs off the fade, not off the height.** The
+fade always runs; the height animation waits for a measurement that a
+zero-sized branch, or one that never lays out, would never produce.
+Tying the end of a change to the thing that always happens is what keeps
+a region from being stuck half way.
+
+**Adjacent surfaces stagger.** *Not written yet.* Two regions committing
+in the same tick are not perceived as two changes, they are perceived as
+the app blinking. A delay of about 100ms on the second makes them two
+legible events. It will be automatic and have no API: surfaces
+committing in the same tick ordered by a module-level scheduler.
 
 **Reduce Motion is honoured.** With the system setting on, no fade and no
 scale: the swap is instant. The content still changes, only the manner
 does. This is not a refinement; for some people those transitions are
-physically unpleasant.
+physically unpleasant. The platform answer is asynchronous, so the value
+starts `false` and corrects itself on the first tick, which is the right
+way round: it is read before anything has had reason to move.
 
 ### 6.9 Coordination between surfaces
 
@@ -764,17 +784,17 @@ surface `visibleWhen` is legal but rare, given 6.10.
 
 | prop | default | meaning |
 |---|---|---|
+| `transition` | `'fade'` | `'fade'` or `'none'` (6.8) |
 | `sx` | | style override on the region, applied last |
 | `access` | | permission requirement (section 5) |
 | `visibleWhen` | | form predicate (section 5) |
 
 `Surface.Case` takes `when: boolean`. `Surface.Fallback` takes nothing.
 
-Two more arrive with the behaviour they control, rather than as props
-that accept a value and ignore it: `commit`, one of `'immediate'`,
-`'settled'` and `'unattended'` (6.7), and `transition`, `'fade'` or
-`'none'` (6.8). Both are additive, so nothing written today has to
-change to pick them up.
+`commit` arrives with the behaviour it controls rather than as a prop
+that accepts a value and ignores it: one of `'immediate'`, `'settled'`
+and `'unattended'` (6.7). It is additive, so nothing written today has to
+change to pick it up.
 
 `sx` is a plain style rather than a slot map, because the region has one
 styleable element. Compound components like `TextField` take a map.
