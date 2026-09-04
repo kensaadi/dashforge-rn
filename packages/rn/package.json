@@ -1,0 +1,111 @@
+{
+  "name": "@dashforge/rn",
+  "version": "0.0.0",
+  "description": "Token-first React Native UI library. Props, not styles.",
+  "license": "MIT",
+  "private": false,
+  "sideEffects": false,
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
+  "types": "./dist/typescript/commonjs/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/typescript/module/src/index.d.ts",
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/src/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./theme": {
+      "import": {
+        "types": "./dist/typescript/module/src/theme/index.d.ts",
+        "default": "./dist/module/theme/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/src/theme/index.d.ts",
+        "default": "./dist/commonjs/theme/index.js"
+      }
+    },
+    "./tokens": {
+      "import": {
+        "types": "./dist/typescript/module/src/tokens/index.d.ts",
+        "default": "./dist/module/tokens/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/src/tokens/index.d.ts",
+        "default": "./dist/commonjs/tokens/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "theme",
+    "tokens",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --passWithNoTests",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "valtio": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@dashforge/calendar-core": "^1.0.0",
+    "@dashforge/forms": "^1.0.0",
+    "@dashforge/rbac": "^1.0.0",
+    "@dashforge/ui-core": "^1.0.0",
+    "react": ">=19.2.3",
+    "react-native": ">=0.78.0"
+  },
+  "devDependencies": {
+    "@dashforge/calendar-core": "^1.0.0",
+    "@dashforge/forms": "^1.0.0",
+    "@dashforge/rbac": "^1.0.0",
+    "@dashforge/ui-core": "^1.0.0",
+    "@react-native/babel-preset": "^0.87.0",
+    "@react-native/jest-preset": "^0.87.1",
+    "@testing-library/react-native": "^13.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^19.2.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "react": "19.2.3",
+    "react-native": "0.87.1",
+    "react-native-builder-bob": "^0.40.0",
+    "react-test-renderer": "19.2.3",
+    "typescript": "~5.9.2"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "dist",
+    "exclude": "**/{__tests__,__fixtures__,__mocks__}/**",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}
