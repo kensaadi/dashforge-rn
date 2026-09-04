@@ -86,7 +86,7 @@
   "react-native-builder-bob": {
     "source": "src",
     "output": "dist",
-    "exclude": "**/{__tests__,__fixtures__,__mocks__}/**",
+    "exclude": "**/{__tests__/**,__fixtures__/**,__mocks__/**,*.test.*,*.spec.*}",
     "targets": [
       [
         "commonjs",
