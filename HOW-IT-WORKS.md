@@ -407,11 +407,11 @@ no re-render.
 
 ## 6. `Surface`, the reactive region
 
-**Design, ahead of implementation.** Every other section in this file
-reports on code that exists and quotes numbers measured from it. This
-one is the contract agreed before writing it, kept here so the
-implementation has something to be checked against. Nothing below has
-shipped yet.
+**Partly shipped.** The matcher exists and is covered by tests: ordered
+cases, first match wins, optional fallback, hard swap. The transition
+(6.8) and the commit policy (6.6, 6.7) are the agreed contract and have
+not been written yet, so those two sections describe what the region
+will do, not what it does today. Everything else reports on code.
 
 ### 6.1 The problem it exists for
 
@@ -764,13 +764,20 @@ surface `visibleWhen` is legal but rare, given 6.10.
 
 | prop | default | meaning |
 |---|---|---|
-| `commit` | `'settled'` | how much this region may interrupt (6.7) |
-| `transition` | `'fade'` | `'fade'` or `'none'` |
-| `sx` | | escape hatch, `{ root }` |
+| `sx` | | style override on the region, applied last |
 | `access` | | permission requirement (section 5) |
 | `visibleWhen` | | form predicate (section 5) |
 
 `Surface.Case` takes `when: boolean`. `Surface.Fallback` takes nothing.
+
+Two more arrive with the behaviour they control, rather than as props
+that accept a value and ignore it: `commit`, one of `'immediate'`,
+`'settled'` and `'unattended'` (6.7), and `transition`, `'fade'` or
+`'none'` (6.8). Both are additive, so nothing written today has to
+change to pick them up.
+
+`sx` is a plain style rather than a slot map, because the region has one
+styleable element. Compound components like `TextField` take a map.
 
 **Open, to settle during implementation:** whether a commit callback is
 worth exposing for analytics, since knowing which branch won and when is
