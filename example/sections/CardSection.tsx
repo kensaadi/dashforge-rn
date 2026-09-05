@@ -144,6 +144,80 @@ export function CardSection() {
         </Card>
       </Card>
 
+      <Card>
+        <Card.Header title="Le CTA" subtitle="In fondo, non in testata" />
+        <Caption>
+          `action` sulla testata è lo slot accanto al titolo: un prezzo, un
+          "vedi tutti", un menu. Quello che la scheda ti sta chiedendo di fare
+          sta in Card.Footer, in fondo, dove lo trova chi ha letto prima.
+        </Caption>
+
+        <Card variant="filled">
+          <Card.Header
+            title="Due azioni"
+            subtitle={'align="end", il default'}
+          />
+          <Card.Footer divider>
+            <Button size="sm" variant="ghost" color="secondary">
+              Annulla
+            </Button>
+            <Button size="sm">Conferma</Button>
+          </Card.Footer>
+        </Card>
+
+        <Card variant="filled">
+          <Card.Header
+            title="Una sola azione"
+            subtitle={'align="stack" + fullWidth'}
+          />
+          <Card.Footer align="stack" divider>
+            <Button fullWidth onPress={() => setTapped(n => n + 1)}>
+              Aggiungi al carrello
+            </Button>
+          </Card.Footer>
+        </Card>
+
+        <Card variant="filled">
+          <Card.Header title="Ai due estremi" subtitle={'align="between"'} />
+          <Card.Footer align="between">
+            <Button size="sm" variant="link" color="secondary">
+              Dettagli
+            </Button>
+            <Button size="sm" color="danger">
+              Elimina
+            </Button>
+          </Card.Footer>
+        </Card>
+
+        <Caption>
+          La riga sopra le azioni attraversa tutta la scheda invece di fermarsi
+          dentro la spaziatura: una linea che si ferma prima dei bordi si legge
+          come decorazione, non come confine fra due regioni.
+        </Caption>
+        <Caption>
+          `align="stack"` decide la direzione, non la larghezza. Un Button non
+          fullWidth dichiara alignSelf per conto suo e batte l'alignItems del
+          padre, che è il verso giusto: il controllo conosce la propria forma
+          meglio della riga in cui si trova. Quindi la CTA piena si scrive
+          fullWidth.
+        </Caption>
+      </Card>
+
+      <Card tone="danger">
+        <Card.Header
+          title="Elimina il progetto"
+          subtitle="Diciannove file e tre anni di cronologia. Non si torna indietro."
+        />
+        <Card.Footer divider>
+          <Button size="sm" variant="ghost" color="secondary">
+            Annulla
+          </Button>
+          <Button size="sm" color="danger">
+            Elimina
+          </Button>
+        </Card.Footer>
+      </Card>
+
       <Card
         variant="elevated"
         onPress={() => {}}
@@ -156,9 +230,14 @@ export function CardSection() {
           action={<Typography variant="subtitle">89 €</Typography>}
         />
         <Typography variant="caption" color="muted">
-          Il caso normale: la fascia in cima, il testo sul suo fondo, tutta la
-          scheda premibile.
+          Il caso normale: fascia in cima, prezzo accanto al titolo come
+          `action`, e la CTA in fondo.
         </Typography>
+        <Card.Footer align="stack">
+          <Button fullWidth onPress={() => setTapped(n => n + 1)}>
+            Aggiungi al carrello · toccato {tapped}
+          </Button>
+        </Card.Footer>
       </Card>
 
       <Card>

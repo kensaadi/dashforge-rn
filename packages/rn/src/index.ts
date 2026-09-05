@@ -28,6 +28,7 @@ export type {
 } from './components/TextField/textField.types';
 export type {
   CardProps,
+  CardFooterProps,
   CardHeaderProps,
   CardMediaProps,
   CardHeaderSx,

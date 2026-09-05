@@ -124,6 +124,8 @@ export interface CardTokens {
     border: string;
     title: string;
     subtitle: string;
+    /** The hairline a footer can draw above itself. */
+    divider: string;
   };
   /** The tinted grounds, one per meaning. `neutral` is the absence of one. */
   tone: Record<CardTone, CardToneStyle>;
@@ -266,6 +268,10 @@ export function defaultComponentTokens(s: SemanticTokens) {
           border: s.border.default,
           title: s.text.primary,
           subtitle: s.text.muted,
+          // The opaque separator, not the translucent one: a card has a
+          // ground of its own, and letting the page show through a line
+          // drawn on it is the wrong effect.
+          divider: s.separator.opaque,
         },
         tone: {
           success: toneOf(s, 'success'),

@@ -458,3 +458,91 @@ describe('media', () => {
     expect(img.props.accessibilityLabel).toBe('Il prodotto, di profilo');
   });
 });
+
+describe('footer', () => {
+  const footerStyle = () => flat(screen.getByTestId('footer').props.style);
+
+  it('puts the actions at the end, where a confirm lands', () => {
+    render(
+      <Card>
+        <Card.Footer testID="footer">
+          <Text>Conferma</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    const s = footerStyle();
+    expect(s.flexDirection).toBe('row');
+    expect(s.justifyContent).toBe('flex-end');
+  });
+
+  it.each([
+    ['start', 'flex-start'],
+    ['between', 'space-between'],
+  ] as const)('aligns %s', (align, justify) => {
+    render(
+      <Card>
+        <Card.Footer testID="footer" align={align}>
+          <Text>x</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    expect(footerStyle().justifyContent).toBe(justify);
+  });
+
+  it('stacks them one above the other when asked to', () => {
+    render(
+      <Card>
+        <Card.Footer testID="footer" align="stack">
+          <Text>x</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    const s = footerStyle();
+    expect(s.flexDirection).toBe('column');
+    // Stretch reaches whatever does not opt out, but it is not a promise:
+    // a Button states its own alignSelf and wins, which is why a
+    // full-width action is written `<Button fullWidth>` rather than
+    // inferred from the footer.
+    expect(s.alignItems).toBe('stretch');
+  });
+
+  it('draws no rule unless asked', () => {
+    const { toJSON } = render(
+      <Card>
+        <Card.Footer testID="footer">
+          <Text>x</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    expect(JSON.stringify(toJSON())).not.toContain('hairline');
+  });
+
+  it('runs the rule across the whole card, not inside its padding', () => {
+    render(
+      <Card padding="md">
+        <Card.Footer testID="footer" divider>
+          <Text>x</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    // A line stopping short of the edges reads as decoration rather than
+    // as a boundary, so the rule is the one view that bleeds.
+    const rule = screen
+      .UNSAFE_getAllByType(View)
+      .map((v) => flat(v.props.style))
+      .find((st) => st.marginHorizontal === -16 && st.backgroundColor);
+    expect(rule).toBeDefined();
+    expect(rule?.height).toBeGreaterThan(0);
+  });
+
+  it('honours the Dashforge props like everything else', () => {
+    render(
+      <Card>
+        <Card.Footer visibleWhen={() => false}>
+          <Text>nascosto</Text>
+        </Card.Footer>
+      </Card>,
+    );
+    expect(screen.queryByText('nascosto')).toBeNull();
+  });
+});

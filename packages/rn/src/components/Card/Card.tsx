@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
@@ -8,7 +8,12 @@ import {
   useComponentTokens,
 } from '../../theme/useComponentTokens';
 import { cardRecipe } from './card.variants';
-import type { CardHeaderProps, CardMediaProps, CardProps } from './card.types';
+import type {
+  CardFooterProps,
+  CardHeaderProps,
+  CardMediaProps,
+  CardProps,
+} from './card.types';
 
 /**
  * What a card tells its own parts.
@@ -174,6 +179,75 @@ export function CardHeader(props: CardHeaderProps) {
 CardHeader.displayName = 'Card.Header';
 
 /**
+ * The card's call to action, at the bottom.
+ *
+ * Distinct from `Card.Header`'s `action`, which is a slot beside the
+ * title for a price, a "see all", an overflow menu. What the card is
+ * asking the user to do belongs down here, after what it is asking about.
+ *
+ * `align="stack"` puts the actions one above the other, which is the
+ * shape a phone wants when the card asks for one thing; the default puts
+ * them at the end, where a confirm lands on both platforms.
+ *
+ * Stacking decides the direction and not the width. A `Button` that is
+ * not `fullWidth` states `alignSelf` for itself and beats the footer's
+ * `alignItems`, which is the right way round, so a full-width action is
+ * written `<Button fullWidth>`.
+ *
+ * @example
+ * ```tsx
+ * <Card>
+ *   <Card.Header title="Elimina il progetto" subtitle="Non si torna indietro" />
+ *   <Card.Footer divider>
+ *     <Button variant="ghost" color="secondary">Annulla</Button>
+ *     <Button color="danger">Elimina</Button>
+ *   </Card.Footer>
+ * </Card>
+ * ```
+ */
+export function CardFooter(props: CardFooterProps) {
+  const tokens = useComponentTokens('Card');
+  const { padding } = useContext(CardContext);
+  const {
+    children,
+    align = 'end',
+    divider = false,
+    access,
+    visibleWhen,
+    sx,
+    ...rest
+  } = props;
+
+  const isVisible = useVisibility(visibleWhen);
+  const accessState = useAccessState(access);
+
+  if (!isVisible || !accessState.visible) return null;
+
+  const styles = cardRecipe(tokens)({ align });
+
+  return (
+    <>
+      {divider ? (
+        // Across the whole card rather than inside its padding: a rule
+        // that stops short of the edges reads as decoration, not as a
+        // boundary between two regions.
+        <View
+          style={{
+            marginHorizontal: -padding,
+            height: StyleSheet.hairlineWidth,
+            backgroundColor: tokens.color.divider,
+          }}
+        />
+      ) : null}
+      <View {...rest} style={[styles.footer, sx]}>
+        {children}
+      </View>
+    </>
+  );
+}
+CardFooter.displayName = 'Card.Footer';
+
+/**
  * A surface that groups content.
  *
  * The default is `outlined`, because the language here is flat and
@@ -289,3 +363,4 @@ export function Card(props: CardProps) {
 
 Card.Header = CardHeader;
 Card.Media = CardMedia;
+Card.Footer = CardFooter;

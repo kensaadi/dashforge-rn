@@ -3,11 +3,13 @@ import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
 import { resolveTypeStyle } from '../../theme/typography';
 import type { CardTokens, CardTone } from '../../tokens/components';
-import type { CardProps } from './card.types';
+import type { CardFooterProps, CardProps } from './card.types';
 
 /** The parts a Card paints. */
 export interface CardSlotStyles {
   root: ViewStyle;
+  /** The row of actions at the bottom. */
+  footer: ViewStyle;
   header: ViewStyle;
   /** The title and subtitle block, so a long title wraps before the action. */
   headerBody: ViewStyle;
@@ -21,6 +23,7 @@ export interface CardVariantSelection {
   tone?: CardProps['tone'];
   padding?: CardProps['padding'];
   pressed?: boolean;
+  align?: CardFooterProps['align'];
 }
 
 const TONES: CardTone[] = ['success', 'warning', 'danger', 'info'];
@@ -68,6 +71,7 @@ export const cardRecipe: (
           gap: t.gap,
         } as ViewStyle,
         headerBody: { flex: 1, gap: 2 } as ViewStyle,
+        footer: { gap: t.gap, alignItems: 'center' } as ViewStyle,
         title: {
           ...resolveTypeStyle(t.typography.title),
           color: t.color.title,
@@ -110,6 +114,18 @@ export const cardRecipe: (
           info: tinted('info'),
         },
         pressed: { true: {}, false: {} },
+        align: {
+          start: { footer: { flexDirection: 'row', justifyContent: 'flex-start' } },
+          end: { footer: { flexDirection: 'row', justifyContent: 'flex-end' } },
+          between: {
+            footer: { flexDirection: 'row', justifyContent: 'space-between' },
+          },
+          // One above the other. `alignItems: stretch` fills whatever
+          // does not opt out, but the footer promises the direction and
+          // nothing more: a `Button` states its own `alignSelf` and wins,
+          // so a full-width action is `<Button fullWidth>`.
+          stack: { footer: { flexDirection: 'column', alignItems: 'stretch' } },
+        },
       },
       compoundVariants: [
         ...TONES.map((tone) => ({

@@ -142,6 +142,37 @@ export interface CardMediaProps
   sx?: StyleProp<ImageStyle>;
 }
 
+export interface CardFooterProps extends Omit<ViewProps, 'style'>, DashforgeProps {
+  /** The actions. */
+  children?: ReactNode;
+  /**
+   * How the actions sit.
+   *
+   * `'end'` is the default, which is where a confirm lands on both
+   * platforms. `'stack'` puts them one above the other instead, which is
+   * the shape a phone wants when the card is asking for one thing.
+   *
+   * **`'stack'` decides the direction, not the width.** A `Button` that
+   * is not `fullWidth` states `alignSelf: 'flex-start'` for itself, and
+   * a child's `alignSelf` beats its parent's `alignItems`, as it should:
+   * the control knows its own shape better than the row it happens to be
+   * in. So a stacked primary action is `<Button fullWidth>`, and the
+   * footer does not pretend otherwise.
+   *
+   * @default 'end'
+   */
+  align?: 'start' | 'end' | 'between' | 'stack';
+  /**
+   * Draw a hairline above the actions, across the whole card rather than
+   * inside its padding, which is where a rule belongs when it is
+   * separating one region from another.
+   * @default false
+   */
+  divider?: boolean;
+  /** @default undefined */
+  sx?: StyleProp<ViewStyle>;
+}
+
 export interface CardHeaderProps extends Omit<ViewProps, 'style'>, DashforgeProps {
   /**
    * The card's heading. A string is rendered on the title scale; a node
@@ -155,8 +186,16 @@ export interface CardHeaderProps extends Omit<ViewProps, 'style'>, DashforgeProp
    */
   subtitle?: ReactNode;
   /**
-   * Trailing content, aligned to the top rather than centred so a
-   * one-line control does not drift when the title wraps to two.
+   * Trailing content in the heading row, aligned to the top rather than
+   * centred so a one-line control does not drift when the title wraps to
+   * two.
+   *
+   * **Not the card's call to action.** This is the slot for something
+   * that belongs beside the title: a price, a "see all", an overflow
+   * menu, a status chip. What the card is asking the user to *do* goes in
+   * `Card.Footer`, at the bottom, where it is found by anyone who has
+   * read the card first.
+   *
    * @default undefined
    */
   action?: ReactNode;
