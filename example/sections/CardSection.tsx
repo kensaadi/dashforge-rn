@@ -16,6 +16,36 @@ export function CardSection() {
 
   return (
     <>
+      <Card
+        padding="none"
+        onPress={() => setTapped(n => n + 1)}
+        accessibilityLabel="Solo oggi, sconto del 30% su tutto il catalogo"
+        accessibilityHint="Apre le offerte"
+      >
+        <Card.Media
+          source={require('../assets/promo.png')}
+          aspectRatio={1000 / 420}
+          flush="all"
+        />
+      </Card>
+
+      <Card>
+        <Card.Header
+          title="La scheda che è solo un'immagine"
+          subtitle={'padding="none" + flush="all" + onPress'}
+        />
+        <Caption>
+          {`Il banner qui sopra. Niente spaziatura, la fascia tocca tutti e quattro i bordi, quindi tutti e quattro gli angoli arrotondati: non c'è niente sotto per cui tenerne due quadri. Toccato ${tapped} volte.`}
+        </Caption>
+        <Caption>
+          Qui l'etichetta di accessibilità non è un dettaglio: il messaggio sta
+          nei pixel, quindi senza di essa la scheda è un bottone che non
+          annuncia niente. Nelle altre schede l'immagine è decorazione accanto a
+          un titolo che la nomina già ed è giusto saltarla, qui è l'unico
+          contenuto che c'è.
+        </Caption>
+      </Card>
+
       <Card>
         <Card.Header
           title="Varianti"
@@ -141,25 +171,6 @@ export function CardSection() {
             title="info + elevated, premibile"
             subtitle="Anche il tono si muove sotto il dito"
           />
-        </Card>
-      </Card>
-
-      <Card>
-        <Card.Header
-          title="Solo immagine, premibile"
-          subtitle={'padding="none" + flush="all"'}
-        />
-        <Caption>
-          Niente spaziatura e la fascia che tocca tutti e quattro i bordi,
-          quindi tutti e quattro gli angoli arrotondati: non c'è niente sotto
-          per cui tenerne due quadri.
-        </Caption>
-        <Card
-          padding="none"
-          onPress={() => setTapped(n => n + 1)}
-          accessibilityLabel="Apri la galleria"
-        >
-          <Card.Media source={require('../assets/landscape.png')} flush="all" />
         </Card>
       </Card>
 
