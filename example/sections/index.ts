@@ -5,5 +5,6 @@ export { TypographySection } from './TypographySection';
 export { AccessSection } from './AccessSection';
 export { VisibleWhenSection } from './VisibleWhenSection';
 export { CardSection } from './CardSection';
+export { CheckboxSection } from './CheckboxSection';
 export { SurfaceSection } from './SurfaceSection';
 export { TokensSection } from './TokensSection';

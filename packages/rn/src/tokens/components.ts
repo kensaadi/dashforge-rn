@@ -169,6 +169,43 @@ export interface CardTokens {
   elevation: ElevationStyle;
 }
 
+export interface CheckboxTokens {
+  radius: number;
+  borderWidth: number;
+  /** The box, per size. */
+  box: SizeScale;
+  /** Between the box and its label. */
+  gap: number;
+  /** Between the row and the helper text under it. */
+  rowGap: number;
+  /** Extra touch area, so even `sm` clears the 44pt floor. */
+  hitSlop: SizeScale;
+  /** Thickness of the drawn mark. */
+  markWidth: SizeScale;
+  typography: {
+    label: TypeStyle;
+    helper: TypeStyle;
+  };
+  color: {
+    bg: string;
+    bgChecked: string;
+    bgDisabled: string;
+    bgCheckedDisabled: string;
+    border: string;
+    borderChecked: string;
+    borderInvalid: string;
+    borderDisabled: string;
+    /** The tick and the indeterminate bar, on the checked fill. */
+    mark: string;
+    markDisabled: string;
+    label: string;
+    labelDisabled: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+  };
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -184,6 +221,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Checkbox?: {
+      defaults?: Record<string, unknown>;
+      tokens?: CheckboxTokens;
     };
     Card?: {
       defaults?: Record<string, unknown>;
@@ -202,6 +243,9 @@ declare module './types' {
 
 /** @internal The floor every touch target has to clear, in points. */
 const TOUCH_TARGET = 44;
+
+/** The box itself is small; the target around it is not. */
+const checkboxBoxes: SizeScale = { sm: 18, md: 20, lg: 24 };
 
 function hitSlopFor(heights: SizeScale): SizeScale {
   const pad = (h: number) => Math.max(0, Math.round((TOUCH_TARGET - h) / 2));
@@ -323,6 +367,38 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Checkbox: {
+      tokens: {
+        // Softer than a control but not a pill: a square with rounded
+        // corners is what says "more than one of these may be true",
+        // which is the whole difference from a radio.
+        radius: 5,
+        borderWidth: s.borderWidth.strong,
+        box: checkboxBoxes,
+        gap: s.space.inline,
+        rowGap: 6,
+        hitSlop: hitSlopFor(checkboxBoxes),
+        markWidth: { sm: 1.5, md: 2, lg: 2.5 },
+        typography: { label: s.typography.body, helper: s.typography.caption },
+        color: {
+          bg: s.surface.raised,
+          bgChecked: s.action.primary.bg,
+          bgDisabled: s.fill.subtle,
+          bgCheckedDisabled: s.fill.default,
+          border: s.border.default,
+          borderChecked: s.action.primary.bg,
+          borderInvalid: s.action.danger.bg,
+          borderDisabled: s.border.subtle,
+          mark: s.action.primary.fg,
+          markDisabled: s.text.disabled,
+          label: s.text.primary,
+          labelDisabled: s.text.disabled,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.action.danger.bg,
+        },
+      } satisfies CheckboxTokens,
     },
     IconButton: {
       tokens: {

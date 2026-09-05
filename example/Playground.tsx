@@ -22,6 +22,7 @@ import {
   TextFieldSection,
   FormSection,
   CardSection,
+  CheckboxSection,
   SurfaceSection,
   TokensSection,
   TypographySection,
@@ -45,6 +46,7 @@ const SECTIONS = [
   },
   { key: 'form', label: 'Payload', render: () => <FormSection /> },
   { key: 'card', label: 'Card', render: () => <CardSection /> },
+  { key: 'checkbox', label: 'Checkbox', render: () => <CheckboxSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
@@ -56,7 +58,7 @@ const SECTIONS = [
 const GROUPS = [
   {
     label: 'Componenti',
-    keys: ['button', 'textfield', 'typography', 'card', 'surface'],
+    keys: ['button', 'textfield', 'checkbox', 'typography', 'card', 'surface'],
   },
   { label: 'Props Dashforge', keys: ['access', 'visibleWhen'] },
   { label: 'Form', keys: ['form'] },

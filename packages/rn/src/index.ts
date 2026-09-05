@@ -16,6 +16,7 @@ export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
 export { Surface } from './components/Surface/Surface';
 export { Card } from './components/Card/Card';
+export { Checkbox } from './components/Checkbox/Checkbox';
 export { buttonRecipe } from './components/Button/button.variants';
 export type {
   TypographyProps,
