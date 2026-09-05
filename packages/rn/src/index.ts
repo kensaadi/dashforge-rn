@@ -15,6 +15,7 @@ export { Button } from './components/Button/Button';
 export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
 export { Surface } from './components/Surface/Surface';
+export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
 export { Checkbox } from './components/Checkbox/Checkbox';
@@ -55,6 +56,7 @@ export type {
   RadioOptionSx,
   RadioValue,
 } from './components/RadioGroup/radioGroup.types';
+export type { IconButtonProps } from './components/IconButton/iconButton.types';
 export type { StackProps, StackGap } from './components/Stack/stack.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';

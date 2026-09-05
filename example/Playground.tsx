@@ -22,6 +22,7 @@ import {
   TextFieldSection,
   FormSection,
   CardSection,
+  IconButtonSection,
   StackSection,
   CheckboxSection,
   SwitchSection,
@@ -35,6 +36,11 @@ import { THEMES, type ThemeKey } from './themes';
 
 const SECTIONS = [
   { key: 'button', label: 'Button', render: () => <ButtonSection /> },
+  {
+    key: 'iconbutton',
+    label: 'IconButton',
+    render: () => <IconButtonSection />,
+  },
   { key: 'textfield', label: 'TextField', render: () => <TextFieldSection /> },
   {
     key: 'typography',
@@ -66,6 +72,7 @@ const GROUPS = [
     label: 'Componenti',
     keys: [
       'button',
+      'iconbutton',
       'textfield',
       'checkbox',
       'switch',
