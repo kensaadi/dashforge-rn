@@ -4,6 +4,7 @@ import { DashFormContext } from '@dashforge/ui-core';
 import type { DashFormBridge, FieldRegistration } from '@dashforge/ui-core';
 import { useDashFieldMeta } from '@dashforge/forms';
 import { useAccessState } from '../../hooks/useAccessState';
+import { useStandaloneFieldWarning } from '../../hooks/useStandaloneFieldWarning';
 import { useVisibility } from '../../hooks/useVisibility';
 import {
   useComponentDefaults,
@@ -21,6 +22,25 @@ import type { TextFieldProps } from './textField.types';
  * from there and reports validation. With neither it is an ordinary
  * controlled input. The prop surface is identical either way, so moving
  * a field into a form is adding a `name`, not rewriting the call site.
+ *
+ * **Through the bridge, never through react-hook-form.** RHF is a
+ * dependency of `@dashforge/forms` alone, which wraps it and publishes a
+ * neutral bridge on `DashFormContext`. No renderer imports RHF, and none
+ * of them uses `Controller`: the MUI and Tailwind fields register through
+ * the same bridge this one does.
+ *
+ * That indirection matters more here than on the web. RHF's registration
+ * is DOM-shaped, a `ref` for an element and an `onChange` expecting
+ * `event.target.value`, and React Native has neither. `Controller` cannot
+ * help, because it assumes it can wrap something that speaks that
+ * contract. The bridge is what makes the field's own change signal
+ * enough.
+ *
+ * `name` is optional here and required in `@dashforge/tw`, deliberately:
+ * on the web the presence of a bridge is ambiguous enough that the name
+ * is used to disambiguate, while here `name` is precisely the thing that
+ * says "this field belongs to a form", so a standalone search box does
+ * not have to invent one.
  *
  * @example
  * ```tsx
@@ -70,6 +90,13 @@ export function TextField(props: TextFieldProps) {
   const accessState = useAccessState(access);
   const [focused, setFocused] = useState(false);
   const labelId = useId();
+  useStandaloneFieldWarning(
+    'TextField',
+    name,
+    isFormMode,
+    controlledValue,
+    onChangeText,
+  );
 
   // StrictMode-safe unregister. The double invoke in development mounts,
   // unmounts and mounts again, so an eager unregister on the first

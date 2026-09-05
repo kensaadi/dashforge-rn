@@ -11,7 +11,17 @@ const flat = (style: unknown) =>
 
 const input = () => screen.UNSAFE_getByType(require('react-native').TextInput);
 
-beforeEach(() => setMode('light'));
+let warn: jest.SpyInstance;
+
+beforeEach(() => {
+  setMode('light');
+  // Several tests here deliberately render a field wired to nothing,
+  // which is exactly what the standalone warning is for. Silenced so the
+  // output stays readable, and asserted on in its own group.
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => warn.mockRestore());
 
 describe('standalone', () => {
   it('renders a label and a placeholder', () => {
@@ -205,5 +215,42 @@ describe('sx', () => {
   it('targets slots, because a field has parts you cannot compose around', () => {
     render(<TextField label="Email" sx={{ label: { color: '#ff0000' } }} />);
     expect(flat(screen.getByText('Email').props.style).color).toBe('#ff0000');
+  });
+});
+
+describe('the standalone warning', () => {
+  const message = 'never report a change';
+
+  it('warns when the field is wired to nothing', () => {
+    render(<TextField name="email" label="Email" />);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining(message));
+    // Names the field, so the message points somewhere.
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('name="email"'));
+  });
+
+  it('stays quiet for a controlled field', () => {
+    render(<TextField label="Cerca" value="" onChangeText={jest.fn()} />);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('stays quiet with only a change handler, which is enough to report upward', () => {
+    render(<TextField label="Cerca" onChangeText={jest.fn()} />);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('stays quiet inside a form, where the bridge owns the value', () => {
+    render(
+      <DashFormProvider>
+        <TextField name="email" label="Email" />
+      </DashFormProvider>,
+    );
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('warns once, not once per render', () => {
+    const { rerender } = render(<TextField label="Email" />);
+    rerender(<TextField label="Email cambiata" />);
+    rerender(<TextField label="Ancora" />);
+    expect(warn).toHaveBeenCalledTimes(1);
   });
 });
