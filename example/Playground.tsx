@@ -24,6 +24,7 @@ import {
   CardSection,
   CheckboxSection,
   SwitchSection,
+  RadioGroupSection,
   SurfaceSection,
   TokensSection,
   TypographySection,
@@ -49,6 +50,7 @@ const SECTIONS = [
   { key: 'card', label: 'Card', render: () => <CardSection /> },
   { key: 'checkbox', label: 'Checkbox', render: () => <CheckboxSection /> },
   { key: 'switch', label: 'Switch', render: () => <SwitchSection /> },
+  { key: 'radio', label: 'RadioGroup', render: () => <RadioGroupSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
@@ -65,6 +67,7 @@ const GROUPS = [
       'textfield',
       'checkbox',
       'switch',
+      'radio',
       'typography',
       'card',
       'surface',

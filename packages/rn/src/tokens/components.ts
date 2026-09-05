@@ -242,6 +242,44 @@ export interface SwitchTokens {
   };
 }
 
+export interface RadioGroupTokens {
+  /** The circle, per size. */
+  circle: SizeScale;
+  /** The dot inside it. */
+  dot: SizeScale;
+  borderWidth: number;
+  /** Between a circle and its label. */
+  gap: number;
+  /** Between one option and the next. */
+  optionGap: number;
+  /** Between the group's own label, its options, and its helper. */
+  groupGap: number;
+  hitSlop: SizeScale;
+  typography: {
+    /** The group's question. */
+    legend: TypeStyle;
+    /** One option's answer. */
+    label: TypeStyle;
+    helper: TypeStyle;
+  };
+  color: {
+    bg: string;
+    bgDisabled: string;
+    border: string;
+    borderChecked: string;
+    borderInvalid: string;
+    borderDisabled: string;
+    dot: string;
+    dotDisabled: string;
+    legend: string;
+    label: string;
+    labelDisabled: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+  };
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -257,6 +295,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    RadioGroup?: {
+      defaults?: Record<string, unknown>;
+      tokens?: RadioGroupTokens;
     };
     Switch?: {
       defaults?: Record<string, unknown>;
@@ -286,6 +328,9 @@ const TOUCH_TARGET = 44;
 
 /** The box itself is small; the target around it is not. */
 const checkboxBoxes: SizeScale = { sm: 18, md: 20, lg: 24 };
+
+/** Slightly larger than a checkbox: a circle reads smaller than a square of the same width. */
+const radioCircles: SizeScale = { sm: 18, md: 22, lg: 26 };
 
 /**
  * Track sizes. Roughly 1.75 to 1, which is the proportion at which a
@@ -417,6 +462,38 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    RadioGroup: {
+      tokens: {
+        circle: radioCircles,
+        dot: { sm: 8, md: 10, lg: 12 },
+        borderWidth: s.borderWidth.strong,
+        gap: s.space.inline,
+        optionGap: 10,
+        groupGap: s.space.stack,
+        hitSlop: hitSlopFor(radioCircles),
+        typography: {
+          legend: s.typography.label,
+          label: s.typography.body,
+          helper: s.typography.caption,
+        },
+        color: {
+          bg: s.surface.raised,
+          bgDisabled: s.fill.subtle,
+          border: s.border.default,
+          borderChecked: s.action.primary.bg,
+          borderInvalid: s.action.danger.bg,
+          borderDisabled: s.border.subtle,
+          dot: s.action.primary.bg,
+          dotDisabled: s.text.disabled,
+          legend: s.text.primary,
+          label: s.text.primary,
+          labelDisabled: s.text.disabled,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.action.danger.bg,
+        },
+      } satisfies RadioGroupTokens,
     },
     Switch: {
       tokens: {

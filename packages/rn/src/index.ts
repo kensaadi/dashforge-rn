@@ -18,6 +18,7 @@ export { Surface } from './components/Surface/Surface';
 export { Card } from './components/Card/Card';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
+export { RadioGroup } from './components/RadioGroup/RadioGroup';
 export { buttonRecipe } from './components/Button/button.variants';
 export type {
   TypographyProps,
@@ -41,6 +42,18 @@ export type {
   SurfaceCaseProps,
   SurfaceFallbackProps,
 } from './components/Surface/surface.types';
+export type {
+  CheckboxProps,
+  CheckboxSx,
+} from './components/Checkbox/checkbox.types';
+export type { SwitchProps, SwitchSx } from './components/Switch/switch.types';
+export type {
+  RadioGroupProps,
+  RadioGroupSx,
+  RadioOptionProps,
+  RadioOptionSx,
+  RadioValue,
+} from './components/RadioGroup/radioGroup.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';
 export { useVisibility, type VisibleWhen } from './hooks/useVisibility';

@@ -7,5 +7,6 @@ export { VisibleWhenSection } from './VisibleWhenSection';
 export { CardSection } from './CardSection';
 export { CheckboxSection } from './CheckboxSection';
 export { SwitchSection } from './SwitchSection';
+export { RadioGroupSection } from './RadioGroupSection';
 export { SurfaceSection } from './SurfaceSection';
 export { TokensSection } from './TokensSection';
