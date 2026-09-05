@@ -68,32 +68,49 @@ export function CardMedia(props: CardMediaProps) {
   const toTheEdge = flush === 'top';
 
   return (
-    <Image
-      source={source}
-      resizeMode={resizeMode}
-      // Announced only when it was given something to say. A photograph
-      // beside a title that already names it is decoration, and the
-      // right outcome for decoration is to be skipped.
-      accessible={Boolean(accessibilityLabel)}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole={accessibilityLabel ? 'image' : undefined}
-      importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
-      {...rest}
-      style={[
-        {
-          width: undefined,
-          height,
-          aspectRatio: height === undefined ? aspectRatio : undefined,
-          marginHorizontal: -padding,
-          marginTop: toTheEdge ? -padding : 0,
-          // The inner radius of a rounded box is the outer one less the
-          // border, or the corner reads as two curves that disagree.
-          borderTopLeftRadius: toTheEdge ? radius : 0,
-          borderTopRightRadius: toTheEdge ? radius : 0,
-        },
-        sx,
-      ]}
-    />
+    // The bleed is the wrapper's job, not the image's.
+    //
+    // An `Image` reports the intrinsic size of what it loaded, and Yoga
+    // uses that when the width is left to work itself out, so an image
+    // laid out by negative margins alone ended up wider than the card and
+    // ran off its right edge. A `View` has no intrinsic size to argue
+    // with: it takes the card's content box, the negative margins push it
+    // out to the edges from there, and the image fills it at exactly
+    // 100%.
+    //
+    // The wrapper also owns the clipping, which is what makes the corner
+    // safe: `overflow: 'hidden'` here cannot reach the card, so an
+    // elevated card keeps the shadow it would have lost.
+    <View
+      style={{
+        marginHorizontal: -padding,
+        marginTop: toTheEdge ? -padding : 0,
+        borderTopLeftRadius: toTheEdge ? radius : 0,
+        borderTopRightRadius: toTheEdge ? radius : 0,
+        overflow: 'hidden',
+      }}
+    >
+      <Image
+        source={source}
+        resizeMode={resizeMode}
+        // Announced only when it was given something to say. A photograph
+        // beside a title that already names it is decoration, and the
+        // right outcome for decoration is to be skipped.
+        accessible={Boolean(accessibilityLabel)}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole={accessibilityLabel ? 'image' : undefined}
+        importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
+        {...rest}
+        style={[
+          {
+            width: '100%',
+            height,
+            aspectRatio: height === undefined ? aspectRatio : undefined,
+          },
+          sx,
+        ]}
+      />
+    </View>
   );
 }
 CardMedia.displayName = 'Card.Media';
@@ -224,9 +241,15 @@ export function Card(props: CardProps) {
   const inset = padding === 'none' ? 0 : tokens.padding[padding as 'sm' | 'md' | 'lg'];
   // The radius a child sees is the card's less its border, or a band
   // tucked into the corner draws a second curve inside the first.
+  // The border the card actually draws, which is not the token unless
+  // the variant asked for an edge. Subtracting it unconditionally left an
+  // elevated card rounded a point more than the band inside it, and that
+  // point of ground showing through the corner is what reads as the image
+  // spilling out.
+  const edge = variant === 'outlined' ? tokens.borderWidth : 0;
   const inner = {
     padding: inset,
-    radius: Math.max(tokens.radius - tokens.borderWidth, 0),
+    radius: Math.max(tokens.radius - edge, 0),
     tone,
   };
 

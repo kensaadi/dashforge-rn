@@ -3,6 +3,9 @@ import { View } from 'react-native';
 import { Button, Card, Typography } from '@dashforge/rn';
 import { Caption, Label, Row } from '../ui';
 
+/** Un'immagine remota vera, per mostrare che `source` accetta un uri. */
+const REMOTE = 'https://picsum.photos/id/1043/800/450';
+
 /**
  * The component the playground had to invent twice before it existed:
  * once as `Card` in `ui.tsx`, once as `Panel` inside the Surface
@@ -141,33 +144,65 @@ export function CardSection() {
         </Card>
       </Card>
 
-      <Card>
-        <Card.Media source={require('../assets/media.png')} />
+      <Card
+        variant="elevated"
+        onPress={() => {}}
+        accessibilityLabel="Apri la lampada Nord"
+      >
+        <Card.Media source={require('../assets/product.png')} />
         <Card.Header
-          title="Immagine"
-          subtitle="Una fascia sopra il contenuto, non uno sfondo dietro"
+          title="Lampada Nord"
+          subtitle="Ceramica smaltata, 32 cm"
+          action={<Typography variant="subtitle">89 €</Typography>}
+        />
+        <Typography variant="caption" color="muted">
+          Il caso normale: la fascia in cima, il testo sul suo fondo, tutta la
+          scheda premibile.
+        </Typography>
+      </Card>
+
+      <Card>
+        <Card.Media
+          source={require('../assets/landscape.png')}
+          accessibilityLabel="Colline al tramonto"
+        />
+        <Card.Header
+          title="Dove finisce la luce"
+          subtitle="Reportage · 8 minuti di lettura"
         />
         <Caption>
-          Sopra invece che dietro, così il testo resta sul suo fondo. Il
-          contrasto contro una fotografia che arriva da un CDN non è una cosa
-          che possiamo promettere, e una fascia evita di doverlo fare.
+          Questa ha un accessibilityLabel perché l'immagine dice qualcosa che il
+          testo non dice. Quella del prodotto qui sopra no: è decorazione
+          accanto a un titolo che la nomina già, e la cosa giusta per una
+          decorazione è essere saltata.
+        </Caption>
+      </Card>
+
+      <Card>
+        <Card.Media source={{ uri: REMOTE }} />
+        <Card.Header title="Da URL" subtitle="source={{ uri: … }}" />
+        <Caption>
+          `source` è quello di Image: un require locale oppure un oggetto con
+          uri, con headers e cache se servono.
         </Caption>
         <Caption>
-          Sborda da sola oltre la spaziatura della scheda, perché la legge dal
-          contesto: cambia padding sulla scheda e la fascia si adegua. Gli
-          angoli in alto sono arrotondati del raggio meno il bordo.
+          Nota che lo spazio è già riservato prima che i byte arrivino, perché
+          la fascia lavora su una proporzione e non su un'altezza da scoprire.
+          Niente salto di layout quando l'immagine si posa.
         </Caption>
       </Card>
 
       <Card padding="lg" variant="elevated">
-        <Card.Media source={require('../assets/media.png')} height={100} />
+        <Card.Media source={require('../assets/abstract.png')} height={110} />
         <Card.Header
           title="Con padding lg e ombra"
           subtitle="Ritagliamo l'immagine, non la scheda"
         />
         <Caption>
-          Se arrotondassimo la scheda servirebbe overflow hidden, e quello
-          toglie l'ombra su iOS mentre Android continua a disegnarla.
+          La fascia legge la spaziatura dal contesto, quindi con padding lg
+          sborda di 24 invece che di 16 senza che tu le dica niente. Se
+          arrotondassimo la scheda servirebbe overflow hidden, e quello toglie
+          l'ombra su iOS mentre Android continua a disegnarla.
         </Caption>
       </Card>
 
@@ -175,10 +210,10 @@ export function CardSection() {
         <Card.Header title="Fascia in mezzo" subtitle={'flush="none"'} />
         <Caption>
           Sopra la fascia c'è del contenuto, quindi niente margine negativo in
-          alto.
+          alto e angoli quadri.
         </Caption>
         <Card.Media
-          source={require('../assets/media.png')}
+          source={require('../assets/abstract.png')}
           height={70}
           flush="none"
         />

@@ -340,6 +340,8 @@ describe('tone', () => {
 describe('media', () => {
   const source = { uri: 'https://example.test/p.jpg' };
   const mediaStyle = () => flat(screen.UNSAFE_getByType(Image).props.style);
+  /** The bleed lives on the wrapper, which is what owns the clipping too. */
+  const bleedStyle = () => flat(screen.UNSAFE_getByType(Image).parent?.props.style);
 
   it('bleeds past the card padding, because a band that stopped inside is not a band', () => {
     render(
@@ -347,7 +349,7 @@ describe('media', () => {
         <Card.Media source={source} />
       </Card>,
     );
-    const s = mediaStyle();
+    const s = bleedStyle();
     expect(s.marginHorizontal).toBe(-16);
     expect(s.marginTop).toBe(-16);
   });
@@ -358,7 +360,7 @@ describe('media', () => {
         <Card.Media source={source} />
       </Card>,
     );
-    expect(mediaStyle().marginHorizontal).toBe(-24);
+    expect(bleedStyle().marginHorizontal).toBe(-24);
   });
 
   it('adds no margin at all inside a card with no padding', () => {
@@ -367,7 +369,7 @@ describe('media', () => {
         <Card.Media source={source} />
       </Card>,
     );
-    expect(mediaStyle().marginHorizontal).toBe(-0);
+    expect(bleedStyle().marginHorizontal).toBe(-0);
   });
 
   it('rounds only the corners it meets, less the border', () => {
@@ -376,11 +378,14 @@ describe('media', () => {
         <Card.Media source={source} />
       </Card>,
     );
-    const s = mediaStyle();
+    const s = bleedStyle();
     // The card's radius less its border: an inner curve equal to the
     // outer one reads as two curves that disagree.
     expect(s.borderTopLeftRadius).toBe(11);
     expect(s.borderBottomLeftRadius).toBeUndefined();
+    // Clipped here and not on the card: `overflow: 'hidden'` on the card
+    // would take an elevated card's shadow with it on iOS.
+    expect(s.overflow).toBe('hidden');
   });
 
   it('stays put when it is not the first child', () => {
@@ -390,12 +395,25 @@ describe('media', () => {
         <Card.Media source={source} flush="none" />
       </Card>,
     );
-    const s = mediaStyle();
+    const s = bleedStyle();
     // Horizontal bleed either way; a negative top margin here would pull
     // the band over whatever is above it.
     expect(s.marginHorizontal).toBe(-16);
     expect(s.marginTop).toBe(0);
     expect(s.borderTopLeftRadius).toBe(0);
+  });
+
+  it('takes its width from the wrapper and not from the image own size', () => {
+    render(
+      <Card>
+        <Card.Media source={source} />
+      </Card>,
+    );
+    // An Image reports the intrinsic size of what it loaded and Yoga uses
+    // it when the width is left to work itself out, so a band laid out by
+    // margins alone ran off the card's right edge. The wrapper has no
+    // intrinsic size to argue with, and 100% of it is exact.
+    expect(mediaStyle().width).toBe('100%');
   });
 
   it('keeps its proportions instead of taking a height', () => {
