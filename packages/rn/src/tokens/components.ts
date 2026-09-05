@@ -206,6 +206,42 @@ export interface CheckboxTokens {
   };
 }
 
+export interface SwitchTokens {
+  /** The track, per size. Width and height; the radius is half the height. */
+  track: { sm: { w: number; h: number }; md: { w: number; h: number }; lg: { w: number; h: number } };
+  /** The circle, per size. */
+  thumb: SizeScale;
+  /** Between the thumb and the track's edge. */
+  inset: SizeScale;
+  /** Between the switch and its label. */
+  gap: number;
+  /** Between the row and the helper text under it. */
+  rowGap: number;
+  hitSlop: SizeScale;
+  /** How long the thumb takes to cross. */
+  duration: number;
+  /** The thumb sits above the track, and says so. */
+  elevation: ElevationStyle;
+  typography: {
+    label: TypeStyle;
+    helper: TypeStyle;
+  };
+  color: {
+    trackOff: string;
+    trackOn: string;
+    trackOffDisabled: string;
+    trackOnDisabled: string;
+    trackInvalid: string;
+    thumb: string;
+    thumbDisabled: string;
+    label: string;
+    labelDisabled: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+  };
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -221,6 +257,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Switch?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SwitchTokens;
     };
     Checkbox?: {
       defaults?: Record<string, unknown>;
@@ -246,6 +286,16 @@ const TOUCH_TARGET = 44;
 
 /** The box itself is small; the target around it is not. */
 const checkboxBoxes: SizeScale = { sm: 18, md: 20, lg: 24 };
+
+/**
+ * Track sizes. Roughly 1.75 to 1, which is the proportion at which a
+ * pill reads as a track with room to travel rather than as a wide dot.
+ */
+const switchTracks = {
+  sm: { w: 34, h: 20 },
+  md: { w: 42, h: 24 },
+  lg: { w: 52, h: 30 },
+} as const;
 
 function hitSlopFor(heights: SizeScale): SizeScale {
   const pad = (h: number) => Math.max(0, Math.round((TOUCH_TARGET - h) / 2));
@@ -367,6 +417,39 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Switch: {
+      tokens: {
+        track: switchTracks,
+        thumb: { sm: 16, md: 20, lg: 24 },
+        inset: { sm: 2, md: 2, lg: 3 },
+        gap: s.space.inline,
+        rowGap: 6,
+        hitSlop: hitSlopFor({
+          sm: switchTracks.sm.h,
+          md: switchTracks.md.h,
+          lg: switchTracks.lg.h,
+        }),
+        duration: s.motion.quick,
+        elevation: s.elevation.raised,
+        typography: { label: s.typography.body, helper: s.typography.caption },
+        color: {
+          // The track off is a fill and not a surface: it is a rail, not
+          // a card, and Apple's fill scale exists for exactly this.
+          trackOff: s.fill.default,
+          trackOn: s.action.primary.bg,
+          trackOffDisabled: s.fill.subtle,
+          trackOnDisabled: s.fill.strong,
+          trackInvalid: s.action.danger.bg,
+          thumb: '#ffffff',
+          thumbDisabled: s.surface.raised,
+          label: s.text.primary,
+          labelDisabled: s.text.disabled,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.action.danger.bg,
+        },
+      } satisfies SwitchTokens,
     },
     Checkbox: {
       tokens: {
