@@ -29,6 +29,7 @@ export type {
 export type {
   CardProps,
   CardHeaderProps,
+  CardMediaProps,
   CardHeaderSx,
 } from './components/Card/card.types';
 export type {

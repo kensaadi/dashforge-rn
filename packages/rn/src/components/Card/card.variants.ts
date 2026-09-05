@@ -2,7 +2,7 @@ import type { TextStyle, ViewStyle } from 'react-native';
 import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
 import { resolveTypeStyle } from '../../theme/typography';
-import type { CardTokens } from '../../tokens/components';
+import type { CardTokens, CardTone } from '../../tokens/components';
 import type { CardProps } from './card.types';
 
 /** The parts a Card paints. */
@@ -18,9 +18,12 @@ export interface CardSlotStyles {
 /** The axes the recipe resolves on. `pressed` is internal, not a public prop. */
 export interface CardVariantSelection {
   variant?: CardProps['variant'];
+  tone?: CardProps['tone'];
   padding?: CardProps['padding'];
   pressed?: boolean;
 }
+
+const TONES: CardTone[] = ['success', 'warning', 'danger', 'info'];
 
 /**
  * The Card recipe.
@@ -39,8 +42,16 @@ export interface CardVariantSelection {
 export const cardRecipe: (
   tokens: CardTokens,
 ) => (props?: CardVariantSelection) => CardSlotStyles = createRecipe(
-  (t: CardTokens) =>
-    svSlots({
+  (t: CardTokens) => {
+    // Written out rather than generated: a spread of computed keys erases
+    // the literal key types, and the axis would then only know `neutral`.
+    const tinted = (tone: CardTone) => ({
+      root: { backgroundColor: t.tone[tone].bg, borderColor: t.tone[tone].border },
+      title: { color: t.tone[tone].fg },
+      subtitle: { color: t.tone[tone].fg },
+    });
+
+    return svSlots({
       slots: {
         root: {
           borderRadius: t.radius,
@@ -88,25 +99,49 @@ export const cardRecipe: (
           md: { root: { padding: t.padding.md } },
           lg: { root: { padding: t.padding.lg } },
         },
+        tone: {
+          neutral: {},
+          // A tone recolours the ground and the text with it. Whether
+          // there is an edge at all is still the variant's decision, so
+          // the border *colour* is set here and its width is not.
+          success: tinted('success'),
+          warning: tinted('warning'),
+          danger: tinted('danger'),
+          info: tinted('info'),
+        },
         pressed: { true: {}, false: {} },
       },
       compoundVariants: [
+        ...TONES.map((tone) => ({
+          tone,
+          pressed: true,
+          style: { root: { backgroundColor: t.tone[tone].bgPressed } },
+        })),
         {
           variant: 'outlined',
+          tone: 'neutral',
           pressed: true,
           style: { root: { backgroundColor: t.color.bgPressed } },
         },
         {
           variant: 'elevated',
+          tone: 'neutral',
           pressed: true,
           style: { root: { backgroundColor: t.color.bgPressed } },
         },
         {
           variant: 'filled',
+          tone: 'neutral',
           pressed: true,
           style: { root: { backgroundColor: t.color.bgFilledPressed } },
         },
       ],
-      defaultVariants: { variant: 'outlined', padding: 'md', pressed: false },
-    }),
+      defaultVariants: {
+        variant: 'outlined',
+        tone: 'neutral',
+        padding: 'md',
+        pressed: false,
+      },
+    });
+  },
 );

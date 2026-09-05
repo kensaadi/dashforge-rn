@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from 'react-native';
+import { createContext, useContext } from 'react';
+import { Image, Pressable, Text, View } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
@@ -7,7 +8,95 @@ import {
   useComponentTokens,
 } from '../../theme/useComponentTokens';
 import { cardRecipe } from './card.variants';
-import type { CardHeaderProps, CardProps } from './card.types';
+import type { CardHeaderProps, CardMediaProps, CardProps } from './card.types';
+
+/**
+ * What a card tells its own parts.
+ *
+ * `Card.Media` needs the inset it has to escape, since a band that
+ * stopped at the card's padding would not be a band. `Card.Header` needs
+ * the tone, because a tint recolours the text that sits on it and the
+ * header is the component that draws that text.
+ */
+const CardContext = createContext<{
+  padding: number;
+  radius: number;
+  tone: NonNullable<CardProps['tone']>;
+}>({ padding: 0, radius: 0, tone: 'neutral' });
+
+/**
+ * A full-width image band inside a card.
+ *
+ * Above the content rather than behind it, which is what most cards
+ * actually want and what keeps the text on its own ground: contrast
+ * against a photograph arriving from a CDN is not something this library
+ * can promise, and a band avoids having to.
+ *
+ * The image is clipped, not the card. Rounding the card would need
+ * `overflow: 'hidden'`, and that removes the shadow of an `elevated`
+ * card on iOS while Android keeps drawing it, since `elevation` is a
+ * property of the view rather than a painted edge.
+ *
+ * @example
+ * ```tsx
+ * <Card padding="md">
+ *   <Card.Media source={{ uri: product.image }} />
+ *   <Card.Header title={product.name} subtitle={product.price} />
+ * </Card>
+ * ```
+ */
+export function CardMedia(props: CardMediaProps) {
+  const { padding, radius } = useContext(CardContext);
+  const {
+    source,
+    aspectRatio = 16 / 9,
+    height,
+    resizeMode = 'cover',
+    flush = 'top',
+    accessibilityLabel,
+    access,
+    visibleWhen,
+    sx,
+    ...rest
+  } = props;
+
+  const isVisible = useVisibility(visibleWhen);
+  const accessState = useAccessState(access);
+
+  if (!isVisible || !accessState.visible) return null;
+
+  const toTheEdge = flush === 'top';
+
+  return (
+    <Image
+      source={source}
+      resizeMode={resizeMode}
+      // Announced only when it was given something to say. A photograph
+      // beside a title that already names it is decoration, and the
+      // right outcome for decoration is to be skipped.
+      accessible={Boolean(accessibilityLabel)}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityLabel ? 'image' : undefined}
+      importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
+      {...rest}
+      style={[
+        {
+          width: undefined,
+          height,
+          aspectRatio: height === undefined ? aspectRatio : undefined,
+          marginHorizontal: -padding,
+          marginTop: toTheEdge ? -padding : 0,
+          // The inner radius of a rounded box is the outer one less the
+          // border, or the corner reads as two curves that disagree.
+          borderTopLeftRadius: toTheEdge ? radius : 0,
+          borderTopRightRadius: toTheEdge ? radius : 0,
+        },
+        sx,
+      ]}
+    />
+  );
+}
+CardMedia.displayName = 'Card.Media';
 
 /**
  * A card's heading block.
@@ -29,15 +118,18 @@ import type { CardHeaderProps, CardProps } from './card.types';
  */
 export function CardHeader(props: CardHeaderProps) {
   const tokens = useComponentTokens('Card');
-  const { title, subtitle, action, children, access, visibleWhen, sx, ...rest } =
-    props;
+  const { tone } = useContext(CardContext);
+  const { title, subtitle, action, children, access, visibleWhen, sx, ...rest } = props;
 
   const isVisible = useVisibility(visibleWhen);
   const accessState = useAccessState(access);
 
   if (!isVisible || !accessState.visible) return null;
 
-  const styles = cardRecipe(tokens)();
+  // Resolved with the card's tone, not with the default: on a tinted
+  // ground the text moves with the tint, and muted neutral text there was
+  // never checked for contrast against it.
+  const styles = cardRecipe(tokens)({ tone });
 
   return (
     <View {...rest} style={[styles.header, sx?.header]}>
@@ -104,6 +196,7 @@ export function Card(props: CardProps) {
   const {
     children,
     variant = 'outlined',
+    tone = 'neutral',
     padding = 'md',
     onPress,
     onLongPress,
@@ -128,34 +221,48 @@ export function Card(props: CardProps) {
   const interactive = Boolean(onPress || onLongPress);
   const inactive = disabled || accessState.disabled || accessState.readonly;
 
+  const inset = padding === 'none' ? 0 : tokens.padding[padding as 'sm' | 'md' | 'lg'];
+  // The radius a child sees is the card's less its border, or a band
+  // tucked into the corner draws a second curve inside the first.
+  const inner = {
+    padding: inset,
+    radius: Math.max(tokens.radius - tokens.borderWidth, 0),
+    tone,
+  };
+
   if (!interactive) {
     return (
-      <View {...rest} style={[resolve({ variant, padding }).root, sx]}>
-        {children}
-      </View>
+      <CardContext.Provider value={inner}>
+        <View {...rest} style={[resolve({ variant, tone, padding }).root, sx]}>
+          {children}
+        </View>
+      </CardContext.Provider>
     );
   }
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled: inactive }}
-      disabled={inactive}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      {...rest}
-      style={({ pressed }) => [
-        resolve({ variant, padding, pressed: pressed && !inactive }).root,
-        // Dimming means "unavailable" and nothing else, which is why it
-        // is the only opacity token there is. A press is a colour change,
-        // never a fade.
-        inactive ? { opacity: theme.semantic.opacity.disabled } : null,
-        sx,
-      ]}
-    >
-      {children}
-    </Pressable>
+    <CardContext.Provider value={inner}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: inactive }}
+        disabled={inactive}
+        onPress={onPress}
+        onLongPress={onLongPress}
+        {...rest}
+        style={({ pressed }) => [
+          resolve({ variant, tone, padding, pressed: pressed && !inactive }).root,
+          // Dimming means "unavailable" and nothing else, which is why it
+          // is the only opacity token there is. A press is a colour change,
+          // never a fade.
+          inactive ? { opacity: theme.semantic.opacity.disabled } : null,
+          sx,
+        ]}
+      >
+        {children}
+      </Pressable>
+    </CardContext.Provider>
   );
 }
 
 Card.Header = CardHeader;
+Card.Media = CardMedia;

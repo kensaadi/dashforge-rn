@@ -1,5 +1,5 @@
 import { RbacProvider, type RbacPolicy } from '@dashforge/rbac';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { setMode } from '../../theme/store';
 import { defaultComponentTokens } from '../../tokens/components';
@@ -267,5 +267,176 @@ describe('the pressed ground', () => {
     const grounds = groundsFor(semantic);
     expect(grounds('filled').rest).not.toBe(grounds('outlined').rest);
     expect(grounds('filled').rest).not.toBe(grounds('elevated').rest);
+  });
+});
+
+describe('tone', () => {
+  const groundsFor = (semantic: typeof semanticLight) => {
+    const tokens = defaultComponentTokens(semantic).Card.tokens;
+    return cardRecipe(tokens);
+  };
+
+  it('tints the ground and takes the text with it', () => {
+    render(
+      <Card testID="card" tone="warning">
+        <Card.Header title="Attenzione" />
+      </Card>,
+    );
+    const neutral = groundsFor(semanticLight)({ tone: 'neutral' });
+    const warning = groundsFor(semanticLight)({ tone: 'warning' });
+
+    expect(rootStyle().backgroundColor).toBe(warning.root.backgroundColor);
+    expect(warning.root.backgroundColor).not.toBe(neutral.root.backgroundColor);
+    // The text moves with the ground: muted neutral on a tint is muddy,
+    // and worse, its contrast was never checked against that ground.
+    expect(warning.title.color).not.toBe(neutral.title.color);
+    expect(warning.subtitle.color).toBe(warning.title.color);
+  });
+
+  it('reaches the header, which is the thing that draws the text', () => {
+    // Asserted on what is rendered and not only on the recipe: the header
+    // is a separate component and learns the tone from the card through
+    // context. Testing the recipe alone missed that it never asked.
+    render(
+      <Card tone="danger">
+        <Card.Header title="Errore" subtitle="Riprova" />
+      </Card>,
+    );
+    const expected = groundsFor(semanticLight)({ tone: 'danger' }).title.color;
+    expect(flat(screen.getByText('Errore').props.style).color).toBe(expected);
+    expect(flat(screen.getByText('Riprova').props.style).color).toBe(expected);
+  });
+
+  it('leaves the variant to decide whether there is an edge at all', () => {
+    render(
+      <Card testID="outlined" tone="danger" variant="outlined">
+        <Text>x</Text>
+      </Card>,
+    );
+    expect(rootStyle('outlined').borderWidth).toBe(1);
+
+    render(
+      <Card testID="filled" tone="danger" variant="filled">
+        <Text>x</Text>
+      </Card>,
+    );
+    expect(rootStyle('filled').borderWidth).toBeUndefined();
+  });
+
+  it.each([
+    ['light', semanticLight],
+    ['dark', semanticDark],
+  ] as const)('still moves under the finger in %s mode', (_, semantic) => {
+    const resolve = groundsFor(semantic);
+    for (const tone of ['success', 'warning', 'danger', 'info'] as const) {
+      const rest = resolve({ tone, pressed: false }).root.backgroundColor;
+      const pressed = resolve({ tone, pressed: true }).root.backgroundColor;
+      expect(pressed).toBeTruthy();
+      expect(pressed).not.toBe(rest);
+    }
+  });
+});
+
+describe('media', () => {
+  const source = { uri: 'https://example.test/p.jpg' };
+  const mediaStyle = () => flat(screen.UNSAFE_getByType(Image).props.style);
+
+  it('bleeds past the card padding, because a band that stopped inside is not a band', () => {
+    render(
+      <Card padding="md">
+        <Card.Media source={source} />
+      </Card>,
+    );
+    const s = mediaStyle();
+    expect(s.marginHorizontal).toBe(-16);
+    expect(s.marginTop).toBe(-16);
+  });
+
+  it('follows the card padding rather than a number of its own', () => {
+    render(
+      <Card padding="lg">
+        <Card.Media source={source} />
+      </Card>,
+    );
+    expect(mediaStyle().marginHorizontal).toBe(-24);
+  });
+
+  it('adds no margin at all inside a card with no padding', () => {
+    render(
+      <Card padding="none">
+        <Card.Media source={source} />
+      </Card>,
+    );
+    expect(mediaStyle().marginHorizontal).toBe(-0);
+  });
+
+  it('rounds only the corners it meets, less the border', () => {
+    render(
+      <Card padding="md">
+        <Card.Media source={source} />
+      </Card>,
+    );
+    const s = mediaStyle();
+    // The card's radius less its border: an inner curve equal to the
+    // outer one reads as two curves that disagree.
+    expect(s.borderTopLeftRadius).toBe(11);
+    expect(s.borderBottomLeftRadius).toBeUndefined();
+  });
+
+  it('stays put when it is not the first child', () => {
+    render(
+      <Card padding="md">
+        <Text>sopra</Text>
+        <Card.Media source={source} flush="none" />
+      </Card>,
+    );
+    const s = mediaStyle();
+    // Horizontal bleed either way; a negative top margin here would pull
+    // the band over whatever is above it.
+    expect(s.marginHorizontal).toBe(-16);
+    expect(s.marginTop).toBe(0);
+    expect(s.borderTopLeftRadius).toBe(0);
+  });
+
+  it('keeps its proportions instead of taking a height', () => {
+    render(
+      <Card>
+        <Card.Media source={source} />
+      </Card>,
+    );
+    const s = mediaStyle();
+    expect(s.aspectRatio).toBeCloseTo(16 / 9);
+    expect(s.height).toBeUndefined();
+  });
+
+  it('takes a height when a ratio cannot say it', () => {
+    render(
+      <Card>
+        <Card.Media source={source} height={80} />
+      </Card>,
+    );
+    const s = mediaStyle();
+    expect(s.height).toBe(80);
+    expect(s.aspectRatio).toBeUndefined();
+  });
+
+  it('is decoration until it is given something to say', () => {
+    render(
+      <Card>
+        <Card.Media source={source} />
+      </Card>,
+    );
+    expect(screen.UNSAFE_getByType(Image).props.accessible).toBe(false);
+  });
+
+  it('is announced once it has', () => {
+    render(
+      <Card>
+        <Card.Media source={source} accessibilityLabel="Il prodotto, di profilo" />
+      </Card>,
+    );
+    const img = screen.UNSAFE_getByType(Image);
+    expect(img.props.accessible).toBe(true);
+    expect(img.props.accessibilityLabel).toBe('Il prodotto, di profilo');
   });
 });

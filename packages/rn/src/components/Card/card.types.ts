@@ -1,5 +1,15 @@
 import type { ReactNode } from 'react';
-import type { PressableProps, StyleProp, TextStyle, ViewProps, ViewStyle } from 'react-native';
+import type {
+  ImageProps,
+  ImageSourcePropType,
+  ImageStyle,
+  PressableProps,
+  StyleProp,
+  TextStyle,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
+import type { CardTone } from '../../tokens/components';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
 /**
@@ -36,6 +46,22 @@ export interface CardProps
    */
   variant?: 'outlined' | 'elevated' | 'filled';
   /**
+   * What the card means, as a role rather than a colour.
+   *
+   * A tone tints the ground, recolours the edge and the text with it,
+   * and keeps all three consistent in both modes. It is the answer to
+   * "this card is a warning"; it is not the answer to "this card is
+   * #FF5722", which is `sx` and which you should know puts you outside
+   * the theme, since a fixed colour neither inverts in dark mode nor
+   * follows a theme swap.
+   *
+   * Orthogonal to `variant`: the tone decides the colours, the variant
+   * still decides whether there is an edge or a shadow.
+   *
+   * @default 'neutral'
+   */
+  tone?: 'neutral' | CardTone;
+  /**
    * Inner spacing. `none` is for a card whose content reaches the edges,
    * a full-bleed image or a list that draws its own rows.
    * @default 'md'
@@ -67,6 +93,53 @@ export interface CardProps
    * @default undefined
    */
   sx?: StyleProp<ViewStyle>;
+}
+
+export interface CardMediaProps
+  extends Omit<ImageProps, 'source' | 'style' | 'resizeMode'>,
+    DashforgeProps {
+  /** The image. */
+  source: ImageSourcePropType;
+  /**
+   * Shape, as a ratio rather than a height, so the band keeps its
+   * proportions at every width. Ignored when `height` is given.
+   * @default 16 / 9
+   */
+  aspectRatio?: number;
+  /**
+   * A fixed height, for the cases a ratio cannot express.
+   * @default undefined
+   */
+  height?: number;
+  /**
+   * @default 'cover'
+   */
+  resizeMode?: ImageProps['resizeMode'];
+  /**
+   * Whether the band also meets the card's top edge, cancelling the top
+   * padding and rounding its top corners.
+   *
+   * `'top'` is the default because a media band is nearly always the
+   * first child. Set `'none'` for one sitting between two blocks of
+   * content, where a negative top margin would pull it over whatever is
+   * above it.
+   *
+   * Horizontal bleed happens either way: a band that stopped at the
+   * card's padding would not be a band.
+   *
+   * @default 'top'
+   */
+  flush?: 'top' | 'none';
+  /**
+   * Describe the image only when it carries information the text does
+   * not. Without one it is announced as decoration and skipped, which is
+   * the right outcome for a photograph beside a title that already says
+   * what it is.
+   * @default undefined
+   */
+  accessibilityLabel?: string;
+  /** @default undefined */
+  sx?: StyleProp<ImageStyle>;
 }
 
 export interface CardHeaderProps extends Omit<ViewProps, 'style'>, DashforgeProps {

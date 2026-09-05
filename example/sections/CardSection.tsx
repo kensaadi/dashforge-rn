@@ -28,8 +28,8 @@ export function CardSection() {
         <Card variant="elevated">
           <Label>elevated</Label>
           <Caption>
-            L'eccezione, per una scheda che deve stare sopra la pagina. In
-            scuro l'ombra si legge poco, per questo lì porta più opacità.
+            L'eccezione, per una scheda che deve stare sopra la pagina. In scuro
+            l'ombra si legge poco, per questo lì porta più opacità.
           </Caption>
         </Card>
         <Card variant="filled">
@@ -59,7 +59,11 @@ export function CardSection() {
           <Card.Header
             title="Un titolo abbastanza lungo da andare a capo su due righe"
             subtitle="Il blocco di testo prende la larghezza, l'azione no"
-            action={<Button size="sm" color="secondary">Apri</Button>}
+            action={
+              <Button size="sm" color="secondary">
+                Apri
+              </Button>
+            }
           />
         </Card>
       </Card>
@@ -103,6 +107,84 @@ export function CardSection() {
         </Caption>
       </Card>
 
+      <Card>
+        <Card.Header
+          title="Tono"
+          subtitle="Il significato come ruolo, non come colore"
+        />
+        <Caption>
+          Tinge il fondo, ricolora il bordo e porta con sé il testo, coerente
+          nei due modi. È la risposta a "questa scheda è un avviso". Non è la
+          risposta a "questa scheda è #FF5722": quello è sx, e devi sapere che
+          ti mette fuori dal tema.
+        </Caption>
+        {(['success', 'warning', 'danger', 'info'] as const).map(tone => (
+          <Card key={tone} tone={tone}>
+            <Card.Header
+              title={tone}
+              subtitle="Il bordo e il testo seguono il fondo"
+            />
+          </Card>
+        ))}
+        <Caption>
+          Il tono decide i colori, la variante decide se c'è un bordo o
+          un'ombra. Sono ortogonali.
+        </Caption>
+        <Card tone="warning" variant="filled">
+          <Card.Header title="warning + filled" subtitle="Tinta, senza bordo" />
+        </Card>
+        <Card tone="info" variant="elevated" onPress={() => {}}>
+          <Card.Header
+            title="info + elevated, premibile"
+            subtitle="Anche il tono si muove sotto il dito"
+          />
+        </Card>
+      </Card>
+
+      <Card>
+        <Card.Media source={require('../assets/media.png')} />
+        <Card.Header
+          title="Immagine"
+          subtitle="Una fascia sopra il contenuto, non uno sfondo dietro"
+        />
+        <Caption>
+          Sopra invece che dietro, così il testo resta sul suo fondo. Il
+          contrasto contro una fotografia che arriva da un CDN non è una cosa
+          che possiamo promettere, e una fascia evita di doverlo fare.
+        </Caption>
+        <Caption>
+          Sborda da sola oltre la spaziatura della scheda, perché la legge dal
+          contesto: cambia padding sulla scheda e la fascia si adegua. Gli
+          angoli in alto sono arrotondati del raggio meno il bordo.
+        </Caption>
+      </Card>
+
+      <Card padding="lg" variant="elevated">
+        <Card.Media source={require('../assets/media.png')} height={100} />
+        <Card.Header
+          title="Con padding lg e ombra"
+          subtitle="Ritagliamo l'immagine, non la scheda"
+        />
+        <Caption>
+          Se arrotondassimo la scheda servirebbe overflow hidden, e quello
+          toglie l'ombra su iOS mentre Android continua a disegnarla.
+        </Caption>
+      </Card>
+
+      <Card>
+        <Card.Header title="Fascia in mezzo" subtitle={'flush="none"'} />
+        <Caption>
+          Sopra la fascia c'è del contenuto, quindi niente margine negativo in
+          alto.
+        </Caption>
+        <Card.Media
+          source={require('../assets/media.png')}
+          height={70}
+          flush="none"
+        />
+        <Caption>E sotto pure.</Caption>
+      </Card>
+
       <Card variant="filled">
         <Card.Header
           title="Ombra e ritaglio"
@@ -110,10 +192,10 @@ export function CardSection() {
         />
         <Caption>
           L'ombra è disegnata fuori dai limiti della vista. Un antenato con
-          overflow hidden la toglie su iOS, mentre Android continua a
-          disegnarla perché elevation è una proprietà della vista e non un
-          bordo dipinto. Per arrotondare un'immagine dentro una scheda
-          elevata: ritaglia l'immagine, non la scheda.
+          overflow hidden la toglie su iOS, mentre Android continua a disegnarla
+          perché elevation è una proprietà della vista e non un bordo dipinto.
+          Per arrotondare un'immagine dentro una scheda elevata: ritaglia
+          l'immagine, non la scheda.
         </Caption>
         <View />
       </Card>

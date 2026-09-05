@@ -72,6 +72,27 @@ export interface TextFieldTokens {
   };
 }
 
+/** The meanings a Card can carry beyond the neutral one. */
+export type CardTone = 'success' | 'warning' | 'danger' | 'info';
+
+/** A tinted card: its ground, its edge, and the text that sits on it. */
+export interface CardToneStyle {
+  bg: string;
+  /**
+   * Pressed ground.
+   *
+   * One step along the same ramp, taken from the role's border colour
+   * because that is exactly where that step lands: darker than the tint
+   * in light, lighter than it in dark. The alternative was adding a
+   * field to `FeedbackRole`, which serves banners and badges and has no
+   * pressed state to speak of.
+   */
+  bgPressed: string;
+  border: string;
+  /** Title and subtitle both, because muted neutral text on a tint is muddy. */
+  fg: string;
+}
+
 export interface CardTokens {
   radius: number;
   borderWidth: number;
@@ -104,6 +125,8 @@ export interface CardTokens {
     title: string;
     subtitle: string;
   };
+  /** The tinted grounds, one per meaning. `neutral` is the absence of one. */
+  tone: Record<CardTone, CardToneStyle>;
   typography: {
     title: TypeStyle;
     subtitle: TypeStyle;
@@ -155,6 +178,12 @@ function hitSlopFor(heights: SizeScale): SizeScale {
 }
 
 /** Default component tokens, derived from a semantic layer. */
+/** Build one tinted ground from the feedback role of the same name. */
+function toneOf(s: SemanticTokens, role: CardTone): CardToneStyle {
+  const r = s.feedback[role];
+  return { bg: r.bg, bgPressed: r.border, border: r.border, fg: r.fg };
+}
+
 export function defaultComponentTokens(s: SemanticTokens) {
   const role: Record<ActionColor, ActionRole> = {
     primary: s.action.primary,
@@ -237,6 +266,12 @@ export function defaultComponentTokens(s: SemanticTokens) {
           border: s.border.default,
           title: s.text.primary,
           subtitle: s.text.muted,
+        },
+        tone: {
+          success: toneOf(s, 'success'),
+          warning: toneOf(s, 'warning'),
+          danger: toneOf(s, 'danger'),
+          info: toneOf(s, 'info'),
         },
         typography: {
           title: s.typography.subtitle,
