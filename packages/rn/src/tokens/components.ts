@@ -145,6 +145,17 @@ export interface CardTokens {
      */
     scrim: string;
   };
+  /**
+   * How much a pressable card shrinks under the finger.
+   *
+   * Geometric and not chromatic, because a card whose ground is covered
+   * by an image has no background left to change: a promo banner is one
+   * picture and a tap target, and a colour it never shows is not
+   * feedback. This works over anything, in both modes.
+   *
+   * Set it to 1 to turn it off.
+   */
+  pressScale: number;
   /** The tinted grounds, one per meaning. `neutral` is the absence of one. */
   tone: Record<CardTone, CardToneStyle>;
   typography: {
@@ -294,6 +305,10 @@ export function defaultComponentTokens(s: SemanticTokens) {
           onCoverMuted: 'rgba(255, 255, 255, 0.82)',
           scrim: '#000000',
         },
+        // 0.97 rather than something smaller: on a card the size of a
+        // banner two percent is a few points of travel and reads as a
+        // wobble, while three is unmistakable without being jumpy.
+        pressScale: 0.97,
         tone: {
           success: toneOf(s, 'success'),
           warning: toneOf(s, 'warning'),

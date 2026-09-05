@@ -468,9 +468,16 @@ export function Card(props: CardProps) {
         {...rest}
         style={({ pressed }) => [
           resolve({ variant, tone, padding, pressed: pressed && !inactive }).root,
+          // The ground moves too, but a card can have its ground covered
+          // by an image, and then there is nothing chromatic left to say:
+          // a promo banner is one picture and a tap target, and a colour
+          // it never shows is not feedback. Shrinking works over
+          // anything, in both modes. Instant rather than animated,
+          // because it is tied to the finger and not played at the user.
+          pressed && !inactive ? { transform: [{ scale: tokens.pressScale }] } : null,
           // Dimming means "unavailable" and nothing else, which is why it
-          // is the only opacity token there is. A press is a colour change,
-          // never a fade.
+          // is the only opacity token there is. A press is a colour change
+          // or a shift, never a fade.
           inactive ? { opacity: theme.semantic.opacity.disabled } : null,
           sx,
         ]}

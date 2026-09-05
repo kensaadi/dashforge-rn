@@ -220,6 +220,24 @@ describe('the Dashforge props', () => {
   });
 });
 
+describe('the pressed feedback', () => {
+  /**
+   * The press *state* is not asserted through a render: React Native's
+   * `Pressable` drives it from the responder system, and firing
+   * `pressIn` at the test renderer leaves it untouched, so the style
+   * callback never runs with `pressed`. What is testable is the decision
+   * itself, which is what these check; the state reaching the screen is
+   * verified on a device.
+   */
+  it('shrinks the card, which is the only feedback an image can carry', () => {
+    const { pressScale } = defaultComponentTokens(semanticLight).Card.tokens;
+    // A card covered by a full-bleed image has no ground left to
+    // recolour, and a colour it never shows is not feedback.
+    expect(pressScale).toBeLessThan(1);
+    expect(pressScale).toBeGreaterThan(0.9);
+  });
+});
+
 describe('the pressed ground', () => {
   /**
    * Asserted on the recipe rather than through a press, because this is a
