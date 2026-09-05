@@ -32,6 +32,7 @@ import {
   TypographySection,
   VisibleWhenSection,
 } from './sections';
+import { SurfaceViewport } from '@dashforge/rn';
 import { THEMES, type ThemeKey } from './themes';
 
 const SECTIONS = [
@@ -202,15 +203,25 @@ export function Playground() {
         </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{
-          padding: s.space.inset,
-          paddingBottom: insets.bottom + 48,
-          gap: s.space.stack,
-        }}
-      >
-        {current.render()}
-      </ScrollView>
+      {/*
+        Wired so `Surface` has something to tell it when the user is
+        scrolling. Without it every surface here would behave as
+        `commit="immediate"` and warn about it.
+      */}
+      <SurfaceViewport>
+        {scroll => (
+          <ScrollView
+            {...scroll}
+            contentContainerStyle={{
+              padding: s.space.inset,
+              paddingBottom: insets.bottom + 48,
+              gap: s.space.stack,
+            }}
+          >
+            {current.render()}
+          </ScrollView>
+        )}
+      </SurfaceViewport>
 
       <Drawer
         open={menuOpen}

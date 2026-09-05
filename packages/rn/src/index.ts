@@ -15,6 +15,7 @@ export { Button } from './components/Button/Button';
 export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
 export { Surface } from './components/Surface/Surface';
+export { SurfaceViewport } from './components/Surface/SurfaceViewport';
 export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
@@ -44,6 +45,10 @@ export type {
   SurfaceCaseProps,
   SurfaceFallbackProps,
 } from './components/Surface/surface.types';
+export type {
+  SurfaceViewportProps,
+  SurfaceScrollProps,
+} from './components/Surface/SurfaceViewport';
 export type {
   CheckboxProps,
   CheckboxSx,

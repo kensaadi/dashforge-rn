@@ -407,11 +407,9 @@ no re-render.
 
 ## 6. `Surface`, the reactive region
 
-**Partly shipped.** The matcher and the transition exist and are covered
-by tests. The commit policy (6.6, 6.7), which decides *when* an answer is
-applied rather than what it is, has not been written yet, so those two
-sections describe what the region will do rather than what it does today.
-The stagger in 6.8 is not written either, and is marked where it appears.
+**Shipped.** The matcher, the transition, the stagger and the commit
+policy all exist and are covered by tests. One thing named in the design
+did not survive it, and 6.7 says which and why.
 
 ### 6.1 The problem it exists for
 
@@ -594,26 +592,50 @@ missing it costs nothing.
 | `commit` | lands |
 |---|---|
 | `'immediate'` | as soon as the condition is true, scroll or no scroll |
-| `'settled'` *(default)* | once the user has been still for a moment |
-| `'unattended'` | only while the region is not being looked at |
+| `'settled'` *(default)* | once the scroll has stopped |
 
 The default is `'settled'`, because half a second of delay is a smaller
 cost than tearing content away.
 
+**`'unattended'` was designed and then not built.** It was meant to hold
+a change until the region was not being looked at, and building the
+other two showed that most of it was already there: `'settled'` applies
+at once, and without a transition, when the region is below the fold,
+which is the case `'unattended'` existed for. What would have been left
+is a policy that refuses to change a region while it is in view and can
+therefore wait forever if it never leaves. That is a real hazard and
+nothing has asked for it, so it is not in the API. It is additive if a
+case turns up.
+
 **Implementation constraint, stated because it is real.** React Native
 has no ambient notion of "the user is scrolling", and a region cannot
 know where it sits relative to a viewport it was not told about. The
-quiet policies therefore require the scroll container to be wired:
+quiet policy therefore requires the scroll container to be wired:
 
 ```tsx
 <SurfaceViewport>
-  <ScrollView>…</ScrollView>
+  {(scroll) => <ScrollView {...scroll}>…</ScrollView>}
 </SurfaceViewport>
 ```
 
-Without it, `'settled'` and `'unattended'` have nothing to wait for and
-degrade to `'immediate'`, with a `__DEV__` warning. This is a limit of
-the platform, not something the component can paper over.
+A render prop rather than a wrapper around `ScrollView`, so the consumer
+keeps their own scroll container: a `FlatList` is not going to be
+rewritten to get this. The props handed over include
+`maintainVisibleContentPosition`, which is the anchoring 6.6 asks for.
+
+Without it, `'settled'` has nothing to wait for and degrades to
+`'immediate'` with a `__DEV__` warning. This is a limit of the platform,
+not something the component can paper over.
+
+**The viewport is a subscription, not state.** A scroll fires dozens of
+times a second, and putting its position in context would re-render
+every surface under it on every frame to answer a question none of them
+is asking. A surface subscribes only while it has a change waiting, and
+reads the position once, at the moment it wants to commit. Its own
+position comes from `measureInWindow` at that same moment, with a
+deadline: a change that never landed because a measurement never
+answered would be the same stuck-half-way failure the transition avoids
+by hanging its end off the fade.
 
 ### 6.8 The transition
 
@@ -655,11 +677,18 @@ zero-sized branch, or one that never lays out, would never produce.
 Tying the end of a change to the thing that always happens is what keeps
 a region from being stuck half way.
 
-**Adjacent surfaces stagger.** *Not written yet.* Two regions committing
-in the same tick are not perceived as two changes, they are perceived as
-the app blinking. A delay of about 100ms on the second makes them two
-legible events. It will be automatic and have no API: surfaces
-committing in the same tick ordered by a module-level scheduler.
+**Adjacent surfaces stagger.** Two regions committing in the same tick
+are not perceived as two changes, they are perceived as the app
+blinking. A delay of 100ms on the second makes them two legible events.
+Automatic, and no API: a module-level scheduler hands out a slot and
+clears the batch on the next microtask, which is the end of the tick as
+far as React is concerned.
+
+The batch is keyed by the surface and not by the call, which is a
+correction the tests forced. A region that changes three times in a tick
+is one region and keeps one slot; counting calls made the third change
+arrive a third of a second late for no reason. The stagger separates
+regions from each other, not a region from its own past.
 
 **Reduce Motion is honoured.** With the system setting on, no fade and no
 scale: the swap is instant. The content still changes, only the manner
@@ -784,17 +813,13 @@ surface `visibleWhen` is legal but rare, given 6.10.
 
 | prop | default | meaning |
 |---|---|---|
+| `commit` | `'settled'` | how much this region may interrupt (6.7) |
 | `transition` | `'fade'` | `'fade'` or `'none'` (6.8) |
 | `sx` | | style override on the region, applied last |
 | `access` | | permission requirement (section 5) |
 | `visibleWhen` | | form predicate (section 5) |
 
 `Surface.Case` takes `when: boolean`. `Surface.Fallback` takes nothing.
-
-`commit` arrives with the behaviour it controls rather than as a prop
-that accepts a value and ignores it: one of `'immediate'`, `'settled'`
-and `'unattended'` (6.7). It is additive, so nothing written today has to
-change to pick it up.
 
 `sx` is a plain style rather than a slot map, because the region has one
 styleable element. Compound components like `TextField` take a map.

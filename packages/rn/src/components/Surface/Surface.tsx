@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Animated } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
@@ -5,6 +6,8 @@ import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
 import { selectBranch } from './selectBranch';
 import { useBranchTransition } from './useBranchTransition';
+import { useCommitGate } from './useCommitGate';
+import type { MeasurableView } from './SurfaceViewport';
 import {
   BRANCH_MARKER,
   SURFACE_CASE,
@@ -95,7 +98,16 @@ Fallback.displayName = 'Surface.Fallback';
  * ```
  */
 export function Surface(props: SurfaceProps) {
-  const { children, access, visibleWhen, transition = 'fade', sx, ...rest } = props;
+  const {
+    children,
+    access,
+    visibleWhen,
+    commit = 'settled',
+    transition = 'fade',
+    sx,
+    ...rest
+  } = props;
+  const box = useRef<MeasurableView>(null);
 
   const theme = useTheme();
   const isVisible = useVisibility(visibleWhen);
@@ -107,9 +119,14 @@ export function Surface(props: SurfaceProps) {
   const { selected, byKey } = selectBranch(children);
   const hidden = !isVisible || !accessState.visible;
 
+  // The gate decides *when*, the transition decides *how*. It hands back
+  // `instant` for a change happening below the fold, where there is
+  // nothing visible to animate for.
+  const gated = useCommitGate(hidden ? null : (selected?.key ?? null), commit, box);
+
   const t = useBranchTransition(
-    hidden ? null : (selected?.key ?? null),
-    transition === 'fade' && !reduceMotion,
+    gated.key,
+    transition === 'fade' && !reduceMotion && !gated.instant,
     // The incoming branch is the slower of the two, so the outgoing is
     // gone well before the new content has finished settling and there
     // is never a frame showing neither. A refinement is a real event and
@@ -131,6 +148,7 @@ export function Surface(props: SurfaceProps) {
 
   return (
     <Animated.View
+      ref={box}
       {...rest}
       style={[sx, t.animating ? { height: t.height, overflow: 'hidden' } : null]}
     >

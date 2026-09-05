@@ -14,6 +14,30 @@ export interface SurfaceProps extends Omit<ViewProps, 'style'>, DashforgeProps {
    */
   children?: ReactNode;
   /**
+   * How much this region may interrupt.
+   *
+   * Not a detail about animation: it is the editorial question of
+   * whether the content has the right to change while the user is doing
+   * something, and the rule for choosing is one line. **Interrupting is
+   * legitimate when *not* seeing it costs the user something.** An
+   * incoming ride request enters now, because delaying it for the
+   * driver's scroll costs them money. A list of offers never has that
+   * right, because missing it costs nothing.
+   *
+   * `'settled'` waits for the scroll to stop. It also applies at once,
+   * and without a transition, when the region is below the fold: nothing
+   * visible moves there, and waiting for it to come into view would make
+   * content materialise as you arrive at it.
+   *
+   * **It needs a `<SurfaceViewport>` above it.** React Native has no
+   * ambient notion of scrolling, so without one there is nothing to wait
+   * for and this degrades to `'immediate'` with a warning in
+   * development.
+   *
+   * @default 'settled'
+   */
+  commit?: 'immediate' | 'settled';
+  /**
    * How a change of branch is shown.
    *
    * `'fade'` cross-fades: the outgoing branch leaves a little faster
