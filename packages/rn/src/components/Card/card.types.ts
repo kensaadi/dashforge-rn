@@ -2,9 +2,16 @@ import type { ReactNode } from 'react';
 import type { PressableProps, StyleProp, TextStyle, ViewProps, ViewStyle } from 'react-native';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
-/** The parts a Card paints. `sx` targets them by name. */
-export interface CardSx {
-  root?: StyleProp<ViewStyle>;
+/**
+ * The parts `Card.Header` paints.
+ *
+ * The card itself paints one thing, its own box, so its `sx` is a plain
+ * style like `Button`'s. Only the header has parts worth naming, and
+ * they belong to the component that draws them: a slot map on `Card`
+ * would accept keys the card never reads.
+ */
+export interface CardHeaderSx {
+  /** The row holding the text block and the action. */
   header?: StyleProp<ViewStyle>;
   title?: StyleProp<TextStyle>;
   subtitle?: StyleProp<TextStyle>;
@@ -52,10 +59,14 @@ export interface CardProps
    */
   disabled?: boolean;
   /**
-   * Style overrides by part. Applied last, so they win.
+   * Style override on the card's box. Applied last, so it wins.
+   *
+   * The header is styled through `Card.Header`'s own `sx`, because that
+   * is the component that draws it.
+   *
    * @default undefined
    */
-  sx?: CardSx;
+  sx?: StyleProp<ViewStyle>;
 }
 
 export interface CardHeaderProps extends Omit<ViewProps, 'style'>, DashforgeProps {
@@ -81,6 +92,9 @@ export interface CardHeaderProps extends Omit<ViewProps, 'style'>, DashforgeProp
    * @default undefined
    */
   children?: ReactNode;
-  /** @default undefined */
-  sx?: Pick<CardSx, 'header' | 'title' | 'subtitle'>;
+  /**
+   * Style overrides by part. Applied last, so they win.
+   * @default undefined
+   */
+  sx?: CardHeaderSx;
 }

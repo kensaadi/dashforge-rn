@@ -29,7 +29,7 @@ export type {
 export type {
   CardProps,
   CardHeaderProps,
-  CardSx,
+  CardHeaderSx,
 } from './components/Card/card.types';
 export type {
   SurfaceProps,

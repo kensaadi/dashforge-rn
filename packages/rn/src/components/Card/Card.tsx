@@ -130,7 +130,7 @@ export function Card(props: CardProps) {
 
   if (!interactive) {
     return (
-      <View {...rest} style={[resolve({ variant, padding }).root, sx?.root]}>
+      <View {...rest} style={[resolve({ variant, padding }).root, sx]}>
         {children}
       </View>
     );
@@ -150,7 +150,7 @@ export function Card(props: CardProps) {
         // is the only opacity token there is. A press is a colour change,
         // never a fade.
         inactive ? { opacity: theme.semantic.opacity.disabled } : null,
-        sx?.root,
+        sx,
       ]}
     >
       {children}
