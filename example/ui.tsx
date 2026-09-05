@@ -4,22 +4,13 @@
  * and the fastest way to notice something missing.
  */
 import type { ReactNode } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { Typography } from '@dashforge/rn';
-import { useTheme } from '@dashforge/rn/theme';
 
-export function Card({ children }: { children: ReactNode }) {
-  const s = useTheme().semantic;
-  const style: ViewStyle = {
-    backgroundColor: s.surface.raised,
-    borderColor: s.border.default,
-    borderWidth: s.borderWidth.default,
-    borderRadius: s.radius.surface,
-    padding: s.space.inset,
-    gap: s.space.stack,
-  };
-  return <View style={style}>{children}</View>;
-}
+// `Card` used to be built here by hand, out of six semantic tokens, and
+// the Surface section had a second copy of it. Both are gone: the
+// library ships it, and re-exporting keeps every existing call site.
+export { Card } from '@dashforge/rn';
 
 export function Label({ children }: { children: string }) {
   return <Typography variant="label">{children}</Typography>;

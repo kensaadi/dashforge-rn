@@ -15,6 +15,7 @@ export { Button } from './components/Button/Button';
 export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
 export { Surface } from './components/Surface/Surface';
+export { Card } from './components/Card/Card';
 export { buttonRecipe } from './components/Button/button.variants';
 export type {
   TypographyProps,
@@ -25,6 +26,11 @@ export type {
   TextFieldProps,
   TextFieldSx,
 } from './components/TextField/textField.types';
+export type {
+  CardProps,
+  CardHeaderProps,
+  CardSx,
+} from './components/Card/card.types';
 export type {
   SurfaceProps,
   SurfaceCaseProps,

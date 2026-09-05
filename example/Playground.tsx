@@ -21,6 +21,7 @@ import {
   ButtonSection,
   TextFieldSection,
   FormSection,
+  CardSection,
   SurfaceSection,
   TokensSection,
   TypographySection,
@@ -43,6 +44,7 @@ const SECTIONS = [
     render: () => <VisibleWhenSection />,
   },
   { key: 'form', label: 'Payload', render: () => <FormSection /> },
+  { key: 'card', label: 'Card', render: () => <CardSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
@@ -52,7 +54,10 @@ const SECTIONS = [
  * section can move between groups without touching what it renders.
  */
 const GROUPS = [
-  { label: 'Componenti', keys: ['button', 'textfield', 'typography', 'surface'] },
+  {
+    label: 'Componenti',
+    keys: ['button', 'textfield', 'typography', 'card', 'surface'],
+  },
   { label: 'Props Dashforge', keys: ['access', 'visibleWhen'] },
   { label: 'Form', keys: ['form'] },
   { label: 'Fondamenta', keys: ['tokens'] },

@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { Button, Surface, Typography } from '@dashforge/rn';
-import { useTheme } from '@dashforge/rn/theme';
-import { Card, Caption, Label, Row } from '../ui';
+import { Button, Card, Surface } from '@dashforge/rn';
+import { Caption, Label, Row } from '../ui';
 
 /**
  * Two backend services with different latencies, and a screen that
@@ -52,23 +50,10 @@ function useStagedFetch() {
 
 /** A block with a visible extent, so a region taking space is obvious. */
 function Panel({ tone, title, body }: { tone: 'raised' | 'sunken'; title: string; body: string }) {
-  const s = useTheme().semantic;
   return (
-    <View
-      style={{
-        backgroundColor: tone === 'raised' ? s.surface.raised : s.surface.sunken,
-        borderColor: s.border.default,
-        borderWidth: s.borderWidth.default,
-        borderRadius: s.radius.surface,
-        padding: s.space.inset,
-        gap: 4,
-      }}
-    >
-      <Typography variant="label">{title}</Typography>
-      <Typography variant="caption" color="muted">
-        {body}
-      </Typography>
-    </View>
+    <Card variant={tone === 'raised' ? 'outlined' : 'filled'}>
+      <Card.Header title={title} subtitle={body} />
+    </Card>
   );
 }
 

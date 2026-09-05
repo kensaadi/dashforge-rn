@@ -10,7 +10,7 @@
  *
  * See ARCHITECTURE.md section 6.
  */
-import type { ActionRole, SemanticTokens, TypeStyle } from './types';
+import type { ActionRole, ElevationStyle, SemanticTokens, TypeStyle } from './types';
 
 /** The five action roles a Button can take. */
 export type ActionColor = 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
@@ -72,6 +72,49 @@ export interface TextFieldTokens {
   };
 }
 
+export interface CardTokens {
+  radius: number;
+  borderWidth: number;
+  /** Between the card's own children, so a card is a stack by default. */
+  gap: number;
+  padding: SizeScale;
+  color: {
+    /** `outlined` and `elevated`. */
+    bg: string;
+    /**
+     * `filled`.
+     *
+     * On the surface scale rather than the fill scale, because the fill
+     * steps collapse onto `surface.raised` in dark mode and a filled card
+     * inside an ordinary one would vanish.
+     */
+    bgFilled: string;
+    /**
+     * Pressed background for `outlined` and `elevated`.
+     *
+     * `surface.sunken` rather than a fill, because it is the one token
+     * that moves the right way in both modes: darker than a white card
+     * in light, lighter than a near-black one in dark. A fixed direction
+     * would make the press invisible in one of the two.
+     */
+    bgPressed: string;
+    /** Pressed background for `filled`, one fill step up. */
+    bgFilledPressed: string;
+    border: string;
+    title: string;
+    subtitle: string;
+  };
+  typography: {
+    title: TypeStyle;
+    subtitle: TypeStyle;
+  };
+  /**
+   * The shadow `elevated` carries, expressed once and expanded to both
+   * platforms. Nothing else in the library reads the elevation scale yet.
+   */
+  elevation: ElevationStyle;
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -87,6 +130,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Card?: {
+      defaults?: Record<string, unknown>;
+      tokens?: CardTokens;
     };
     IconButton?: {
       defaults?: Record<string, unknown>;
@@ -169,6 +216,36 @@ export function defaultComponentTokens(s: SemanticTokens) {
           caret: s.border.focus,
         },
       } satisfies TextFieldTokens,
+    },
+    Card: {
+      tokens: {
+        radius: s.radius.surface,
+        borderWidth: s.borderWidth.default,
+        gap: s.space.stack,
+        padding: { sm: 12, md: s.space.inset, lg: 24 },
+        color: {
+          bg: s.surface.raised,
+          // Not `fill.subtle`: in dark mode that lands on the same value
+          // as `surface.raised`, so a filled card nested in an ordinary
+          // one disappears. The surface scale is the one that keeps its
+          // steps apart in both modes.
+          bgFilled: s.surface.sunken,
+          bgPressed: s.surface.sunken,
+          // Two fill steps up rather than one, for the same reason:
+          // `fill.default` equals `surface.sunken` in dark.
+          bgFilledPressed: s.fill.strong,
+          border: s.border.default,
+          title: s.text.primary,
+          subtitle: s.text.muted,
+        },
+        typography: {
+          title: s.typography.subtitle,
+          // The scale entry that exists for the second line of a list
+          // item, which is the same job a card subtitle does.
+          subtitle: s.typography.bodySmall,
+        },
+        elevation: s.elevation.raised,
+      } satisfies CardTokens,
     },
     IconButton: {
       tokens: {
