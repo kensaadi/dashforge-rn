@@ -280,6 +280,17 @@ export interface RadioGroupTokens {
   };
 }
 
+export interface StackTokens {
+  /**
+   * The named gaps, which are the spacing scale under another name so a
+   * call site says why rather than how much.
+   */
+  gap: { none: number; inline: number; stack: number; inset: number; section: number };
+  /** The line drawn between children when one is asked for. */
+  divider: string;
+  dividerWidth: number;
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -295,6 +306,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Stack?: {
+      defaults?: Record<string, unknown>;
+      tokens?: StackTokens;
     };
     RadioGroup?: {
       defaults?: Record<string, unknown>;
@@ -462,6 +477,22 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Stack: {
+      tokens: {
+        gap: {
+          none: 0,
+          inline: s.space.inline,
+          stack: s.space.stack,
+          inset: s.space.inset,
+          section: s.space.section,
+        },
+        // The opaque separator, like a card's: a stack usually sits on a
+        // surface, and letting the page show through a line drawn on one
+        // is the wrong effect.
+        divider: s.separator.opaque,
+        dividerWidth: s.borderWidth.hairline,
+      } satisfies StackTokens,
     },
     RadioGroup: {
       tokens: {

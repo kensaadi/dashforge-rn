@@ -4,8 +4,8 @@
  * and the fastest way to notice something missing.
  */
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
-import { Typography } from '@dashforge/rn';
+import { Stack, Typography } from '@dashforge/rn';
+import type { StackGap } from '@dashforge/rn';
 
 // `Card` used to be built here by hand, out of six semantic tokens, and
 // the Surface section had a second copy of it. Both are gone: the
@@ -24,16 +24,21 @@ export function Caption({ children }: { children: string }) {
   );
 }
 
+/**
+ * Was hand-rolled flexbox until `Stack` existed. Kept as a name because
+ * the playground says "a row of things" a lot, but it is the primitive
+ * underneath now.
+ */
 export function Row({
   children,
-  gap = 8,
+  gap = 'inline',
 }: {
   children: ReactNode;
-  gap?: number;
+  gap?: StackGap;
 }) {
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap }}>
+    <Stack direction="row" wrap gap={gap}>
       {children}
-    </View>
+    </Stack>
   );
 }

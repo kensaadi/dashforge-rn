@@ -22,6 +22,7 @@ import {
   TextFieldSection,
   FormSection,
   CardSection,
+  StackSection,
   CheckboxSection,
   SwitchSection,
   RadioGroupSection,
@@ -48,6 +49,7 @@ const SECTIONS = [
   },
   { key: 'form', label: 'Payload', render: () => <FormSection /> },
   { key: 'card', label: 'Card', render: () => <CardSection /> },
+  { key: 'stack', label: 'Stack', render: () => <StackSection /> },
   { key: 'checkbox', label: 'Checkbox', render: () => <CheckboxSection /> },
   { key: 'switch', label: 'Switch', render: () => <SwitchSection /> },
   { key: 'radio', label: 'RadioGroup', render: () => <RadioGroupSection /> },
@@ -75,7 +77,7 @@ const GROUPS = [
   },
   { label: 'Props Dashforge', keys: ['access', 'visibleWhen'] },
   { label: 'Form', keys: ['form'] },
-  { label: 'Fondamenta', keys: ['tokens'] },
+  { label: 'Fondamenta', keys: ['stack', 'tokens'] },
 ] as const;
 
 type SectionKey = (typeof SECTIONS)[number]['key'];
