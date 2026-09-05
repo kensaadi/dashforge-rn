@@ -14,7 +14,14 @@ const flat = (style: unknown) =>
 
 const rootStyle = (testID = 'card') => flat(screen.getByTestId(testID).props.style);
 
-beforeEach(() => setMode('light'));
+let warn: jest.SpyInstance;
+
+beforeEach(() => {
+  setMode('light');
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => warn.mockRestore());
 
 describe('variants', () => {
   it('draws an edge and no shadow by default', () => {
@@ -382,7 +389,7 @@ describe('media', () => {
     // The card's radius less its border: an inner curve equal to the
     // outer one reads as two curves that disagree.
     expect(s.borderTopLeftRadius).toBe(11);
-    expect(s.borderBottomLeftRadius).toBeUndefined();
+    expect(s.borderBottomLeftRadius).toBe(0);
     // Clipped here and not on the card: `overflow: 'hidden'` on the card
     // would take an elevated card's shadow with it on iOS.
     expect(s.overflow).toBe('hidden');
@@ -544,5 +551,119 @@ describe('footer', () => {
       </Card>,
     );
     expect(screen.queryByText('nascosto')).toBeNull();
+  });
+});
+
+describe('cover', () => {
+  const source = { uri: 'https://example.test/hero.jpg' };
+  const coverStyle = () => flat(screen.getByTestId('cover').props.style);
+  const scrimStyle = () =>
+    screen
+      .UNSAFE_getAllByType(View)
+      .map((v) => flat(v.props.style))
+      .find((st) => st.opacity !== undefined && st.backgroundColor);
+
+  it('is the whole card: bleeds on every side and takes its corners', () => {
+    render(
+      <Card padding="md">
+        <Card.Cover testID="cover" source={source} />
+      </Card>,
+    );
+    const s = coverStyle();
+    expect(s.marginHorizontal).toBe(-16);
+    expect(s.marginVertical).toBe(-16);
+    expect(s.borderRadius).toBe(11);
+    expect(s.overflow).toBe('hidden');
+  });
+
+  it('keeps the text inset even when the card has no padding of its own', () => {
+    render(
+      <Card padding="none">
+        <Card.Cover testID="cover" source={source} />
+      </Card>,
+    );
+    // Nothing to bleed past, but the words still cannot sit on the edge.
+    expect(coverStyle().marginHorizontal).toBe(-0);
+    expect(coverStyle().padding).toBe(16);
+  });
+
+  it('puts the content at the bottom, where a caption belongs', () => {
+    render(
+      <Card>
+        <Card.Cover testID="cover" source={source} />
+      </Card>,
+    );
+    expect(coverStyle().justifyContent).toBe('flex-end');
+  });
+
+  it('veils the image by default, because the caller cannot measure a photograph', () => {
+    render(
+      <Card>
+        <Card.Cover testID="cover" source={source} />
+      </Card>,
+    );
+    expect(scrimStyle()?.opacity).toBe(0.5);
+  });
+
+  it('warns when the veil is lowered past the point it can promise anything', () => {
+    render(
+      <Card>
+        <Card.Cover testID="cover" source={source} scrim={0.1} />
+      </Card>,
+    );
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('stops being legible'));
+  });
+
+  it('takes the text off the theme, because a photograph does not invert', () => {
+    const onCover = defaultComponentTokens(semanticLight).Card.tokens.color.onCover;
+
+    render(
+      <Card>
+        <Card.Cover source={source}>
+          <Card.Header title="Sopra" subtitle="Sotto" />
+        </Card.Cover>
+      </Card>,
+    );
+    expect(flat(screen.getByText('Sopra').props.style).color).toBe(onCover);
+
+    setMode('dark');
+    render(
+      <Card>
+        <Card.Cover source={source}>
+          <Card.Header title="Scuro" subtitle="Sotto" />
+        </Card.Cover>
+      </Card>,
+    );
+    // The same colour in both modes, which is the whole point.
+    expect(flat(screen.getByText('Scuro').props.style).color).toBe(onCover);
+  });
+
+  it('leaves the header alone outside a cover', () => {
+    const onCover = defaultComponentTokens(semanticLight).Card.tokens.color.onCover;
+    render(
+      <Card>
+        <Card.Header title="Normale" />
+      </Card>,
+    );
+    expect(flat(screen.getByText('Normale').props.style).color).not.toBe(onCover);
+  });
+});
+
+describe('an image-only card', () => {
+  const source = { uri: 'https://example.test/p.jpg' };
+
+  it('rounds every corner, since nothing sits below to keep them square for', () => {
+    render(
+      <Card padding="none" onPress={jest.fn()} testID="card">
+        <Card.Media source={source} flush="all" />
+      </Card>,
+    );
+    const s = flat(screen.UNSAFE_getByType(Image).parent?.props.style);
+    // 11 and not 12: the card is `outlined` by default, so the inner
+    // curve is the card's radius less the border it actually draws.
+    expect(s.borderTopLeftRadius).toBe(11);
+    expect(s.borderBottomLeftRadius).toBe(11);
+    expect(s.borderBottomRightRadius).toBe(11);
+    expect(screen.getByTestId('card').props.accessibilityRole).toBe('button');
   });
 });

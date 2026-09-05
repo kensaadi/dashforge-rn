@@ -9,6 +9,7 @@ import {
 } from '../../theme/useComponentTokens';
 import { cardRecipe } from './card.variants';
 import type {
+  CardCoverProps,
   CardFooterProps,
   CardHeaderProps,
   CardMediaProps,
@@ -27,7 +28,9 @@ const CardContext = createContext<{
   padding: number;
   radius: number;
   tone: NonNullable<CardProps['tone']>;
-}>({ padding: 0, radius: 0, tone: 'neutral' });
+  /** True inside a `Card.Cover`, where the text stops following the mode. */
+  over: 'card' | 'cover';
+}>({ padding: 0, radius: 0, tone: 'neutral', over: 'card' });
 
 /**
  * A full-width image band inside a card.
@@ -70,7 +73,8 @@ export function CardMedia(props: CardMediaProps) {
 
   if (!isVisible || !accessState.visible) return null;
 
-  const toTheEdge = flush === 'top';
+  const toTheEdge = flush === 'top' || flush === 'all';
+  const toTheBottom = flush === 'all';
 
   return (
     // The bleed is the wrapper's job, not the image's.
@@ -90,8 +94,11 @@ export function CardMedia(props: CardMediaProps) {
       style={{
         marginHorizontal: -padding,
         marginTop: toTheEdge ? -padding : 0,
+        marginBottom: toTheBottom ? -padding : 0,
         borderTopLeftRadius: toTheEdge ? radius : 0,
         borderTopRightRadius: toTheEdge ? radius : 0,
+        borderBottomLeftRadius: toTheBottom ? radius : 0,
+        borderBottomRightRadius: toTheBottom ? radius : 0,
         overflow: 'hidden',
       }}
     >
@@ -140,7 +147,7 @@ CardMedia.displayName = 'Card.Media';
  */
 export function CardHeader(props: CardHeaderProps) {
   const tokens = useComponentTokens('Card');
-  const { tone } = useContext(CardContext);
+  const { tone, over } = useContext(CardContext);
   const { title, subtitle, action, children, access, visibleWhen, sx, ...rest } = props;
 
   const isVisible = useVisibility(visibleWhen);
@@ -151,7 +158,7 @@ export function CardHeader(props: CardHeaderProps) {
   // Resolved with the card's tone, not with the default: on a tinted
   // ground the text moves with the tint, and muted neutral text there was
   // never checked for contrast against it.
-  const styles = cardRecipe(tokens)({ tone });
+  const styles = cardRecipe(tokens)({ tone, over });
 
   return (
     <View {...rest} style={[styles.header, sx?.header]}>
@@ -177,6 +184,118 @@ export function CardHeader(props: CardHeaderProps) {
   );
 }
 CardHeader.displayName = 'Card.Header';
+
+/** Below this a flat veil stops guaranteeing that white text can be read. */
+const SCRIM_FLOOR = 0.3;
+
+const COVER_ALIGN = {
+  top: 'flex-start',
+  center: 'center',
+  bottom: 'flex-end',
+} as const;
+
+/**
+ * The card as a picture, with the words on top of it.
+ *
+ * The opposite trade from `Card.Media`, and the reason it is a separate
+ * component rather than a prop: a band puts the text on its own ground
+ * and has nothing to promise, while a cover puts it on a photograph and
+ * has to.
+ *
+ * Two things are therefore not the caller's to get wrong. The veil
+ * between image and text belongs to the component, because contrast
+ * against pixels arriving from a CDN cannot be measured here and cannot
+ * be measured by the caller either. And the text over it stops following
+ * the light and dark modes: a photograph does not invert with the theme,
+ * so neither can the words on it.
+ *
+ * The veil is flat rather than a gradient. A gradient would want a
+ * dependency and this library ships three; flat is less pretty and
+ * always correct, which is the right trade for the thing that decides
+ * whether the words can be read at all.
+ *
+ * @example
+ * ```tsx
+ * <Card padding="none" onPress={open} accessibilityLabel="Apri la guida">
+ *   <Card.Cover source={{ uri: article.hero }} minHeight={220}>
+ *     <Card.Header title="Dove finisce la luce" subtitle="8 minuti" />
+ *   </Card.Cover>
+ * </Card>
+ * ```
+ */
+export function CardCover(props: CardCoverProps) {
+  const tokens = useComponentTokens('Card');
+  const outer = useContext(CardContext);
+  const {
+    source,
+    children,
+    minHeight = 180,
+    align = 'bottom',
+    scrim = 0.5,
+    resizeMode = 'cover',
+    accessibilityLabel,
+    access,
+    visibleWhen,
+    sx,
+    ...rest
+  } = props;
+
+  const isVisible = useVisibility(visibleWhen);
+  const accessState = useAccessState(access);
+
+  if (__DEV__ && scrim < SCRIM_FLOOR) {
+    console.warn(
+      `[@dashforge/rn] <Card.Cover> has scrim=${scrim}, below the ${SCRIM_FLOOR} at which ` +
+        'white text stops being legible over a light image. The text will read on some ' +
+        'pictures and vanish on others, and which ones is not something this component ' +
+        'can know.',
+    );
+  }
+
+  if (!isVisible || !accessState.visible) return null;
+
+  return (
+    // The cover is the whole card, so it bleeds on every side and takes
+    // the card's corners. It carries the padding itself, which is what
+    // keeps the text inset whether the card was given padding or none.
+    <View
+      {...rest}
+      style={[
+        {
+          marginHorizontal: -outer.padding,
+          marginVertical: -outer.padding,
+          borderRadius: outer.radius,
+          overflow: 'hidden',
+          minHeight,
+          padding: outer.padding === 0 ? tokens.padding.md : outer.padding,
+          justifyContent: COVER_ALIGN[align],
+        },
+        sx,
+      ]}
+    >
+      <Image
+        source={source}
+        resizeMode={resizeMode}
+        accessible={Boolean(accessibilityLabel)}
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole={accessibilityLabel ? 'image' : undefined}
+        importantForAccessibility={accessibilityLabel ? 'yes' : 'no-hide-descendants'}
+        style={StyleSheet.absoluteFill}
+      />
+      <View
+        pointerEvents="none"
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: tokens.color.scrim, opacity: scrim },
+        ]}
+      />
+      <CardContext.Provider value={{ ...outer, padding: 0, over: 'cover' }}>
+        {children}
+      </CardContext.Provider>
+    </View>
+  );
+}
+CardCover.displayName = 'Card.Cover';
 
 /**
  * The card's call to action, at the bottom.
@@ -325,6 +444,7 @@ export function Card(props: CardProps) {
     padding: inset,
     radius: Math.max(tokens.radius - edge, 0),
     tone,
+    over: 'card' as const,
   };
 
   if (!interactive) {
@@ -364,3 +484,4 @@ export function Card(props: CardProps) {
 Card.Header = CardHeader;
 Card.Media = CardMedia;
 Card.Footer = CardFooter;
+Card.Cover = CardCover;

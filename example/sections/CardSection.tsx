@@ -145,6 +145,82 @@ export function CardSection() {
       </Card>
 
       <Card>
+        <Card.Header
+          title="Solo immagine, premibile"
+          subtitle={'padding="none" + flush="all"'}
+        />
+        <Caption>
+          Niente spaziatura e la fascia che tocca tutti e quattro i bordi,
+          quindi tutti e quattro gli angoli arrotondati: non c'è niente sotto
+          per cui tenerne due quadri.
+        </Caption>
+        <Card
+          padding="none"
+          onPress={() => setTapped(n => n + 1)}
+          accessibilityLabel="Apri la galleria"
+        >
+          <Card.Media source={require('../assets/landscape.png')} flush="all" />
+        </Card>
+      </Card>
+
+      <Card>
+        <Card.Header
+          title="Copertina"
+          subtitle="L'immagine sotto, le parole sopra"
+        />
+        <Caption>
+          Il compromesso opposto alla fascia, ed è per questo che è un
+          componente a parte. Una fascia mette il testo sul suo fondo e non deve
+          promettere niente. Una copertina lo mette su una fotografia, e allora
+          deve.
+        </Caption>
+
+        <Card padding="none" onPress={() => setTapped(n => n + 1)}>
+          <Card.Cover
+            source={require('../assets/landscape.png')}
+            minHeight={200}
+            accessibilityLabel="Colline al tramonto"
+          >
+            <Card.Header
+              title="Dove finisce la luce"
+              subtitle="Reportage · 8 minuti"
+            />
+          </Card.Cover>
+        </Card>
+
+        <Caption>
+          Due cose non sono del chiamante. Il velo fra immagine e testo è del
+          componente, perché il contrasto contro dei pixel che arrivano da un
+          CDN non si misura né qui né lì. E il testo sopra smette di seguire
+          chiaro e scuro: una fotografia non si inverte col tema, quindi non
+          possono farlo nemmeno le parole che ci stanno sopra. Prova a girare il
+          tema e guarda che resta bianco.
+        </Caption>
+
+        <Card padding="none">
+          <Card.Cover
+            source={require('../assets/abstract.png')}
+            minHeight={160}
+            align="top"
+            scrim={0.35}
+          >
+            <Card.Header
+              title="Velo più leggero, in alto"
+              subtitle={'scrim={0.35}, align="top"'}
+            />
+          </Card.Cover>
+        </Card>
+
+        <Caption>
+          Il velo è piatto e non sfumato: una sfumatura vorrebbe una dipendenza
+          e questa libreria ne ha tre. Piatto è meno bello e sempre corretto,
+          che è il compromesso giusto per la cosa che decide se le parole si
+          leggono. Sotto 0.3 avvisa in sviluppo, perché lì smette di poter
+          promettere qualcosa.
+        </Caption>
+      </Card>
+
+      <Card>
         <Card.Header title="Le CTA" subtitle="In fondo, non in testata" />
         <Caption>
           `action` sulla testata è lo slot accanto al titolo: un prezzo, un

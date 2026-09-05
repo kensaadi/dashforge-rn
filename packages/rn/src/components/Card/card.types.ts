@@ -116,20 +116,20 @@ export interface CardMediaProps
    */
   resizeMode?: ImageProps['resizeMode'];
   /**
-   * Whether the band also meets the card's top edge, cancelling the top
-   * padding and rounding its top corners.
+   * Which of the card's edges the band meets.
    *
    * `'top'` is the default because a media band is nearly always the
-   * first child. Set `'none'` for one sitting between two blocks of
+   * first child. `'none'` is for one sitting between two blocks of
    * content, where a negative top margin would pull it over whatever is
-   * above it.
+   * above it. `'all'` is for the card that *is* the image, with nothing
+   * below it to keep the bottom corners square for.
    *
-   * Horizontal bleed happens either way: a band that stopped at the
+   * Horizontal bleed happens in every case: a band that stopped at the
    * card's padding would not be a band.
    *
    * @default 'top'
    */
-  flush?: 'top' | 'none';
+  flush?: 'top' | 'none' | 'all';
   /**
    * Describe the image only when it carries information the text does
    * not. Without one it is announced as decoration and skipped, which is
@@ -140,6 +140,50 @@ export interface CardMediaProps
   accessibilityLabel?: string;
   /** @default undefined */
   sx?: StyleProp<ImageStyle>;
+}
+
+export interface CardCoverProps extends Omit<ViewProps, 'style'>, DashforgeProps {
+  /** The image behind everything. */
+  source: ImageSourcePropType;
+  /** What sits on top of it. */
+  children?: ReactNode;
+  /**
+   * How tall the cover is at least. The content can make it taller.
+   * @default 180
+   */
+  minHeight?: number;
+  /**
+   * Where the content sits in the frame. The bottom is where a caption
+   * over an image belongs, and it is also the part of a photograph most
+   * likely to be quiet.
+   * @default 'bottom'
+   */
+  align?: 'top' | 'center' | 'bottom';
+  /**
+   * How much the image is veiled behind the text, from 0 to 1.
+   *
+   * **The library owns this rather than the caller**, because contrast
+   * against a photograph arriving from a CDN cannot be measured here and
+   * cannot be measured by the caller either. The default is the value
+   * that keeps white text legible over an image that is mostly light.
+   * Lowering it is allowed and warns in development below the point
+   * where the guarantee stops.
+   *
+   * @default 0.5
+   */
+  scrim?: number;
+  /**
+   * @default 'cover'
+   */
+  resizeMode?: ImageProps['resizeMode'];
+  /**
+   * Describe the image only when it carries information the text over it
+   * does not.
+   * @default undefined
+   */
+  accessibilityLabel?: string;
+  /** @default undefined */
+  sx?: StyleProp<ViewStyle>;
 }
 
 export interface CardFooterProps extends Omit<ViewProps, 'style'>, DashforgeProps {

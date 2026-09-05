@@ -23,6 +23,7 @@ export interface CardVariantSelection {
   tone?: CardProps['tone'];
   padding?: CardProps['padding'];
   pressed?: boolean;
+  over?: 'card' | 'cover';
   align?: CardFooterProps['align'];
 }
 
@@ -114,6 +115,16 @@ export const cardRecipe: (
           info: tinted('info'),
         },
         pressed: { true: {}, false: {} },
+        // Where the heading sits. Over a cover image the text colours
+        // stop following the mode, because a photograph does not invert
+        // with the theme and neither can the words on it.
+        over: {
+          card: {},
+          cover: {
+            title: { color: t.color.onCover },
+            subtitle: { color: t.color.onCoverMuted },
+          },
+        },
         align: {
           start: { footer: { flexDirection: 'row', justifyContent: 'flex-start' } },
           end: { footer: { flexDirection: 'row', justifyContent: 'flex-end' } },

@@ -126,6 +126,24 @@ export interface CardTokens {
     subtitle: string;
     /** The hairline a footer can draw above itself. */
     divider: string;
+    /**
+     * Text over a cover image, and the same in both modes.
+     *
+     * A photograph does not invert with the theme, so neither can the
+     * text on it. These are the only colours in the component that do not
+     * follow the mode, and that is the point.
+     */
+    onCover: string;
+    onCoverMuted: string;
+    /**
+     * The veil between a cover image and its text.
+     *
+     * Flat rather than a gradient: a gradient would want a dependency,
+     * and the library ships three. Flat is less pretty and always
+     * correct, which is the right trade for the thing that decides
+     * whether the words can be read.
+     */
+    scrim: string;
   };
   /** The tinted grounds, one per meaning. `neutral` is the absence of one. */
   tone: Record<CardTone, CardToneStyle>;
@@ -272,6 +290,9 @@ export function defaultComponentTokens(s: SemanticTokens) {
           // ground of its own, and letting the page show through a line
           // drawn on it is the wrong effect.
           divider: s.separator.opaque,
+          onCover: '#ffffff',
+          onCoverMuted: 'rgba(255, 255, 255, 0.82)',
+          scrim: '#000000',
         },
         tone: {
           success: toneOf(s, 'success'),
