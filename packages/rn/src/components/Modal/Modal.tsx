@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   Easing,
@@ -80,26 +80,61 @@ export function Modal(props: ModalProps) {
   const reduceMotion = useReduceMotion();
   const entry = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    if (!open) {
-      entry.setValue(0);
-      return;
-    }
-    if (reduceMotion) {
-      entry.setValue(1);
-      return;
-    }
-    Animated.timing(entry, {
-      toValue: 1,
-      duration: theme.semantic.motion.standard,
-      easing: Easing.out(Easing.cubic),
-      // Only the panel moves, and only opacity and transform: those go
-      // native, so the entrance survives a busy JS thread.
-      useNativeDriver: true,
-    }).start();
-  }, [open, reduceMotion, entry, theme.semantic.motion.standard]);
-
   const hidden = !isVisible || !accessState.visible;
+  const wanted = open && !hidden;
+
+  // Whether React Native is presenting anything. It outlives `wanted`
+  // by the length of the exit, which is the whole point: the panel has
+  // to still be there while it fades.
+  const [presented, setPresented] = useState(wanted);
+
+  // The last content that was actually asked for.
+  //
+  // A caller that stops rendering children the moment it closes, which
+  // is what `{open && <Thing/>}` does and what the dialog host does, was
+  // leaving an empty rectangle on screen for the length of the exit.
+  // Holding the last children means the panel fades out with what was
+  // in it.
+  const held = useRef<ReactNode>(children);
+  if (wanted) held.current = children;
+
+  useEffect(() => {
+    if (wanted) {
+      setPresented(true);
+      if (reduceMotion) {
+        entry.setValue(1);
+        return;
+      }
+      Animated.timing(entry, {
+        toValue: 1,
+        duration: theme.semantic.motion.standard,
+        easing: Easing.out(Easing.cubic),
+        // Opacity and transform only, so the entrance goes on the native
+        // driver and survives a busy JS thread.
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    if (reduceMotion) {
+      entry.setValue(0);
+      setPresented(false);
+      return;
+    }
+
+    // The exit is ours rather than React Native's `animationType`, and
+    // that is what makes the timing exact: the modal stops being
+    // presented when this animation says so, not after a duration we
+    // would have had to guess at.
+    Animated.timing(entry, {
+      toValue: 0,
+      duration: theme.semantic.motion.quick,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setPresented(false);
+    });
+  }, [wanted, reduceMotion, entry, theme.semantic.motion]);
   const dismiss = () => {
     if (dismissible) onClose?.();
   };
@@ -107,11 +142,11 @@ export function Modal(props: ModalProps) {
   return (
     <RNModal
       transparent
-      visible={open && !hidden}
-      // The scrim's own fade is React Native's, because it is the whole
-      // window and the exit has to finish before the modal unmounts.
-      // Anything of ours would need an unmount delay to match it.
-      animationType={reduceMotion ? 'none' : 'fade'}
+      visible={presented}
+      // None: both the entrance and the exit are ours, so the scrim and
+      // the panel move together and the modal stops being presented at
+      // exactly the moment the exit ends.
+      animationType="none"
       // Required on Android, where it is the back button. Called even
       // when the dialog is not dismissible, so `dismiss` decides.
       onRequestClose={dismiss}
@@ -127,19 +162,21 @@ export function Modal(props: ModalProps) {
           padding: tokens.margin,
         }}
       >
-        <Pressable
-          // Inert to assistive technology: it is a way to leave, not a
-          // control, and announcing it would put a nameless button
-          // between the reader and the dialog.
-          accessible={false}
-          importantForAccessibility="no"
-          onPress={dismiss}
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: tokens.scrim },
-            sx?.scrim,
-          ]}
-        />
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: entry }]}>
+          <Pressable
+            // Inert to assistive technology: it is a way to leave, not a
+            // control, and announcing it would put a nameless button
+            // between the reader and the dialog.
+            accessible={false}
+            importantForAccessibility="no"
+            onPress={dismiss}
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: tokens.scrim },
+              sx?.scrim,
+            ]}
+          />
+        </Animated.View>
         <Animated.View
           // Hides everything behind it from VoiceOver, which is the part
           // that makes this a dialog rather than a view that happens to
@@ -177,7 +214,7 @@ export function Modal(props: ModalProps) {
               over: 'card',
             }}
           >
-            {children}
+            {wanted ? children : held.current}
           </CardContext.Provider>
         </Animated.View>
       </View>

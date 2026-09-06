@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Modal as RNModal, Text } from 'react-native';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { createDialogs } from './createDialogs';
 import type { DialogComponent } from './dialog.types';
@@ -51,9 +51,33 @@ describe('a question', () => {
     });
 
     expect(answer).toBe('save');
+
     // Every action closes: shutting is not something a button does, it
-    // is what happens once you have answered.
-    expect(screen.queryByText('Vuoi salvare?')).toBeNull();
+    // is what happens once you have answered. The content is still
+    // there for the length of the exit, on purpose, and what has gone
+    // is the presentation.
+    await waitFor(() =>
+      expect(screen.UNSAFE_getByType(RNModal).props.visible).toBe(false),
+    );
+  });
+
+  it('keeps the content on screen while the panel is leaving', async () => {
+    const { DialogHost, ask } = createDialogs();
+    render(<DialogHost />);
+
+    await act(async () => {
+      void ask(SAVE);
+    });
+    await act(async () => {
+      fireEvent.press(screen.getByText('Salva'));
+    });
+
+    // The host stops describing a dialog the instant it is answered, so
+    // without holding the last content the panel would fade out empty:
+    // a rectangle with nothing in it, which is what this is here to
+    // catch.
+    expect(screen.getByText('Vuoi salvare?')).toBeTruthy();
+    expect(screen.UNSAFE_getByType(RNModal).props.visible).toBe(true);
   });
 
   it('resolves null when it is dismissed without an answer', async () => {
@@ -68,7 +92,7 @@ describe('a question', () => {
     });
 
     await act(async () => {
-      screen.UNSAFE_getByType(require('react-native').Modal).props.onRequestClose();
+      screen.UNSAFE_getByType(RNModal).props.onRequestClose();
     });
 
     // Not confusable with any answer.
@@ -87,7 +111,7 @@ describe('a question', () => {
     });
 
     await act(async () => {
-      screen.UNSAFE_getByType(require('react-native').Modal).props.onRequestClose();
+      screen.UNSAFE_getByType(RNModal).props.onRequestClose();
     });
 
     expect(settled).toBe(false);
