@@ -50,7 +50,7 @@ export function useStandaloneFieldWarning(
     const field =
       typeof name === 'string' && name.length > 0 ? ` name="${name}"` : '';
     console.warn(
-      `[@dashforge/rn] <${componentName}${field}> is outside a <DashForm> and ` +
+      `[@dashforge/rn] <${componentName}${field}> is outside a <DashFormProvider> and ` +
         'has no value/onChangeText of its own, so it will render but never ' +
         'report a change. Add the provider, or control it from the call site.',
     );

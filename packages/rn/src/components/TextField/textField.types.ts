@@ -24,7 +24,7 @@ export interface TextFieldProps
     Omit<TextInputProps, 'style' | 'editable' | 'value' | 'defaultValue'>,
     DashforgeProps {
   /**
-   * Field name in the surrounding `<DashForm>`.
+   * Field name in the surrounding `<DashFormProvider>`.
    *
    * Optional, and its absence is what separates the two modes. With a
    * name and a form the field registers, reads its value from the

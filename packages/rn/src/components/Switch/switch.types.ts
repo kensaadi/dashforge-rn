@@ -19,7 +19,7 @@ export interface SwitchProps
   extends Omit<PressableProps, 'style' | 'disabled' | 'children'>,
     DashforgeProps {
   /**
-   * Field name in the surrounding `<DashForm>`.
+   * Field name in the surrounding `<DashFormProvider>`.
    *
    * A switch usually belongs to a settings screen and takes effect where
    * it stands, but it registers like any other field when it is in a

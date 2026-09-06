@@ -17,8 +17,8 @@ import type { TextFieldProps } from './textField.types';
 /**
  * A text field, in a form or on its own.
  *
- * **Two modes, decided by whether it has a `name` and a `<DashForm>`
- * around it.** With both, it registers with the engine, reads its value
+ * **Two modes, decided by whether it has a `name` and a form around
+ * it.** With both, it registers with the engine, reads its value
  * from there and reports validation. With neither it is an ordinary
  * controlled input. The prop surface is identical either way, so moving
  * a field into a form is adding a `name`, not rewriting the call site.
@@ -44,10 +44,10 @@ import type { TextFieldProps } from './textField.types';
  *
  * @example
  * ```tsx
- * <DashForm onSubmit={save}>
+ * <DashFormProvider>
  *   <TextField name="email" label="Email" rules={{ required: true }} />
- *   <TextField name="vat" label="P.IVA" visibleWhen={(e) => e.getValue('type') === 'business'} />
- * </DashForm>
+ *   <TextField name="vat" label="P.IVA" visibleWhen={(e) => e?.getValue('type') === 'business'} />
+ * </DashFormProvider>
  *
  * <TextField label="Cerca" value={q} onChangeText={setQ} />
  * ```

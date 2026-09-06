@@ -34,9 +34,9 @@ import type { CheckboxProps } from './checkbox.types';
  *
  * @example
  * ```tsx
- * <DashForm onSubmit={save}>
+ * <DashFormProvider>
  *   <Checkbox name="newsletter" label="Iscrivimi alla newsletter" />
- * </DashForm>
+ * </DashFormProvider>
  *
  * <Checkbox checked={all} indeterminate={some} onCheckedChange={setAll} label="Tutti" />
  * ```

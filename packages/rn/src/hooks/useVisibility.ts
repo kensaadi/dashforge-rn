@@ -6,7 +6,8 @@ import type { DashFormBridge, Engine } from '@dashforge/ui-core';
  * A predicate deciding whether to render.
  *
  * The engine is **nullable, and that is not defensive typing**: outside a
- * `<DashForm>` there is no engine and the core calls the predicate with
+ * `<DashFormProvider>` there is no engine and the core calls the
+ * predicate with
  * `null`. A predicate that reaches into it unconditionally throws there,
  * and the core swallows the throw and renders the component anyway, so
  * the failure is a component that will not hide rather than a crash.
@@ -28,7 +29,7 @@ export type VisibleWhen = (engine: Engine | null) => boolean;
 /**
  * Resolve a `visibleWhen` predicate against the ambient form.
  *
- * Inside a `<DashForm>` the predicate re-evaluates whenever engine state
+ * Inside a form the predicate re-evaluates whenever engine state
  * changes, so a control can appear and disappear as another field is
  * filled in. Outside one there is no engine and the predicate is not
  * called at all, which is why a component using this works standalone
@@ -36,7 +37,7 @@ export type VisibleWhen = (engine: Engine | null) => boolean;
  *
  * @example
  * ```tsx
- * <Button visibleWhen={(e) => e.getValue('plan') === 'pro'}>Upgrade</Button>
+ * <Button visibleWhen={(e) => e?.getValue('plan') === 'pro'}>Upgrade</Button>
  * ```
  */
 export function useVisibility(visibleWhen?: VisibleWhen): boolean {

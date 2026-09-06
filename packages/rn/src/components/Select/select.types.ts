@@ -15,7 +15,7 @@ export interface SelectSx {
 
 export interface SelectProps extends DashforgeProps {
   /**
-   * Field name in the surrounding `<DashForm>`.
+   * Field name in the surrounding `<DashFormProvider>`.
    *
    * As on `RadioGroup`, the select owns the field and its options do
    * not: one field holds one answer, and an option offers a value.

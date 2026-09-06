@@ -26,7 +26,7 @@ export interface RadioOptionSx {
 
 export interface RadioGroupProps extends Omit<ViewProps, 'style'>, DashforgeProps {
   /**
-   * Field name in the surrounding `<DashForm>`.
+   * Field name in the surrounding `<DashFormProvider>`.
    *
    * **The group registers, not the options.** One field holds one
    * answer, and the options are how it is offered, which is the shape

@@ -40,7 +40,8 @@ export interface DashforgeProps {
   access?: AccessRequirement;
   /**
    * Render only while this predicate holds, evaluated against the
-   * ambient `<DashForm>` engine and re-evaluated as form state changes.
+   * ambient `<DashFormProvider>` engine and re-evaluated as form state
+   * changes.
    *
    * Outside a form there is no engine and the predicate is never called,
    * so the component simply renders.
@@ -49,7 +50,7 @@ export interface DashforgeProps {
    *
    * @example
    * ```tsx
-   * <TextField name="vat" visibleWhen={(e) => e.getValue('type') === 'business'} />
+   * <TextField name="vat" visibleWhen={(e) => e?.getValue('type') === 'business'} />
    * ```
    */
   visibleWhen?: VisibleWhen;

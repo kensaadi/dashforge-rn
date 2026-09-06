@@ -17,7 +17,7 @@ export interface CheckboxProps
   extends Omit<PressableProps, 'style' | 'disabled' | 'children'>,
     DashforgeProps {
   /**
-   * Field name in the surrounding `<DashForm>`.
+   * Field name in the surrounding `<DashFormProvider>`.
    *
    * As on `TextField`, its absence is what separates the two modes: with
    * a name and a form it registers and reads its value from the engine,
