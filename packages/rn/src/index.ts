@@ -19,6 +19,7 @@ export { SurfaceViewport } from './components/Surface/SurfaceViewport';
 export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
+export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
@@ -65,6 +66,12 @@ export type {
 } from './components/RadioGroup/radioGroup.types';
 export type { IconButtonProps } from './components/IconButton/iconButton.types';
 export type { StackProps, StackGap } from './components/Stack/stack.types';
+export type {
+  Notification,
+  NotificationAction,
+  SnackbarProps,
+  SnackbarSx,
+} from './components/Snackbar/snackbar.types';
 export type { ModalProps, ModalSx } from './components/Modal/modal.types';
 export type {
   Ask,
@@ -76,6 +83,7 @@ export type {
   DialogPropsOf,
   DialogRequest,
   DialogResultOf,
+  Notify,
   Question,
 } from './components/Modal/dialog.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';

@@ -313,6 +313,46 @@ export interface ModalTokens {
   elevation: ElevationStyle;
 }
 
+export interface SnackbarTokens {
+  radius: number;
+  padding: number;
+  /** Between the words and the action. */
+  gap: number;
+  /** From the screen's edges. */
+  margin: number;
+  maxWidth: number;
+  elevation: ElevationStyle;
+  typography: TypeStyle;
+  /**
+   * How long it stays, worked out from how much there is to read.
+   *
+   * A fixed duration is wrong at both ends: three seconds is plenty for
+   * "Salvato" and not enough for a sentence, and the person reading is
+   * not the person who wrote it.
+   */
+  reading: {
+    /** Before a single character has been read. */
+    base: number;
+    perCharacter: number;
+    min: number;
+    max: number;
+  };
+  color: {
+    /** The neutral ground: inverted, so it reads as an overlay and not as a card. */
+    bg: string;
+    fg: string;
+    /** The action's label, which has to carry on the inverted ground. */
+    action: string;
+    /** Tinted grounds, one per meaning. */
+    bgSuccess: string;
+    bgWarning: string;
+    bgDanger: string;
+    bgInfo: string;
+    /** Text on a tinted ground. */
+    fgOnTone: string;
+  };
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -328,6 +368,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Snackbar?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SnackbarTokens;
     };
     Modal?: {
       defaults?: Record<string, unknown>;
@@ -503,6 +547,35 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Snackbar: {
+      tokens: {
+        radius: s.radius.control,
+        padding: 14,
+        gap: s.space.inline,
+        margin: s.space.inset,
+        maxWidth: 560,
+        // `floating` and not `modal`: it sits above the page but it is
+        // not taking it over, and the shadow should say which.
+        elevation: s.elevation.floating,
+        typography: s.typography.bodySmall,
+        reading: { base: 1600, perCharacter: 55, min: 3000, max: 7000 },
+        color: {
+          // Inverted, which is what a notification looks like on both
+          // platforms: it is the app speaking, not a piece of the page.
+          bg: s.surface.inverse,
+          fg: s.text.inverse,
+          // The action has to read against the inverted ground, so it
+          // cannot be the primary role, which was chosen against the
+          // page.
+          action: s.text.inverse,
+          bgSuccess: s.feedback.success.bg,
+          bgWarning: s.feedback.warning.bg,
+          bgDanger: s.feedback.danger.bg,
+          bgInfo: s.feedback.info.bg,
+          fgOnTone: s.text.primary,
+        },
+      } satisfies SnackbarTokens,
     },
     Modal: {
       tokens: {

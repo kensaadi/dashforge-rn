@@ -1,5 +1,9 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { ButtonProps } from '../Button/button.types';
+import type {
+  Notification,
+  NotificationAction,
+} from '../Snackbar/snackbar.types';
 
 /**
  * The contract for asking a question from code, with no JSX anywhere on
@@ -145,6 +149,26 @@ export interface Ask<R extends object> {
   ): Promise<DialogResultOf<R[N]> | null>;
 }
 
+/**
+ * Tell, and do not wait.
+ *
+ * The counterpart of `Ask`, and the opposite on every rule that matters.
+ * Two notifications **queue** rather than being a defect: "salvato" and
+ * "sincronizzato" are two true things, and dropping one drops
+ * information, where two dialogs at once is somebody's mistake.
+ *
+ * The promise is there for the undo case and is optional to await: it
+ * resolves with the action's value if it was pressed, and `null` if the
+ * notification simply went away. Awaiting one with no action means
+ * waiting for it to expire, which is almost never what you want.
+ */
+export interface Notify {
+  (message: string): Promise<null>;
+  <const A extends NotificationAction | undefined>(
+    notification: Notification<A>,
+  ): Promise<(A extends NotificationAction ? A['value'] : never) | null>;
+}
+
 /** What `createDialogs` hands back. One per application. */
 export interface DialogApi<R extends object> {
   /**
@@ -152,7 +176,16 @@ export interface DialogApi<R extends object> {
    * only thing that decides whether a dialog is open, which is the whole
    * reason it is a provider rather than a component you place.
    */
-  DialogHost: ComponentType<{ children?: ReactNode }>;
+  DialogHost: ComponentType<{
+    children?: ReactNode;
+    /**
+     * How far off the bottom edge a notification sits. The safe-area
+     * inset goes here: this package has no dependency that could read it
+     * for you, and guessing it would be wrong on half the devices.
+     * @default 0
+     */
+    bottomInset?: number;
+  }>;
   /**
    * Usable outside React, which is the point: a store or a service asks
    * without importing a component or a hook.
@@ -160,4 +193,10 @@ export interface DialogApi<R extends object> {
   ask: Ask<R>;
   /** The same function, for code that is already inside a component. */
   useDialog: () => Ask<R>;
+  /**
+   * Says something without asking anything. Same channel, because a
+   * notification raised while a dialog is up would be behind it: the
+   * host holds the queue until the dialog has gone.
+   */
+  notify: Notify;
 }

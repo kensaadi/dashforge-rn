@@ -120,7 +120,7 @@ export function Playground() {
   return (
     // Mounted once, at the root, empty until something asks. It renders
     // its children through, so it is a wrapper and not a place.
-    <DialogHost>
+    <DialogHost bottomInset={insets.bottom}>
       <View style={{ flex: 1, backgroundColor: s.surface.base }}>
         <View
           style={{

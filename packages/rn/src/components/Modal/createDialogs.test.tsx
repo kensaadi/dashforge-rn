@@ -257,3 +257,150 @@ describe('how the answers are laid out', () => {
     expect(screen.getByText('Terza')).toBeTruthy();
   });
 });
+
+describe('telling rather than asking', () => {
+  it('shows what it was told, and takes it away by itself', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, notify } = createDialogs();
+    render(<DialogHost />);
+
+    await act(async () => {
+      void notify('Progetto salvato');
+    });
+    expect(screen.getByText('Progetto salvato')).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(8000);
+    });
+    expect(screen.queryByText('Progetto salvato')).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it('queues rather than refusing, unlike a second ask', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, notify } = createDialogs();
+    render(<DialogHost />);
+
+    await act(async () => {
+      void notify('Salvato');
+      void notify('Sincronizzato');
+    });
+
+    // Two dialogs at once is somebody's mistake; two things to say is
+    // two true things, and dropping one drops information.
+    expect(screen.getByText('Salvato')).toBeTruthy();
+    expect(screen.queryByText('Sincronizzato')).toBeNull();
+
+    await act(async () => {
+      jest.advanceTimersByTime(8000);
+    });
+    expect(screen.getByText('Sincronizzato')).toBeTruthy();
+    jest.useRealTimers();
+  });
+
+  it('gives a longer message longer to be read', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, notify } = createDialogs();
+    render(<DialogHost />);
+
+    const long = 'Sincronizzazione completata: quarantadue file caricati e tre ignorati.';
+    await act(async () => {
+      void notify('Ok');
+    });
+
+    // A fixed duration is wrong at both ends: three seconds is plenty
+    // for "Ok" and not enough for a sentence.
+    await act(async () => {
+      jest.advanceTimersByTime(3100);
+    });
+    expect(screen.queryByText('Ok')).toBeNull();
+
+    await act(async () => {
+      void notify(long);
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(3100);
+    });
+    expect(screen.getByText(long)).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(5000);
+    });
+    expect(screen.queryByText(long)).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it('resolves with the action when it is pressed', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, notify } = createDialogs();
+    render(<DialogHost />);
+
+    let answer: unknown = 'untouched';
+    await act(async () => {
+      void notify({
+        message: 'Progetto eliminato',
+        kind: 'danger',
+        action: { value: 'undo', label: 'Annulla' },
+      }).then((value) => {
+        answer = value;
+      });
+    });
+
+    await act(async () => {
+      fireEvent.press(screen.getByText('Annulla'));
+    });
+    expect(answer).toBe('undo');
+    jest.useRealTimers();
+  });
+
+  it('resolves null when it simply went away', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, notify } = createDialogs();
+    render(<DialogHost />);
+
+    let answer: unknown = 'untouched';
+    await act(async () => {
+      void notify({
+        message: 'Eliminato',
+        action: { value: 'undo', label: 'Annulla' },
+      }).then((value) => {
+        answer = value;
+      });
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(8000);
+    });
+    expect(answer).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it('holds the queue while a dialog is up, since it would be behind it', async () => {
+    jest.useFakeTimers();
+    const { DialogHost, ask, notify } = createDialogs();
+    render(<DialogHost />);
+
+    await act(async () => {
+      void ask(SAVE);
+      void notify('Salvato');
+    });
+
+    // A modal is its own window, so a notification raised now would be
+    // out of sight. It waits rather than being spent on nobody.
+    expect(screen.queryByText('Salvato')).toBeNull();
+
+    await act(async () => {
+      fireEvent.press(screen.getByText('Salva'));
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(0);
+    });
+    expect(screen.getByText('Salvato')).toBeTruthy();
+    jest.useRealTimers();
+  });
+
+  it('rejects when no host is mounted', async () => {
+    const { notify } = createDialogs();
+    await expect(notify('Ciao')).rejects.toThrow('no <DialogHost> mounted');
+  });
+});

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Card, Stack, Typography } from '@dashforge/rn';
 import { useTheme } from '@dashforge/rn/theme';
-import { ask } from '../dialogs';
+import { ask, notify } from '../dialogs';
 import { Caption } from '../ui';
 
 /** Stands in for the store or the service that would really do this. */
@@ -15,9 +15,16 @@ async function saveProject(log: (line: string) => void) {
     ],
   });
 
-  if (answer === 'save') log('PUT /projects/1 inviata');
-  else if (answer === 'discard') log('Modifiche scartate');
-  else log('Chiuso senza rispondere');
+  if (answer === 'save') {
+    log('PUT /projects/1 inviata');
+    // Detto e non chiesto: non blocca, non aspetta, se ne va da solo.
+    void notify({ message: 'Progetto salvato', kind: 'success' });
+  } else if (answer === 'discard') {
+    log('Modifiche scartate');
+    void notify('Modifiche scartate');
+  } else {
+    log('Chiuso senza rispondere');
+  }
 }
 
 export function DialogSection() {
@@ -133,6 +140,87 @@ export function DialogSection() {
         >
           Rinomina
         </Button>
+      </Card>
+
+      <Card>
+        <Card.Header
+          title="Dire, invece di chiedere"
+          subtitle="Stesso canale, regole opposte"
+        />
+        <Caption>
+          Un dialogo interrompe e aspetta; un avviso non blocca e non chiede
+          niente. Due dialoghi non coesistono mai, quindi la seconda ask
+          rifiuta; due avvisi si accodano, perché "salvato" e "sincronizzato"
+          sono due cose vere e perderne una è perdere informazione.
+        </Caption>
+        <Stack direction="row" gap="inline">
+          <Button
+            size="sm"
+            variant="outline"
+            color="secondary"
+            onPress={() => void notify('Salvato')}
+          >
+            Uno
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            color="secondary"
+            onPress={() => {
+              void notify({ message: 'Salvato', kind: 'success' });
+              void notify({ message: 'Sincronizzato', kind: 'info' });
+              void notify({ message: 'Backup non riuscito', kind: 'warning' });
+            }}
+          >
+            Tre insieme
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            color="secondary"
+            onPress={async () => {
+              const undone = await notify({
+                message: 'Elemento archiviato',
+                action: { value: 'undo', label: 'Annulla' },
+              });
+              write(
+                undone === 'undo' ? 'Archiviazione annullata' : 'Archiviato',
+              );
+            }}
+          >
+            Con annulla
+          </Button>
+        </Stack>
+        <Caption>
+          Quanto resta dipende da quanto c'è da leggere: una durata fissa è
+          sbagliata a tutti e due gli estremi, tre secondi bastano per "Salvato"
+          e non bastano per una frase.
+        </Caption>
+        <Caption>
+          E non è un Modal: quello prende la finestra e con essa i tocchi, e un
+          avviso che ti impedisce di toccare lo schermo mentre passa è un
+          dialogo travestito. Prova a scrollare mentre uno è a schermo.
+        </Caption>
+        <Button
+          size="sm"
+          variant="outline"
+          color="secondary"
+          onPress={async () => {
+            void notify('Questo aspetta che il dialogo se ne vada');
+            await ask({
+              title: 'Un dialogo davanti',
+              message: "L'avviso è già in coda dietro di lui.",
+              actions: [{ value: 'ok', label: 'Chiudi' }],
+            });
+          }}
+        >
+          Avviso dietro un dialogo
+        </Button>
+        <Caption>
+          Un avviso alzato mentre un dialogo è aperto starebbe dietro, perché un
+          modal è una finestra sua. La coda aspetta invece di spenderlo su
+          nessuno.
+        </Caption>
       </Card>
 
       <Card>

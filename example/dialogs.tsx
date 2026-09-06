@@ -65,6 +65,6 @@ const RenameProject: DialogComponent<{ current: string }, string> = ({
   );
 };
 
-export const { DialogHost, ask, useDialog } = createDialogs({
+export const { DialogHost, ask, notify, useDialog } = createDialogs({
   renameProject: RenameProject,
 });

@@ -1,12 +1,20 @@
-import { useCallback, useSyncExternalStore, type ReactNode } from 'react';
+import { useCallback, useEffect, useSyncExternalStore, type ReactNode } from 'react';
 import { Button } from '../Button/Button';
+import { Snackbar } from '../Snackbar/Snackbar';
 import { Typography } from '../Typography/Typography';
+import { defaultComponentTokens } from '../../tokens/components';
+import { semanticLight } from '../../tokens/semantic';
 import { Modal } from './Modal';
+import type {
+  Notification,
+  NotificationAction,
+} from '../Snackbar/snackbar.types';
 import type {
   Ask,
   DialogAction,
   DialogApi,
   DialogKind,
+  Notify,
   Question,
 } from './dialog.types';
 
@@ -26,8 +34,36 @@ interface Pending {
   settle: (value: unknown) => void;
 }
 
+/** One thing waiting to be said, and how long it gets to say it. */
+interface Queued {
+  notification: Notification<NotificationAction | undefined>;
+  duration: number;
+  settle: (value: unknown) => void;
+}
+
+/** Replaced whole on every change, so the store's snapshot stays stable. */
+interface State {
+  pending: Pending | null;
+  queue: readonly Queued[];
+}
+
 const isQuestion = (request: Pending['request']): request is Question =>
   !('dialog' in request);
+
+/**
+ * How long there is to read.
+ *
+ * The reading tokens are the same in every theme and every mode, so they
+ * are read once from the shipped defaults rather than through a hook:
+ * this runs when `notify` is called, which may be nowhere near React.
+ */
+const READING = defaultComponentTokens(semanticLight).Snackbar.tokens.reading;
+
+const timeToRead = (message: string) =>
+  Math.min(
+    READING.max,
+    Math.max(READING.min, READING.base + message.length * READING.perCharacter),
+  );
 
 /**
  * Build the one dialog channel an application has.
@@ -56,7 +92,7 @@ const isQuestion = (request: Pending['request']): request is Question =>
 export function createDialogs<R extends object = Record<string, never>>(
   registry?: R,
 ): DialogApi<R> {
-  let pending: Pending | null = null;
+  let state: State = { pending: null, queue: [] };
   const listeners = new Set<() => void>();
 
   const emit = () => {
@@ -77,14 +113,48 @@ export function createDialogs<R extends object = Record<string, never>>(
     };
   };
 
-  const snapshot = () => pending;
+  const snapshot = () => state;
 
   const settle = (value: unknown) => {
-    const held = pending;
-    pending = null;
+    const held = state.pending;
+    state = { ...state, pending: null };
     emit();
     held?.settle(value);
   };
+
+  /** Take one off the front, having said what it had to say. */
+  const dismiss = (entry: Queued, value: unknown) => {
+    if (state.queue[0] !== entry) return;
+    state = { ...state, queue: state.queue.slice(1) };
+    emit();
+    entry.settle(value);
+  };
+
+  const notify = (input: string | Notification<NotificationAction | undefined>) =>
+    new Promise((resolve, reject) => {
+      if (listeners.size === 0) {
+        const message =
+          '[@dashforge/rn] notify() was called with no <DialogHost> mounted, so there is ' +
+          'nowhere to show it. Mount the host once at the root of the app.';
+        if (__DEV__) console.warn(message);
+        reject(new Error(message));
+        return;
+      }
+
+      const notification =
+        typeof input === 'string' ? { message: input } : input;
+
+      // Queued and not refused, unlike a second `ask`. Two dialogs at
+      // once is somebody's mistake; two things to say is two true
+      // things, and dropping one drops information.
+      const entry: Queued = {
+        notification,
+        duration: notification.duration ?? timeToRead(notification.message),
+        settle: resolve,
+      };
+      state = { ...state, queue: [...state.queue, entry] };
+      emit();
+    });
 
   const ask = (request: Pending['request']) =>
     new Promise((resolve, reject) => {
@@ -97,7 +167,7 @@ export function createDialogs<R extends object = Record<string, never>>(
         return;
       }
 
-      if (pending !== null) {
+      if (state.pending !== null) {
         // Not queued on purpose. Two dialogs never coexist, so a second
         // ask is a defect in the caller: queueing would hide it and
         // reorder business logic nobody wrote that way, and resolving
@@ -112,7 +182,7 @@ export function createDialogs<R extends object = Record<string, never>>(
         return;
       }
 
-      pending = { request, settle: resolve };
+      state = { ...state, pending: { request, settle: resolve } };
       emit();
     });
 
@@ -123,17 +193,38 @@ export function createDialogs<R extends object = Record<string, never>>(
    * channel stays a plain object that code outside React can write to
    * and this is the only thing that re-renders when it does.
    */
-  function DialogHost({ children }: { children?: ReactNode }) {
-    const current = useSyncExternalStore(subscribe, snapshot, snapshot);
+  function DialogHost({
+    children,
+    bottomInset = 0,
+  }: {
+    children?: ReactNode;
+    bottomInset?: number;
+  }) {
+    const { pending: current, queue } = useSyncExternalStore(
+      subscribe,
+      snapshot,
+      snapshot,
+    );
 
-    const dismiss = useCallback(() => settle(null), []);
+    // Held while a dialog is up. A notification raised then would be
+    // *behind* it, since a modal is its own window, so the queue waits
+    // and the thing gets said once there is somewhere to say it.
+    const note = current === null ? (queue[0] ?? null) : null;
+
+    useEffect(() => {
+      if (note === null) return;
+      const timer = setTimeout(() => dismiss(note, null), note.duration);
+      return () => clearTimeout(timer);
+    }, [note]);
+
+    const close = useCallback(() => settle(null), []);
 
     return (
       <>
         {children}
         <Modal
           open={current !== null}
-          onClose={dismiss}
+          onClose={close}
           dismissible={
             current !== null && isQuestion(current.request)
               ? (current.request.dismissible ?? true)
@@ -155,6 +246,23 @@ export function createDialogs<R extends object = Record<string, never>>(
             />
           )}
         </Modal>
+        {note === null ? null : (
+          <Snackbar
+            // Keyed by identity, so a second notification arriving after
+            // the first is a new strip that enters rather than the same
+            // one whose words changed underneath the reader.
+            key={note.duration + note.notification.message}
+            message={note.notification.message}
+            kind={note.notification.kind}
+            actionLabel={note.notification.action?.label}
+            onAction={
+              note.notification.action
+                ? () => dismiss(note, note.notification.action?.value)
+                : undefined
+            }
+            offset={bottomInset}
+          />
+        )}
       </>
     );
   }
@@ -241,5 +349,6 @@ export function createDialogs<R extends object = Record<string, never>>(
     // would mean writing the overloads twice.
     ask: ask as unknown as Ask<R>,
     useDialog: () => ask as unknown as Ask<R>,
+    notify: notify as unknown as Notify,
   };
 }
