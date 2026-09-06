@@ -23,6 +23,7 @@ import {
   FormSection,
   CardSection,
   IconButtonSection,
+  ModalSection,
   StackSection,
   CheckboxSection,
   SwitchSection,
@@ -61,6 +62,7 @@ const SECTIONS = [
   { key: 'switch', label: 'Switch', render: () => <SwitchSection /> },
   { key: 'radio', label: 'RadioGroup', render: () => <RadioGroupSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
+  { key: 'modal', label: 'Modal', render: () => <ModalSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
 
@@ -81,6 +83,7 @@ const GROUPS = [
       'typography',
       'card',
       'surface',
+      'modal',
     ],
   },
   { label: 'Props Dashforge', keys: ['access', 'visibleWhen'] },

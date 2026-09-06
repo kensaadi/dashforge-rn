@@ -291,6 +291,28 @@ export interface StackTokens {
   dividerWidth: number;
 }
 
+export interface ModalTokens {
+  /** What darkens the page behind the panel. */
+  scrim: string;
+  /** The panel. */
+  bg: string;
+  radius: number;
+  /** How far the panel stays from the screen's edges. */
+  margin: number;
+  padding: number;
+  /** Between the panel's own children. */
+  gap: number;
+  /** Widths a dialog is allowed to reach. A phone hits `margin` first. */
+  maxWidth: SizeScale;
+  /**
+   * How tall it may get before its content has to scroll, as a fraction
+   * of the screen.
+   */
+  maxHeightRatio: number;
+  /** The modal step of the elevation scale, which nothing else uses. */
+  elevation: ElevationStyle;
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -306,6 +328,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Modal?: {
+      defaults?: Record<string, unknown>;
+      tokens?: ModalTokens;
     };
     Stack?: {
       defaults?: Record<string, unknown>;
@@ -477,6 +503,22 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Modal: {
+      tokens: {
+        scrim: s.overlay.scrim,
+        // `overlay` and not `raised`: the panel floats above everything
+        // rather than sitting on the page, and in dark mode those are
+        // two different values for a reason.
+        bg: s.surface.overlay,
+        radius: s.radius.surface,
+        margin: s.space.inset,
+        padding: s.space.inset,
+        gap: s.space.stack,
+        maxWidth: { sm: 320, md: 420, lg: 560 },
+        maxHeightRatio: 0.85,
+        elevation: s.elevation.modal,
+      } satisfies ModalTokens,
     },
     Stack: {
       tokens: {

@@ -24,7 +24,15 @@ import type {
  * the tone, because a tint recolours the text that sits on it and the
  * header is the component that draws that text.
  */
-const CardContext = createContext<{
+/**
+ * Exported for `Modal`, which is the one other thing whose panel a
+ * `Card.Header` and a `Card.Footer` are drawn inside. A dialog's heading
+ * is a card's heading, so it lends the context rather than growing a
+ * second pair of components to keep in step.
+ *
+ * @internal
+ */
+export const CardContext = createContext<{
   padding: number;
   radius: number;
   tone: NonNullable<CardProps['tone']>;
