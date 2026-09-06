@@ -32,10 +32,8 @@ Dashforge behaviour layer underneath.
 
 ### What comes from the Dashforge core
 
-Four packages, already dependency-free of any DOM (verified: zero
-occurrences of `document`, `window`, `HTMLElement`, `navigator`,
-`localStorage` outside tests). They are the reason this is a Dashforge
-library and not another RN component kit:
+Four packages, and the reason this is a Dashforge library rather than
+another RN component kit:
 
 - **`@dashforge/ui-core`** — the reactive engine. Nodes, rules,
   dependency tracking, visibility predicates, the `DashFormContext`
@@ -47,6 +45,44 @@ library and not another RN component kit:
   hidden / disabled / read-only centrally.
 - **`@dashforge/calendar-core`** — date grid, ISO handling, locale,
   range logic. Deliberately DOM-free from the start.
+
+### The rule that BUG 10 taught us
+
+**A package shared by both renderers must render no DOM elements.**
+React Native has no `div`, no `span`, no `input`, no `form`. It looks a
+lowercase tag up in its own native view registry, does not find it, and
+throws before anything of ours renders:
+
+```
+View config getter callback for component `form` must be a function
+(received `undefined`).
+```
+
+The audit that was done before this library existed grepped for browser
+*globals*: `document`, `window`, `HTMLElement`, `navigator`,
+`localStorage`. All clean, and the conclusion "DOM-free" was written
+here on that basis. It was wrong, because the grep never looked for JSX
+host elements, and `@dashforge/forms` renders a literal `<form>` inside
+`DashForm`.
+
+So the check is: **grep the shipped files for host elements, not only
+for browser globals.** `src/__tests__/dom-free.test.ts` does exactly
+that on every run, over the compiled output of all four core packages
+and of this one, against a list of what is known and why. A new one
+arriving fails the suite.
+
+Two things the test cannot be replaced by. The test renderer does not
+catch this: it is permissive about unknown host components and renders
+`DashForm` without a word, so only a device tells you. And a code review
+will not either, because the offending line is one JSX tag in somebody
+else's package.
+
+**What is allowed, and why.** `@dashforge/forms` ships `<form>` inside
+`DashForm`, which is the provider plus a form element for the browser's
+native submit. That is correct on the web and unusable here, so React
+Native uses `DashFormProvider`, the provider alone, and calls
+`rhf.handleSubmit` from a button. It is BUG 10 in the monorepo's
+register, not a design mistake: the component is not wrong, it is DOM.
 
 One consumption rule that is easy to get wrong: aggregate form flags
 (`isDirty`, `isValid`, `isSubmitting`) are read with
