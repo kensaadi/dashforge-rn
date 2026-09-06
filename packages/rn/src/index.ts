@@ -20,6 +20,7 @@ export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
 export { Modal } from './components/Modal/Modal';
+export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
 export { RadioGroup } from './components/RadioGroup/RadioGroup';
@@ -65,6 +66,18 @@ export type {
 export type { IconButtonProps } from './components/IconButton/iconButton.types';
 export type { StackProps, StackGap } from './components/Stack/stack.types';
 export type { ModalProps, ModalSx } from './components/Modal/modal.types';
+export type {
+  Ask,
+  DialogAction,
+  DialogApi,
+  DialogComponent,
+  DialogKind,
+  DialogProps,
+  DialogPropsOf,
+  DialogRequest,
+  DialogResultOf,
+  Question,
+} from './components/Modal/dialog.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';
 export { useVisibility, type VisibleWhen } from './hooks/useVisibility';

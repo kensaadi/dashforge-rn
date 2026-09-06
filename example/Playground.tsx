@@ -24,6 +24,7 @@ import {
   CardSection,
   IconButtonSection,
   ModalSection,
+  DialogSection,
   StackSection,
   CheckboxSection,
   SwitchSection,
@@ -34,6 +35,7 @@ import {
   VisibleWhenSection,
 } from './sections';
 import { SurfaceViewport } from '@dashforge/rn';
+import { DialogHost } from './dialogs';
 import { THEMES, type ThemeKey } from './themes';
 
 const SECTIONS = [
@@ -63,6 +65,7 @@ const SECTIONS = [
   { key: 'radio', label: 'RadioGroup', render: () => <RadioGroupSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
   { key: 'modal', label: 'Modal', render: () => <ModalSection /> },
+  { key: 'dialog', label: 'ask()', render: () => <DialogSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
 
@@ -84,6 +87,7 @@ const GROUPS = [
       'card',
       'surface',
       'modal',
+      'dialog',
     ],
   },
   { label: 'Props Dashforge', keys: ['access', 'visibleWhen'] },
@@ -114,131 +118,137 @@ export function Playground() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: s.surface.base }}>
-      <View
-        style={{
-          paddingTop: insets.top + 8,
-          paddingHorizontal: 12,
-          paddingBottom: 10,
-          backgroundColor: s.surface.raised,
-          borderBottomColor: s.separator.opaque,
-          borderBottomWidth: s.borderWidth.default,
-          gap: 10,
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Apri il menu"
-            onPress={() => setMenuOpen(true)}
-            hitSlop={8}
-            style={{
-              width: 44,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4,
-            }}
-          >
-            {[0, 1, 2].map(i => (
-              <View
-                key={i}
-                style={{
-                  width: 18,
-                  height: 2,
-                  borderRadius: 1,
-                  backgroundColor: s.text.primary,
-                }}
-              />
-            ))}
-          </Pressable>
-          <Typography variant="subtitle">{current.label}</Typography>
-        </View>
+    // Mounted once, at the root, empty until something asks. It renders
+    // its children through, so it is a wrapper and not a place.
+    <DialogHost>
+      <View style={{ flex: 1, backgroundColor: s.surface.base }}>
+        <View
+          style={{
+            paddingTop: insets.top + 8,
+            paddingHorizontal: 12,
+            paddingBottom: 10,
+            backgroundColor: s.surface.raised,
+            borderBottomColor: s.separator.opaque,
+            borderBottomWidth: s.borderWidth.default,
+            gap: 10,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Apri il menu"
+              onPress={() => setMenuOpen(true)}
+              hitSlop={8}
+              style={{
+                width: 44,
+                height: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 4,
+              }}
+            >
+              {[0, 1, 2].map(i => (
+                <View
+                  key={i}
+                  style={{
+                    width: 18,
+                    height: 2,
+                    borderRadius: 1,
+                    backgroundColor: s.text.primary,
+                  }}
+                />
+              ))}
+            </Pressable>
+            <Typography variant="subtitle">{current.label}</Typography>
+          </View>
 
-        {/*
+          {/*
           Theme and mode stay in the header rather than becoming menu
           items. They are the context everything else is looked at in: if
           switching to dark means opening a menu, leaving the section you
           were studying and coming back, the comparison is gone.
         */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={{ flexDirection: 'row', gap: 8, flex: 1 }}>
-            {THEMES.map(t => (
-              <Pressable
-                key={t.key}
-                accessibilityRole="button"
-                accessibilityLabel={`Tema ${t.label}`}
-                accessibilityState={{ selected: brand === t.key }}
-                hitSlop={8}
-                onPress={() => applyBrand(t.key)}
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: s.radius.pill,
-                  backgroundColor: t.swatch,
-                  borderWidth: brand === t.key ? 2 : 0,
-                  borderColor: s.text.primary,
-                }}
-              />
-            ))}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 8, flex: 1 }}>
+              {THEMES.map(t => (
+                <Pressable
+                  key={t.key}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Tema ${t.label}`}
+                  accessibilityState={{ selected: brand === t.key }}
+                  hitSlop={8}
+                  onPress={() => applyBrand(t.key)}
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: s.radius.pill,
+                    backgroundColor: t.swatch,
+                    borderWidth: brand === t.key ? 2 : 0,
+                    borderColor: s.text.primary,
+                  }}
+                />
+              ))}
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                mode === 'light'
+                  ? 'Passa al tema scuro'
+                  : 'Passa al tema chiaro'
+              }
+              hitSlop={8}
+              onPress={() => setMode(mode === 'light' ? 'dark' : 'light')}
+              style={{
+                minHeight: 32,
+                paddingHorizontal: 12,
+                justifyContent: 'center',
+                borderRadius: s.radius.control,
+                borderWidth: s.borderWidth.default,
+                borderColor: s.border.default,
+                backgroundColor: s.action.secondary.bg,
+              }}
+            >
+              <Typography variant="caption">
+                {mode === 'light' ? 'Chiaro' : 'Scuro'}
+              </Typography>
+            </Pressable>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={
-              mode === 'light' ? 'Passa al tema scuro' : 'Passa al tema chiaro'
-            }
-            hitSlop={8}
-            onPress={() => setMode(mode === 'light' ? 'dark' : 'light')}
-            style={{
-              minHeight: 32,
-              paddingHorizontal: 12,
-              justifyContent: 'center',
-              borderRadius: s.radius.control,
-              borderWidth: s.borderWidth.default,
-              borderColor: s.border.default,
-              backgroundColor: s.action.secondary.bg,
-            }}
-          >
-            <Typography variant="caption">
-              {mode === 'light' ? 'Chiaro' : 'Scuro'}
-            </Typography>
-          </Pressable>
         </View>
-      </View>
 
-      {/*
+        {/*
         Wired so `Surface` has something to tell it when the user is
         scrolling. Without it every surface here would behave as
         `commit="immediate"` and warn about it.
       */}
-      <SurfaceViewport>
-        {scroll => (
-          <ScrollView
-            {...scroll}
-            contentContainerStyle={{
-              padding: s.space.inset,
-              paddingBottom: insets.bottom + 48,
-              gap: s.space.stack,
-            }}
-          >
-            {current.render()}
-          </ScrollView>
-        )}
-      </SurfaceViewport>
+        <SurfaceViewport>
+          {scroll => (
+            <ScrollView
+              {...scroll}
+              contentContainerStyle={{
+                padding: s.space.inset,
+                paddingBottom: insets.bottom + 48,
+                gap: s.space.stack,
+              }}
+            >
+              {current.render()}
+            </ScrollView>
+          )}
+        </SurfaceViewport>
 
-      <Drawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        groups={GROUPS.map(g => ({
-          label: g.label,
-          items: g.keys.map(k => {
-            const s2 = SECTIONS.find(x => x.key === k);
-            return { key: k as SectionKey, label: s2?.label ?? k };
-          }),
-        }))}
-        active={section}
-        onSelect={setSection}
-      />
-    </View>
+        <Drawer
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          groups={GROUPS.map(g => ({
+            label: g.label,
+            items: g.keys.map(k => {
+              const s2 = SECTIONS.find(x => x.key === k);
+              return { key: k as SectionKey, label: s2?.label ?? k };
+            }),
+          }))}
+          active={section}
+          onSelect={setSection}
+        />
+      </View>
+    </DialogHost>
   );
 }

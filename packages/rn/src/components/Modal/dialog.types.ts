@@ -49,9 +49,13 @@ export interface Question<
   A extends readonly DialogAction[] = readonly DialogAction[],
 > {
   /**
-   * Wears the matching feedback role. Not a behaviour: a `danger`
-   * question is still a question, and what makes it destructive is the
-   * action, not the tone.
+   * What the affirmative answer is coloured, and nothing else.
+   *
+   * Deliberately small: a dialog that tinted its whole panel by kind
+   * would be shouting, and both platforms settle this the same way, by
+   * colouring the button that does the thing. `danger` makes the last
+   * action red; `neutral` leaves it the primary colour.
+   *
    * @default 'neutral'
    */
   kind?: DialogKind;
