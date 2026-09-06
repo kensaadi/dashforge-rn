@@ -16,6 +16,7 @@ export interface ButtonSlotStyles {
 /** The axes the recipe resolves on. `state` is internal, not a public prop. */
 export interface ButtonVariantSelection {
   variant?: ButtonProps['variant'];
+  radius?: ButtonProps['radius'];
   color?: ButtonProps['color'];
   size?: ButtonProps['size'];
   state?: 'rest' | 'pressed' | 'disabled';
@@ -171,7 +172,6 @@ export const buttonRecipe: (
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: t.radius,
           borderWidth: t.borderWidth,
           borderColor: 'transparent',
           backgroundColor: 'transparent',
@@ -184,6 +184,15 @@ export const buttonRecipe: (
           outline: {},
           ghost: { root: { borderWidth: 0 } },
           link: {},
+        },
+        radius: {
+          none: { root: { borderRadius: t.radius.none } },
+          sm: { root: { borderRadius: t.radius.sm } },
+          md: { root: { borderRadius: t.radius.md } },
+          lg: { root: { borderRadius: t.radius.lg } },
+          xl: { root: { borderRadius: t.radius.xl } },
+          xxl: { root: { borderRadius: t.radius.xxl } },
+          full: { root: { borderRadius: t.radius.full } },
         },
         color: Object.fromEntries(COLORS.map((c) => [c, {}])),
         size: {
@@ -224,6 +233,7 @@ export const buttonRecipe: (
         variant: 'solid',
         color: 'primary',
         size: 'md',
+        radius: 'md',
         state: 'rest',
         fullWidth: false,
       },

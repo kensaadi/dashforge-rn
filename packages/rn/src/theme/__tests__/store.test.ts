@@ -27,11 +27,11 @@ describe('defineTheme', () => {
       }),
       components: ({ semantic }) =>
         ({
-          Button: { tokens: { radius: semantic.radius.pill } },
+          Button: { tokens: { radius: { ...semantic.radius, md: semantic.radius.pill } } },
         }) as never,
     });
     expect(t.semantic.border.focus).toBe(palette.info['500']);
-    expect(t.components.Button?.tokens?.radius).toBe(9999);
+    expect(t.components.Button?.tokens?.radius.md).toBe(9999);
   });
 
   it('accepts plain values as well as functions', () => {
@@ -46,7 +46,7 @@ describe('defineTheme', () => {
     // Not empty: every theme is merged over the shipped component
     // defaults, so a consumer overriding one value never has to restate
     // the rest.
-    expect(t.components.Button?.tokens?.radius).toBe(8);
+    expect(t.components.Button?.tokens?.radius.md).toBe(8);
   });
 });
 
@@ -86,11 +86,11 @@ describe('component tokens', () => {
     const t = defineTheme({
       meta: { name: 'squared', mode: 'light' },
       semantic: semanticLight,
-      components: { Button: { tokens: { radius: 0 } } } as never,
+      components: { Button: { tokens: { radius: { md: 0 } } } } as never,
     });
-    expect(t.components.Button?.tokens?.radius).toBe(0);
+    expect(t.components.Button?.tokens?.radius.md).toBe(0);
     expect(t.components.Button?.tokens?.minHeight).toEqual({ sm: 36, md: 44, lg: 52 });
-    expect(t.components.IconButton?.tokens?.radius).toBe(8);
+    expect(t.components.IconButton?.tokens?.radius.md).toBe(8);
   });
 
   it('gives the small size enough hitSlop to clear the 44pt floor', () => {

@@ -77,7 +77,7 @@ export function IconButtonSection() {
       </Card>
 
       <Card>
-        <Card.Header title="Misure e forma" />
+        <Card.Header title="Misure e raggio" />
         <Stack direction="row" gap="inline" align="center">
           {(['sm', 'md', 'lg'] as const).map(size => (
             <IconButton
@@ -95,7 +95,7 @@ export function IconButtonSection() {
               key={size}
               icon={Plus}
               size={size}
-              shape="circle"
+              radius="full"
               variant="solid"
               color="primary"
               accessibilityLabel={`Nuovo ${size}`}

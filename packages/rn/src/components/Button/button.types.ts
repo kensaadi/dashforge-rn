@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { PressableProps, StyleProp, ViewStyle } from 'react-native';
-import type { ActionColor } from '../../tokens/components';
+import type { ActionColor, RadiusStep } from '../../tokens/components';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
 /**
@@ -42,6 +42,22 @@ export interface ButtonProps
    * @default 'md'
    */
   size?: 'sm' | 'md' | 'lg';
+  /**
+   * How rounded, named from the radius scale.
+   *
+   * A step and not a number: `none` for a square button, `full` for a
+   * pill, and the steps between. An arbitrary value still goes through
+   * `sx`, which is the line this library draws everywhere, because a
+   * step with a name is the design system and a number is you stepping
+   * outside it.
+   *
+   * The whole scale lives in `theme.components.Button.tokens.radius`, so
+   * an app that wants squarer buttons everywhere changes it once rather
+   * than at every call site.
+   *
+   * @default 'md'
+   */
+  radius?: RadiusStep;
   /**
    * Stretch to the width of the parent. The content stays centred as a
    * group rather than spreading to the edges.

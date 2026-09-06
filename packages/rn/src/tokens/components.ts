@@ -15,6 +15,19 @@ import type { ActionRole, ElevationStyle, SemanticTokens, TypeStyle } from './ty
 /** The five action roles a Button can take. */
 export type ActionColor = 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
 
+/** A step on the radius scale, which is what a `radius` prop names. */
+export type RadiusStep = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'full';
+
+/**
+ * The steps a component can be rounded to.
+ *
+ * Every box-drawing component carries the whole scale rather than one
+ * number, because roundness is a prop: the recipe has to be able to
+ * compile any step, and every step it can produce has to be reachable
+ * from the theme.
+ */
+export type RadiusScale = Record<RadiusStep, number>;
+
 /** Per-size numbers, shared by every control that has three sizes. */
 export interface SizeScale {
   sm: number;
@@ -23,7 +36,7 @@ export interface SizeScale {
 }
 
 export interface ButtonTokens {
-  radius: number;
+  radius: RadiusScale;
   borderWidth: number;
   typography: TypeStyle;
   /** Applied as `minHeight`, never `height`, so the label may grow. */
@@ -38,7 +51,7 @@ export interface ButtonTokens {
 }
 
 export interface TextFieldTokens {
-  radius: number;
+  radius: RadiusScale;
   borderWidth: number;
   /** Border while focused. Thicker rather than only recoloured: the ring
    * has to read for someone who cannot distinguish the two colours. */
@@ -94,7 +107,7 @@ export interface CardToneStyle {
 }
 
 export interface CardTokens {
-  radius: number;
+  radius: RadiusScale;
   borderWidth: number;
   /** Between the card's own children, so a card is a stack by default. */
   gap: number;
@@ -354,7 +367,7 @@ export interface SnackbarTokens {
 }
 
 export interface SelectTokens {
-  radius: number;
+  radius: RadiusScale;
   borderWidth: number;
   borderWidthFocused: number;
   /** Vertical rhythm between label, trigger and helper. */
@@ -394,7 +407,7 @@ export interface SelectTokens {
 }
 
 export interface IconButtonTokens {
-  radius: number;
+  radius: RadiusScale;
   borderWidth: number;
   size: SizeScale;
   /** Larger than the icon inside a Button: alone it carries the whole meaning. */
@@ -453,6 +466,17 @@ declare module './types' {
 }
 
 /** @internal The floor every touch target has to clear, in points. */
+/** The steps, lifted out of the semantic tier where the roles also live. */
+const radiusSteps = (s: SemanticTokens): RadiusScale => ({
+  none: s.radius.none,
+  sm: s.radius.sm,
+  md: s.radius.md,
+  lg: s.radius.lg,
+  xl: s.radius.xl,
+  xxl: s.radius.xxl,
+  full: s.radius.full,
+});
+
 const TOUCH_TARGET = 44;
 
 /** The box itself is small; the target around it is not. */
@@ -499,7 +523,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
   return {
     Button: {
       tokens: {
-        radius: s.radius.control,
+        radius: radiusSteps(s),
         borderWidth: s.borderWidth.default,
         typography: s.typography.label,
         minHeight: buttonHeights,
@@ -512,7 +536,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
     },
     TextField: {
       tokens: {
-        radius: s.radius.control,
+        radius: radiusSteps(s),
         borderWidth: s.borderWidth.default,
         borderWidthFocused: s.borderWidth.strong,
         gap: 6,
@@ -547,7 +571,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
     },
     Card: {
       tokens: {
-        radius: s.radius.surface,
+        radius: radiusSteps(s),
         borderWidth: s.borderWidth.default,
         gap: s.space.stack,
         padding: { sm: 12, md: s.space.inset, lg: 24 },
@@ -594,7 +618,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
     },
     Select: {
       tokens: {
-        radius: s.radius.control,
+        radius: radiusSteps(s),
         borderWidth: s.borderWidth.default,
         borderWidthFocused: s.borderWidth.strong,
         gap: 6,
@@ -786,7 +810,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
     },
     IconButton: {
       tokens: {
-        radius: s.radius.control,
+        radius: radiusSteps(s),
         borderWidth: s.borderWidth.default,
         size: iconButtonSizes,
         iconSize: { sm: 18, md: 20, lg: 24 },

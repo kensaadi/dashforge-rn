@@ -38,6 +38,7 @@ export function Button(props: ButtonProps) {
     variant = 'solid',
     color = 'primary',
     size = 'md',
+    radius = 'md',
     fullWidth = false,
     loading = false,
     disabled = false,
@@ -77,7 +78,7 @@ export function Button(props: ButtonProps) {
         // button keeps its full colour while busy. Dimming would say
         // "you cannot", which is a different message.
         const state = disabled ? 'disabled' : pressed && !loading ? 'pressed' : 'rest';
-        const styles = resolve({ variant, color, size, state, fullWidth });
+        const styles = resolve({ variant, color, size, radius, state, fullWidth });
         const pressState: DashPressState = {
           pressed,
           focused: false,
@@ -88,7 +89,7 @@ export function Button(props: ButtonProps) {
     >
       {({ pressed }) => {
         const state = disabled ? 'disabled' : pressed && !loading ? 'pressed' : 'rest';
-        const styles = resolve({ variant, color, size, state, fullWidth });
+        const styles = resolve({ variant, color, size, radius, state, fullWidth });
         // `ColorValue` admits null and the platform's opaque colour
         // objects; icon components take a plain string. Our tokens only
         // ever produce strings, so anything else means a consumer put

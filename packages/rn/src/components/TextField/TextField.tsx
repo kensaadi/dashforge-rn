@@ -66,6 +66,7 @@ export function TextField(props: TextFieldProps) {
     disabled = false,
     size = 'md',
     fullWidth = false,
+    radius = 'md',
     startAdornment,
     endAdornment,
     value: controlledValue,
@@ -154,6 +155,7 @@ export function TextField(props: TextFieldProps) {
     invalid,
     fullWidth,
     multiline,
+    radius,
   });
 
   const handleChangeText = (next: string) => {

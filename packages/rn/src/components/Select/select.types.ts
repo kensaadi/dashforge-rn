@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { RadiusStep } from '../../tokens/components';
 import type { RadioValue } from '../RadioGroup/radioGroup.types';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
@@ -53,6 +54,11 @@ export interface SelectProps extends DashforgeProps {
   disabled?: boolean;
   /** @default 'md' */
   size?: 'sm' | 'md' | 'lg';
+  /**
+   * How rounded the closed control is, named from the radius scale.
+   * @default 'md'
+   */
+  radius?: RadiusStep;
   /** Controlled selection. In form mode the engine supplies it instead. */
   value?: RadioValue;
   /** Uncontrolled initial selection. Ignored in form mode. */

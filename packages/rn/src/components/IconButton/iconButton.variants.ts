@@ -1,7 +1,7 @@
 import type { TextStyle, ViewStyle } from 'react-native';
 import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
-import type { ActionColor, IconButtonTokens } from '../../tokens/components';
+import type { ActionColor, IconButtonTokens, RadiusStep } from '../../tokens/components';
 import type { IconButtonProps } from './iconButton.types';
 
 const COLORS: ActionColor[] = ['primary', 'secondary', 'danger', 'success', 'warning'];
@@ -18,10 +18,10 @@ export interface IconButtonSlotStyles {
 
 /** `state` is internal, not a public prop. */
 export interface IconButtonVariantSelection {
+  radius?: RadiusStep;
   variant?: IconButtonProps['variant'];
   color?: IconButtonProps['color'];
   size?: IconButtonProps['size'];
-  shape?: IconButtonProps['shape'];
   state?: 'rest' | 'pressed' | 'disabled';
 }
 
@@ -143,25 +143,23 @@ export const iconButtonRecipe: (
           md: { root: { width: t.size.md, height: t.size.md } },
           lg: { root: { width: t.size.lg, height: t.size.lg } },
         },
-        shape: { square: {}, circle: {} },
+        radius: {
+          none: { root: { borderRadius: t.radius.none } },
+          sm: { root: { borderRadius: t.radius.sm } },
+          md: { root: { borderRadius: t.radius.md } },
+          lg: { root: { borderRadius: t.radius.lg } },
+          xl: { root: { borderRadius: t.radius.xl } },
+          xxl: { root: { borderRadius: t.radius.xxl } },
+          full: { root: { borderRadius: t.radius.full } },
+        },
         state: { rest: {}, pressed: {}, disabled: {} },
       },
-      compoundVariants: [
-        ...compounds,
-        // The radius follows the size, so it has to be a compound: a
-        // circle is half of whatever the button is wide.
-        { shape: 'square', size: 'sm', style: { root: { borderRadius: t.radius } } },
-        { shape: 'square', size: 'md', style: { root: { borderRadius: t.radius } } },
-        { shape: 'square', size: 'lg', style: { root: { borderRadius: t.radius } } },
-        { shape: 'circle', size: 'sm', style: { root: { borderRadius: t.size.sm / 2 } } },
-        { shape: 'circle', size: 'md', style: { root: { borderRadius: t.size.md / 2 } } },
-        { shape: 'circle', size: 'lg', style: { root: { borderRadius: t.size.lg / 2 } } },
-      ],
+      compoundVariants: compounds,
       defaultVariants: {
         variant: 'ghost',
         color: 'secondary',
         size: 'md',
-        shape: 'square',
+        radius: 'md',
         state: 'rest',
       },
     });

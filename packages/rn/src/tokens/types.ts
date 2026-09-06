@@ -186,11 +186,25 @@ export interface SemanticTokens {
   overlay: { scrim: string };
 
   radius: {
-    /** Buttons, fields, chips. */
+    /**
+     * The steps, and the three roles below are aliases into them rather
+     * than numbers of their own: one set of values, so a role and a step
+     * cannot drift apart.
+     */
+    none: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
+    /** As round as the box allows. */
+    full: number;
+
+    /** Buttons, fields, chips. The same value as `md`. */
     control: number;
-    /** Cards, sheets, modals. The container is softer than its contents. */
+    /** Cards, sheets, modals, softer than their contents. The same as `lg`. */
     surface: number;
-    /** Avatars, badges, anything fully round. */
+    /** Avatars, badges, anything fully round. The same as `full`. */
     pill: number;
   };
   borderWidth: {

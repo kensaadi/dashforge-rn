@@ -2,7 +2,7 @@ import type { TextStyle, ViewStyle } from 'react-native';
 import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
 import { resolveTypeStyle } from '../../theme/typography';
-import type { CardTokens, CardTone } from '../../tokens/components';
+import type { CardTokens, CardTone, RadiusStep } from '../../tokens/components';
 import type { CardFooterProps, CardProps } from './card.types';
 
 /** The parts a Card paints. */
@@ -19,6 +19,7 @@ export interface CardSlotStyles {
 
 /** The axes the recipe resolves on. `pressed` is internal, not a public prop. */
 export interface CardVariantSelection {
+  radius?: RadiusStep;
   variant?: CardProps['variant'];
   tone?: CardProps['tone'];
   padding?: CardProps['padding'];
@@ -58,7 +59,6 @@ export const cardRecipe: (
     return svSlots({
       slots: {
         root: {
-          borderRadius: t.radius,
           // A card is a stack. Every one built by hand so far set this
           // and a gap, so it is the default rather than a variant.
           flexDirection: 'column',
@@ -83,6 +83,18 @@ export const cardRecipe: (
         } as TextStyle,
       },
       variants: {
+        // Roundness as a prop, named from the scale. Arbitrary numbers
+        // still go through `sx`: a step with a name is the design system,
+        // a number is stepping outside it.
+        radius: {
+          none: { root: { borderRadius: t.radius.none } },
+          sm: { root: { borderRadius: t.radius.sm } },
+          md: { root: { borderRadius: t.radius.md } },
+          lg: { root: { borderRadius: t.radius.lg } },
+          xl: { root: { borderRadius: t.radius.xl } },
+          xxl: { root: { borderRadius: t.radius.xxl } },
+          full: { root: { borderRadius: t.radius.full } },
+        },
         variant: {
           outlined: {
             root: {
@@ -164,6 +176,9 @@ export const cardRecipe: (
         },
       ],
       defaultVariants: {
+        // A card is softer than its contents, which is why its step is
+        // one above a control's.
+        radius: 'lg',
         variant: 'outlined',
         tone: 'neutral',
         padding: 'md',

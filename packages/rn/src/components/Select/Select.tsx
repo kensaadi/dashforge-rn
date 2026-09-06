@@ -93,6 +93,7 @@ export function Select(props: SelectProps) {
     error,
     disabled = false,
     size = 'md',
+    radius = 'md',
     value: controlledValue,
     defaultValue,
     onValueChange,
@@ -158,6 +159,7 @@ export function Select(props: SelectProps) {
   const chosen = options.find((option) => option.value === value);
   const styles = selectRecipe(tokens)({
     size,
+    radius,
     state: inert ? 'disabled' : open ? 'open' : 'rest',
     invalid,
     filled: chosen !== undefined,

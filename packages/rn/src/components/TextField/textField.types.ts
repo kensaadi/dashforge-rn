@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { StyleProp, TextInputProps, TextStyle, ViewStyle } from 'react-native';
+import type { RadiusStep } from '../../tokens/components';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
 /**
@@ -76,6 +77,12 @@ export interface TextFieldProps
    * @default false
    */
   fullWidth?: boolean;
+  /**
+   * How rounded, named from the radius scale. A number still goes
+   * through `sx`.
+   * @default 'md'
+   */
+  radius?: RadiusStep;
   /**
    * Rendered inside the control before the input. A currency symbol, a
    * search glyph. Not pressable: use `IconButton` beside the field for

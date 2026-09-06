@@ -2,7 +2,7 @@ import type { TextStyle, ViewStyle } from 'react-native';
 import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
 import { resolveTypeStyle } from '../../theme/typography';
-import type { SelectTokens } from '../../tokens/components';
+import type { SelectTokens, RadiusStep } from '../../tokens/components';
 import type { SelectProps } from './select.types';
 
 /** The parts a Select paints while it is closed. */
@@ -18,6 +18,7 @@ export interface SelectSlotStyles {
 
 /** `state` is internal, not a public prop. */
 export interface SelectVariantSelection {
+  radius?: RadiusStep;
   size?: SelectProps['size'];
   state?: 'rest' | 'open' | 'disabled';
   invalid?: boolean;
@@ -53,7 +54,6 @@ export const selectRecipe: (
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 8,
-          borderRadius: t.radius,
           borderWidth: t.borderWidth,
           backgroundColor: t.color.bg,
           borderColor: t.color.border,
@@ -79,6 +79,18 @@ export const selectRecipe: (
         } as ViewStyle,
       },
       variants: {
+        // Roundness as a prop, named from the scale. Arbitrary numbers
+        // still go through `sx`: a step with a name is the design system,
+        // a number is stepping outside it.
+        radius: {
+          none: { trigger: { borderRadius: t.radius.none } },
+          sm: { trigger: { borderRadius: t.radius.sm } },
+          md: { trigger: { borderRadius: t.radius.md } },
+          lg: { trigger: { borderRadius: t.radius.lg } },
+          xl: { trigger: { borderRadius: t.radius.xl } },
+          xxl: { trigger: { borderRadius: t.radius.xxl } },
+          full: { trigger: { borderRadius: t.radius.full } },
+        },
         size: Object.fromEntries(
           SIZES.map((size) => [
             size,
@@ -137,6 +149,12 @@ export const selectRecipe: (
           style: { value: { color: t.color.valueDisabled } },
         },
       ],
-      defaultVariants: { size: 'md', state: 'rest', invalid: false, filled: false },
+      defaultVariants: {
+        size: 'md',
+        radius: 'md',
+        state: 'rest',
+        invalid: false,
+        filled: false,
+      },
     }),
 );

@@ -1,4 +1,5 @@
 import type { PressableProps, StyleProp, ViewStyle } from 'react-native';
+import type { RadiusStep } from '../../tokens/components';
 import type { DashPressState, IconComponent } from '../Button/button.types';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
@@ -36,10 +37,16 @@ export interface IconButtonProps
   /** @default 'md' */
   size?: 'sm' | 'md' | 'lg';
   /**
-   * A square with rounded corners, or a circle.
-   * @default 'square'
+   * How rounded, named from the radius scale.
+   *
+   * This replaced a `shape: 'square' | 'circle'`, which was a second way
+   * of saying the same thing: `full` is the circle, and it needs no
+   * arithmetic because a radius past half the box is clamped to it. One
+   * concept beats two that agree.
+   *
+   * @default 'md'
    */
-  shape?: 'square' | 'circle';
+  radius?: RadiusStep;
   /**
    * Replaces the icon with a spinner and makes the button inert. The
    * button keeps its colour, because dimming would say "you cannot",

@@ -2,7 +2,7 @@ import type { TextStyle, ViewStyle } from 'react-native';
 import { createRecipe } from '../../theme/createRecipe';
 import { svSlots } from '../../theme/sv';
 import { resolveTypeStyle } from '../../theme/typography';
-import type { TextFieldTokens } from '../../tokens/components';
+import type { TextFieldTokens, RadiusStep } from '../../tokens/components';
 
 export interface TextFieldSlotStyles {
   root: ViewStyle;
@@ -13,6 +13,7 @@ export interface TextFieldSlotStyles {
 }
 
 export interface TextFieldVariantSelection {
+  radius?: RadiusStep;
   size?: 'sm' | 'md' | 'lg';
   multiline?: boolean;
   /** `rest` and `focused` are mutually exclusive; `invalid` is not. */
@@ -53,7 +54,6 @@ export const textFieldRecipe: (
           flexDirection: 'row',
           alignItems: 'center',
           gap: 8,
-          borderRadius: t.radius,
           borderWidth: t.borderWidth,
           borderColor: t.color.border,
           backgroundColor: t.color.bg,
@@ -80,6 +80,18 @@ export const textFieldRecipe: (
         } as TextStyle,
       },
       variants: {
+        // Roundness as a prop, named from the scale. Arbitrary numbers
+        // still go through `sx`: a step with a name is the design system,
+        // a number is stepping outside it.
+        radius: {
+          none: { control: { borderRadius: t.radius.none } },
+          sm: { control: { borderRadius: t.radius.sm } },
+          md: { control: { borderRadius: t.radius.md } },
+          lg: { control: { borderRadius: t.radius.lg } },
+          xl: { control: { borderRadius: t.radius.xl } },
+          xxl: { control: { borderRadius: t.radius.xxl } },
+          full: { control: { borderRadius: t.radius.full } },
+        },
         size: {
           sm: {
             control: {
@@ -182,6 +194,7 @@ export const textFieldRecipe: (
         invalid: false,
         fullWidth: false,
         multiline: false,
+        radius: 'md',
       },
     }),
 );

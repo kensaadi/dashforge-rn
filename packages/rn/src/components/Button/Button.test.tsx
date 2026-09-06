@@ -1,6 +1,7 @@
 import { Text } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { patchTheme, setMode } from '../../theme/store';
+import { defaultComponentTokens } from '../../tokens/components';
 import { semanticDark, semanticLight } from '../../tokens/semantic';
 import { Button } from './Button';
 
@@ -9,7 +10,30 @@ const flat = (style: unknown) =>
 
 beforeEach(() => {
   setMode('light');
-  patchTheme({ components: { Button: { defaults: {} } } } as never);
+  // The whole Button slice, not just `defaults`. `patchTheme` is a deep
+  // merge into a living store, so a token a test writes survives into
+  // every test after it: putting the shipped ones back is the only
+  // reset there is.
+  // Per mode, and not `'both'`: each mode has its own component tokens
+  // because they are built from its own semantic layer, so restoring the
+  // light ones into the dark theme would make dark mode look like light
+  // mode and the test that checks it would be checking nothing.
+  for (const [mode, semantic] of [
+    ['light', semanticLight],
+    ['dark', semanticDark],
+  ] as const) {
+    patchTheme(
+      {
+        components: {
+          Button: {
+            defaults: {},
+            tokens: defaultComponentTokens(semantic).Button.tokens,
+          },
+        },
+      } as never,
+      mode,
+    );
+  }
 });
 
 describe('Button', () => {
@@ -113,7 +137,9 @@ describe('Button', () => {
     });
 
     it('follows a theme override without touching the component', () => {
-      patchTheme({ components: { Button: { tokens: { radius: 0 } } } } as never);
+      patchTheme({
+        components: { Button: { tokens: { radius: { md: 0 } } } },
+      } as never);
       render(<Button>Salva</Button>);
       expect(flat(screen.getByRole('button').props.style).borderRadius).toBe(0);
     });
@@ -200,5 +226,42 @@ describe('Button', () => {
         semanticDark.action.primary.bg,
       );
     });
+  });
+});
+
+describe('radius', () => {
+  const TOKENS = defaultComponentTokens(semanticLight).Button.tokens;
+  const box = () => flat(screen.getByRole('button').props.style);
+
+  it('is the control step by default', () => {
+    render(<Button>X</Button>);
+    expect(box().borderRadius).toBe(TOKENS.radius.md);
+  });
+
+  it.each(['none', 'sm', 'md', 'lg', 'xl', 'xxl', 'full'] as const)(
+    'takes the %s step',
+    (step) => {
+      render(<Button radius={step}>X</Button>);
+      expect(box().borderRadius).toBe(TOKENS.radius[step]);
+    },
+  );
+
+  it('squares off at none and pills at full', () => {
+    // The two ends of the scale, which are the reason it exists: a
+    // square button and a pill without either being a number at the call
+    // site.
+    render(<Button testID="square" radius="none">X</Button>);
+    expect(flat(screen.getByTestId('square').props.style).borderRadius).toBe(0);
+
+    render(<Button testID="pill" radius="full">X</Button>);
+    expect(flat(screen.getByTestId('pill').props.style).borderRadius).toBeGreaterThan(100);
+  });
+
+  it('follows the scale from the theme, so an app changes it once', () => {
+    patchTheme({
+      components: { Button: { tokens: { radius: { md: 2 } } } },
+    } as never);
+    render(<Button>X</Button>);
+    expect(box().borderRadius).toBe(2);
   });
 });

@@ -9,7 +9,7 @@ import type {
   ViewProps,
   ViewStyle,
 } from 'react-native';
-import type { CardTone } from '../../tokens/components';
+import type { CardTone, RadiusStep } from '../../tokens/components';
 import type { DashforgeProps } from '../_shared/dashforge.types';
 
 /**
@@ -45,6 +45,13 @@ export interface CardProps
    * @default 'outlined'
    */
   variant?: 'outlined' | 'elevated' | 'filled';
+  /**
+   * How rounded, named from the radius scale. The default is a step
+   * above a control's, because a container is softer than the things
+   * inside it.
+   * @default 'lg'
+   */
+  radius?: RadiusStep;
   /**
    * What the card means, as a role rather than a colour.
    *

@@ -415,6 +415,7 @@ export function Card(props: CardProps) {
     children,
     variant = 'outlined',
     tone = 'neutral',
+    radius = 'lg',
     padding = 'md',
     onPress,
     onLongPress,
@@ -450,7 +451,7 @@ export function Card(props: CardProps) {
   const edge = variant === 'outlined' ? tokens.borderWidth : 0;
   const inner = {
     padding: inset,
-    radius: Math.max(tokens.radius - edge, 0),
+    radius: Math.max(tokens.radius[radius] - edge, 0),
     tone,
     over: 'card' as const,
   };
@@ -458,7 +459,7 @@ export function Card(props: CardProps) {
   if (!interactive) {
     return (
       <CardContext.Provider value={inner}>
-        <View {...rest} style={[resolve({ variant, tone, padding }).root, sx]}>
+        <View {...rest} style={[resolve({ variant, tone, radius, padding }).root, sx]}>
           {children}
         </View>
       </CardContext.Provider>
@@ -475,7 +476,7 @@ export function Card(props: CardProps) {
         onLongPress={onLongPress}
         {...rest}
         style={({ pressed }) => [
-          resolve({ variant, tone, padding, pressed: pressed && !inactive }).root,
+          resolve({ variant, tone, radius, padding, pressed: pressed && !inactive }).root,
           // The ground moves too, but a card can have its ground covered
           // by an image, and then there is nothing chromatic left to say:
           // a promo banner is one picture and a tap target, and a colour

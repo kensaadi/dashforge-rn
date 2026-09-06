@@ -25,12 +25,14 @@ import type { IconButtonProps } from './iconButton.types';
  *
  * The box is square, so the glyph sits in the middle of a shape rather
  * than in the middle of a rectangle, and `hitSlop` takes even the small
- * size past the forty-four point floor without growing it.
+ * size past the forty-four point floor without growing it. `radius="full"`
+ * is the round one; there is no separate `shape` prop, because two ways
+ * of saying the same thing is one too many.
  *
  * @example
  * ```tsx
  * <IconButton icon={Trash2} color="danger" accessibilityLabel="Elimina" onPress={remove} />
- * <IconButton icon={Plus} variant="solid" color="primary" shape="circle" accessibilityLabel="Nuovo" />
+ * <IconButton icon={Plus} variant="solid" color="primary" radius="full" accessibilityLabel="Nuovo" />
  * ```
  */
 export function IconButton(props: IconButtonProps) {
@@ -43,7 +45,7 @@ export function IconButton(props: IconButtonProps) {
     variant = 'ghost',
     color = 'secondary',
     size = 'md',
-    shape = 'square',
+    radius = 'md',
     loading = false,
     disabled = false,
     access,
@@ -85,7 +87,7 @@ export function IconButton(props: IconButtonProps) {
         // its colour while busy, since dimming would say "you cannot",
         // which is a different message from "wait".
         const state = disabled ? 'disabled' : pressed && !loading ? 'pressed' : 'rest';
-        const styles = resolve({ variant, color, size, shape, state });
+        const styles = resolve({ variant, color, size, radius, state });
         const pressState: DashPressState = {
           pressed,
           focused: false,
@@ -96,7 +98,7 @@ export function IconButton(props: IconButtonProps) {
     >
       {({ pressed }) => {
         const state = disabled ? 'disabled' : pressed && !loading ? 'pressed' : 'rest';
-        const styles = resolve({ variant, color, size, shape, state });
+        const styles = resolve({ variant, color, size, radius, state });
         // `ColorValue` admits null and the platform's opaque colour
         // objects; icon components take a plain string. Our tokens only
         // ever produce strings, so anything else means a consumer put

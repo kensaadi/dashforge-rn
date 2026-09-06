@@ -64,15 +64,27 @@ describe('the icon', () => {
   });
 });
 
-describe('shape', () => {
-  it('rounds the corners by default', () => {
+describe('radius', () => {
+  it('is the control step by default', () => {
     render(<IconButton icon={Glyph} accessibilityLabel="X" />);
-    expect(box().borderRadius).toBe(TOKENS.radius);
+    expect(box().borderRadius).toBe(TOKENS.radius.md);
   });
 
-  it('is a circle when asked, at half of whatever it is wide', () => {
-    render(<IconButton icon={Glyph} shape="circle" size="lg" accessibilityLabel="X" />);
-    expect(box().borderRadius).toBe(TOKENS.size.lg / 2);
+  it.each(['none', 'sm', 'md', 'lg', 'xl', 'xxl', 'full'] as const)(
+    'takes the %s step',
+    (step) => {
+      render(<IconButton icon={Glyph} radius={step} accessibilityLabel="X" />);
+      expect(box().borderRadius).toBe(TOKENS.radius[step]);
+    },
+  );
+
+  it('is round at full, with no arithmetic', () => {
+    // `full` is past half the box, and a radius past half is clamped to
+    // half. That is why the old `shape: 'circle'` did not need to exist:
+    // it was a second way of saying the same thing, and it had to
+    // compute `size / 2` to say it.
+    render(<IconButton icon={Glyph} radius="full" size="lg" accessibilityLabel="X" />);
+    expect(box().borderRadius).toBeGreaterThan(TOKENS.size.lg / 2);
   });
 });
 

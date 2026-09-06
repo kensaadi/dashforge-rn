@@ -132,11 +132,31 @@ function elevation(
 
 const FLAT = elevation(0, 0, 0, 0);
 
+/**
+ * The radius steps.
+ *
+ * A size scale under the role scale rather than instead of it: the roles
+ * say what a thing is, the steps say how much, and a component that
+ * offers roundness as a prop needs the steps to name.
+ */
+const RADIUS = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  xxl: 24,
+  full: 9999,
+} as const;
+
 const shared = {
   radius: {
-    control: 8,
-    surface: 12,
-    pill: 9999,
+    ...RADIUS,
+    // Named by job, valued by step. Writing 8 here again is how a role
+    // and its step end up disagreeing six months later.
+    control: RADIUS.md,
+    surface: RADIUS.lg,
+    pill: RADIUS.full,
   },
   borderWidth: {
     // Deliberately 0.5 rather than `StyleSheet.hairlineWidth`: this file
