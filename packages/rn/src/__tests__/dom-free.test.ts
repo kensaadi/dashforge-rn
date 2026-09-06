@@ -1,6 +1,3 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-
 /**
  * The core packages must not render DOM elements.
  *
@@ -28,6 +25,34 @@ import { dirname, join } from 'node:path';
  * are somebody else's package and they are correct on the web. What this
  * catches is a *new* one arriving in a core package the renderers share.
  */
+
+/**
+ * Node's own, shaped here rather than pulled in as ambient types.
+ *
+ * `@types/node` in this package's `types` would put `fs` and friends in
+ * scope for every component file, and a library that has to run on a
+ * phone has no business being able to typecheck a call to the file
+ * system. This is the one file that reads the disk, so it is the one
+ * file that describes it.
+ */
+interface NodeFs {
+  readdirSync(dir: string): string[];
+  readFileSync(path: string, encoding: 'utf8'): string;
+  statSync(path: string): { isDirectory(): boolean };
+}
+
+const { readdirSync, readFileSync, statSync } = require('fs') as NodeFs;
+
+/**
+ * `require.resolve` is not on the ambient `NodeRequire` this package
+ * sees, which carries only what React Native's own types declare. Named
+ * once here rather than cast at the call site.
+ */
+const resolveModule = (require as unknown as { resolve(id: string): string }).resolve;
+
+/** Enough of `path` for this, without a second declaration to maintain. */
+const join = (dir: string, entry: string) => `${dir}/${entry}`;
+const dirname = (path: string) => path.slice(0, path.lastIndexOf('/'));
 
 /** What each core package is known to render, and why that is allowed. */
 const ALLOWED: Record<string, { tags: string[]; because: string }> = {
@@ -62,7 +87,7 @@ function filesUnder(dir: string): string[] {
 }
 
 function domTagsIn(packageName: string): string[] {
-  const dist = dirname(require.resolve(packageName));
+  const dist = dirname(resolveModule(packageName));
   const found = new Set<string>();
   for (const file of filesUnder(dist)) {
     const source = readFileSync(file, 'utf8');
