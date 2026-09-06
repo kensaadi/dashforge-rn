@@ -25,6 +25,7 @@ export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
 export { RadioGroup } from './components/RadioGroup/RadioGroup';
+export { Select } from './components/Select/Select';
 export { buttonRecipe } from './components/Button/button.variants';
 export type {
   TypographyProps,
@@ -86,6 +87,11 @@ export type {
   Notify,
   Question,
 } from './components/Modal/dialog.types';
+export type {
+  SelectProps,
+  SelectOptionProps,
+  SelectSx,
+} from './components/Select/select.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';
 export { useVisibility, type VisibleWhen } from './hooks/useVisibility';

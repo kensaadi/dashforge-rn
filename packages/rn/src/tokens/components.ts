@@ -353,6 +353,46 @@ export interface SnackbarTokens {
   };
 }
 
+export interface SelectTokens {
+  radius: number;
+  borderWidth: number;
+  borderWidthFocused: number;
+  /** Vertical rhythm between label, trigger and helper. */
+  gap: number;
+  minHeight: SizeScale;
+  paddingHorizontal: SizeScale;
+  /** The mark that says it opens something. */
+  chevron: { size: number; thickness: number };
+  /**
+   * How tall the list may get inside the dialog. The panel caps itself
+   * too; this is what makes the list scroll rather than the panel.
+   */
+  listMaxHeight: number;
+  typography: {
+    label: TypeStyle;
+    value: TypeStyle;
+    helper: TypeStyle;
+  };
+  color: {
+    bg: string;
+    bgDisabled: string;
+    border: string;
+    borderOpen: string;
+    borderInvalid: string;
+    borderDisabled: string;
+    value: string;
+    /** The value when nothing is chosen yet. */
+    placeholder: string;
+    valueDisabled: string;
+    chevron: string;
+    label: string;
+    labelDisabled: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+  };
+}
+
 export interface IconButtonTokens {
   radius: number;
   borderWidth: number;
@@ -368,6 +408,10 @@ declare module './types' {
     Button?: {
       defaults?: Record<string, unknown>;
       tokens?: ButtonTokens;
+    };
+    Select?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SelectTokens;
     };
     Snackbar?: {
       defaults?: Record<string, unknown>;
@@ -547,6 +591,40 @@ export function defaultComponentTokens(s: SemanticTokens) {
         },
         elevation: s.elevation.raised,
       } satisfies CardTokens,
+    },
+    Select: {
+      tokens: {
+        radius: s.radius.control,
+        borderWidth: s.borderWidth.default,
+        borderWidthFocused: s.borderWidth.strong,
+        gap: 6,
+        minHeight: fieldHeights,
+        paddingHorizontal: { sm: 10, md: 12, lg: 14 },
+        chevron: { size: 9, thickness: 2 },
+        listMaxHeight: 360,
+        typography: {
+          label: s.typography.label,
+          value: s.typography.body,
+          helper: s.typography.caption,
+        },
+        color: {
+          bg: s.surface.raised,
+          bgDisabled: s.fill.subtle,
+          border: s.border.default,
+          borderOpen: s.border.focus,
+          borderInvalid: s.action.danger.bg,
+          borderDisabled: s.border.subtle,
+          value: s.text.primary,
+          placeholder: s.text.muted,
+          valueDisabled: s.text.disabled,
+          chevron: s.text.muted,
+          label: s.text.primary,
+          labelDisabled: s.text.disabled,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.action.danger.bg,
+        },
+      } satisfies SelectTokens,
     },
     Snackbar: {
       tokens: {

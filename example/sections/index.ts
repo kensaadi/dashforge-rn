@@ -12,5 +12,6 @@ export { CardSection } from './CardSection';
 export { CheckboxSection } from './CheckboxSection';
 export { SwitchSection } from './SwitchSection';
 export { RadioGroupSection } from './RadioGroupSection';
+export { SelectSection } from './SelectSection';
 export { SurfaceSection } from './SurfaceSection';
 export { TokensSection } from './TokensSection';
