@@ -149,7 +149,7 @@ export const iconButtonRecipe: (
           md: { root: { borderRadius: t.radius.md } },
           lg: { root: { borderRadius: t.radius.lg } },
           xl: { root: { borderRadius: t.radius.xl } },
-          xxl: { root: { borderRadius: t.radius.xxl } },
+          '2xl': { root: { borderRadius: t.radius['2xl'] } },
           full: { root: { borderRadius: t.radius.full } },
         },
         state: { rest: {}, pressed: {}, disabled: {} },

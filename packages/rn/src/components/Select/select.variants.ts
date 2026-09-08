@@ -88,7 +88,7 @@ export const selectRecipe: (
           md: { trigger: { borderRadius: t.radius.md } },
           lg: { trigger: { borderRadius: t.radius.lg } },
           xl: { trigger: { borderRadius: t.radius.xl } },
-          xxl: { trigger: { borderRadius: t.radius.xxl } },
+          '2xl': { trigger: { borderRadius: t.radius['2xl'] } },
           full: { trigger: { borderRadius: t.radius.full } },
         },
         size: Object.fromEntries(

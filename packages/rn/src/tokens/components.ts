@@ -16,7 +16,7 @@ import type { ActionRole, ElevationStyle, SemanticTokens, TypeStyle } from './ty
 export type ActionColor = 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
 
 /** A step on the radius scale, which is what a `radius` prop names. */
-export type RadiusStep = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'full';
+export type RadiusStep = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
 
 /**
  * The steps a component can be rounded to.
@@ -473,7 +473,7 @@ const radiusSteps = (s: SemanticTokens): RadiusScale => ({
   md: s.radius.md,
   lg: s.radius.lg,
   xl: s.radius.xl,
-  xxl: s.radius.xxl,
+  '2xl': s.radius['2xl'],
   full: s.radius.full,
 });
 

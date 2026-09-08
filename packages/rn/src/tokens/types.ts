@@ -190,13 +190,25 @@ export interface SemanticTokens {
      * The steps, and the three roles below are aliases into them rather
      * than numbers of their own: one set of values, so a role and a step
      * cannot drift apart.
+     *
+     * **The names are Tailwind's**, `2xl` and not `xxl`, because the web
+     * side emits these keys into a Tailwind preset and `rounded-2xl` is
+     * a utility that exists while `rounded-xxl` is not. Costing this
+     * package a quoted key is the cheaper half of the deal: a token set
+     * coming out of a design tool has to be able to say one word and
+     * have all three renderers understand it.
+     *
+     * The values match `@dashforge/tokens`, the MUI-side scale: `sm` 4,
+     * `md` 8, `lg` 12, and `full` where it says `pill`. `@dashforge/
+     * tw-tokens` still carries Tailwind's own numbers, `md` 6 and `lg`
+     * 8, which is a divergence on the web side rather than here.
      */
     none: number;
     sm: number;
     md: number;
     lg: number;
     xl: number;
-    xxl: number;
+    '2xl': number;
     /** As round as the box allows. */
     full: number;
 
