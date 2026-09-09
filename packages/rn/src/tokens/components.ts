@@ -406,6 +406,63 @@ export interface SelectTokens {
   };
 }
 
+/**
+ * The row that is a mobile application's table.
+ *
+ * The lines between rows are here too, and drawn by `List`, because a
+ * row and the hairline above it are one decision: change the inset and
+ * both have to agree or the list looks broken.
+ */
+export interface ListItemTokens {
+  /** The floor a one-line row cannot go under, so it stays a target. */
+  minHeight: number;
+  paddingVertical: number;
+  paddingHorizontal: number;
+  /** Between the leading slot, the text and whatever is on the right. */
+  gap: number;
+  /** Between a title and the line under it. */
+  titleGap: number;
+  /** The icon a `leading` shorthand draws. */
+  iconSize: number;
+  /** The mark that says the row leads somewhere. */
+  chevron: { size: number; thickness: number };
+  separator: {
+    thickness: number;
+    color: string;
+    /**
+     * How far in an inset hairline starts.
+     *
+     * Lines up with the title of a row whose leading slot holds an icon
+     * at `iconSize`, which is the row iOS designed the inset for. A
+     * different leading slot needs `sx`, and the library says so rather
+     * than measuring the slot and pretending it always knows.
+     */
+    inset: number;
+  };
+  typography: {
+    title: TypeStyle;
+    subtitle: TypeStyle;
+    /** The short answer on the right. */
+    value: TypeStyle;
+  };
+  color: {
+    /**
+     * Nothing at rest.
+     *
+     * A row has no ground of its own on purpose: it is dropped into a
+     * card, a sheet or the page, and any colour it painted would be
+     * right in one of those and wrong in the other two.
+     */
+    bg: string;
+    bgPressed: string;
+    title: string;
+    subtitle: string;
+    value: string;
+    icon: string;
+    chevron: string;
+  };
+}
+
 export interface BottomSheetTokens {
   /** What darkens the page behind the sheet. */
   scrim: string;
@@ -499,6 +556,10 @@ declare module './types' {
     TextField?: {
       defaults?: Record<string, unknown>;
       tokens?: TextFieldTokens;
+    };
+    ListItem?: {
+      defaults?: Record<string, unknown>;
+      tokens?: ListItemTokens;
     };
   }
 }
@@ -716,6 +777,43 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    ListItem: {
+      tokens: {
+        minHeight: TOUCH_TARGET,
+        // Ten and not the inset: a row is a line of text with air around
+        // it, and at sixteen a one-line row is taller than a button.
+        paddingVertical: 10,
+        paddingHorizontal: s.space.inset,
+        gap: s.space.stack,
+        titleGap: 2,
+        iconSize: 22,
+        chevron: { size: 8, thickness: s.borderWidth.strong },
+        separator: {
+          thickness: s.borderWidth.hairline,
+          // The translucent one, which is what belongs between rows: it
+          // takes the colour of whatever the list was dropped onto
+          // instead of assuming a ground.
+          color: s.separator.default,
+          inset: s.space.inset + 22 + s.space.stack,
+        },
+        typography: {
+          title: s.typography.body,
+          subtitle: s.typography.bodySmall,
+          value: s.typography.body,
+        },
+        color: {
+          bg: 'transparent',
+          // The same press the `Card` makes, so a row and a card that do
+          // the same thing do not feel like two different libraries.
+          bgPressed: s.surface.sunken,
+          title: s.text.primary,
+          subtitle: s.text.secondary,
+          value: s.text.muted,
+          icon: s.text.secondary,
+          chevron: s.text.muted,
+        },
+      } satisfies ListItemTokens,
     },
     BottomSheet: {
       tokens: {

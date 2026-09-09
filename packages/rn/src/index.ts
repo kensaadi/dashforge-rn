@@ -22,6 +22,7 @@ export { Card } from './components/Card/Card';
 export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
+export { List, ListItem } from './components/ListItem/ListItem';
 export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
@@ -80,6 +81,13 @@ export type {
   BottomSheetRadius,
   BottomSheetSx,
 } from './components/BottomSheet/bottomSheet.types';
+export type {
+  ListDivider,
+  ListItemProps,
+  ListItemSx,
+  ListProps,
+  ListSx,
+} from './components/ListItem/listItem.types';
 export type {
   Ask,
   DialogAction,

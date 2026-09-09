@@ -10,6 +10,7 @@ export { BottomSheetSection } from './BottomSheetSection';
 export { DialogSection } from './DialogSection';
 export { StackSection } from './StackSection';
 export { CardSection } from './CardSection';
+export { ListItemSection } from './ListItemSection';
 export { CheckboxSection } from './CheckboxSection';
 export { SwitchSection } from './SwitchSection';
 export { RadioGroupSection } from './RadioGroupSection';
