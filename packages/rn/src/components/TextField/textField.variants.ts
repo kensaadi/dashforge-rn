@@ -89,7 +89,7 @@ export const textFieldRecipe: (
           md: { control: { borderRadius: t.radius.md } },
           lg: { control: { borderRadius: t.radius.lg } },
           xl: { control: { borderRadius: t.radius.xl } },
-          '2xl': { control: { borderRadius: t.radius['2xl'] } },
+          xxl: { control: { borderRadius: t.radius.xxl } },
           full: { control: { borderRadius: t.radius.full } },
         },
         size: {

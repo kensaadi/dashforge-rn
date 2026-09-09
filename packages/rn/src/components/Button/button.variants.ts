@@ -191,7 +191,7 @@ export const buttonRecipe: (
           md: { root: { borderRadius: t.radius.md } },
           lg: { root: { borderRadius: t.radius.lg } },
           xl: { root: { borderRadius: t.radius.xl } },
-          '2xl': { root: { borderRadius: t.radius['2xl'] } },
+          xxl: { root: { borderRadius: t.radius.xxl } },
           full: { root: { borderRadius: t.radius.full } },
         },
         color: Object.fromEntries(COLORS.map((c) => [c, {}])),

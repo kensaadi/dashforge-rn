@@ -20,15 +20,13 @@ export function ButtonSection() {
           subtitle="Un passo con un nome, non un numero"
         />
         <Caption>
-          none, sm, md, lg, xl, 2xl, full. Gli stessi valori dei ruoli
-          semantici: control è md, surface è lg, pill è full, e i ruoli sono
-          alias dentro la scala invece che numeri paralleli, così non possono
-          divergere. I nomi sono quelli di Tailwind perché il preset del web
-          deve emettere chiavi che le utility conoscono: rounded-2xl esiste,
-          rounded-xxl no.
+          none, sm, md, lg, xl, xxl, full, su un ritmo di quattro punti, che
+          è lo stesso della scala degli spazi. I ruoli semantici sono alias
+          dentro la scala invece che numeri paralleli: control è md, surface è
+          lg, pill è full, così un ruolo e il suo passo non possono divergere.
         </Caption>
         <Row>
-          {(['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const).map(r => (
+          {(['none', 'sm', 'md', 'lg', 'xl', 'xxl', 'full'] as const).map(r => (
             <Button
               key={r}
               size="sm"

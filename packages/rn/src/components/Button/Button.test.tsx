@@ -238,7 +238,7 @@ describe('radius', () => {
     expect(box().borderRadius).toBe(TOKENS.radius.md);
   });
 
-  it.each(['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const)(
+  it.each(['none', 'sm', 'md', 'lg', 'xl', 'xxl', 'full'] as const)(
     'takes the %s step',
     (step) => {
       render(<Button radius={step}>X</Button>);

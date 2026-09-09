@@ -191,24 +191,25 @@ export interface SemanticTokens {
      * than numbers of their own: one set of values, so a role and a step
      * cannot drift apart.
      *
-     * **The names are Tailwind's**, `2xl` and not `xxl`, because the web
-     * side emits these keys into a Tailwind preset and `rounded-2xl` is
-     * a utility that exists while `rounded-xxl` is not. Costing this
-     * package a quoted key is the cheaper half of the deal: a token set
-     * coming out of a design tool has to be able to say one word and
-     * have all three renderers understand it.
+     * **The scale is this library's**, chosen for React Native rather
+     * than borrowed from anywhere. The steps run on a four-point rhythm
+     * because that is what the spacing scale runs on and what reads
+     * evenly in density-independent points: 4, 8, 12, 16, 24. `control`
+     * lands on `md` and `surface` on `lg` because a container should be
+     * softer than the things inside it, and one step is exactly how much
+     * softer.
      *
-     * The values match `@dashforge/tokens`, the MUI-side scale: `sm` 4,
-     * `md` 8, `lg` 12, and `full` where it says `pill`. `@dashforge/
-     * tw-tokens` still carries Tailwind's own numbers, `md` 6 and `lg`
-     * 8, which is a divergence on the web side rather than here.
+     * The web packages have their own scales for their own reasons, and
+     * whether any of them agrees with this one is not a constraint on
+     * it. A token arriving from a design tool is transformed into these,
+     * which is the job of a token layer.
      */
     none: number;
     sm: number;
     md: number;
     lg: number;
     xl: number;
-    '2xl': number;
+    xxl: number;
     /** As round as the box allows. */
     full: number;
 
