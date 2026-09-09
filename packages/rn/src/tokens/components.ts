@@ -406,6 +406,40 @@ export interface SelectTokens {
   };
 }
 
+export interface BottomSheetTokens {
+  /** What darkens the page behind the sheet. */
+  scrim: string;
+  bg: string;
+  /**
+   * The whole scale, so a sheet can pick a step. Only the top corners
+   * ever use it: the bottom is the screen's edge.
+   */
+  radius: RadiusScale;
+  padding: number;
+  /** Between the sheet's own children. */
+  gap: number;
+  /**
+   * The grabber.
+   *
+   * Not decoration: it is the only part of the sheet that says it can be
+   * dragged, and by default it is the only part that can be.
+   */
+  handle: { width: number; height: number; color: string; marginVertical: number };
+  /** How tall it may get, as a fraction of the screen. */
+  maxHeightRatio: number;
+  /**
+   * How far down a drag has to go before letting go dismisses it, as a
+   * fraction of the sheet's own height.
+   */
+  dismissRatio: number;
+  /**
+   * Downward speed, in points per millisecond, that dismisses whatever
+   * the distance was. A flick is an intention even when it is short.
+   */
+  dismissVelocity: number;
+  elevation: ElevationStyle;
+}
+
 export interface IconButtonTokens {
   radius: RadiusScale;
   borderWidth: number;
@@ -429,6 +463,10 @@ declare module './types' {
     Snackbar?: {
       defaults?: Record<string, unknown>;
       tokens?: SnackbarTokens;
+    };
+    BottomSheet?: {
+      defaults?: Record<string, unknown>;
+      tokens?: BottomSheetTokens;
     };
     Modal?: {
       defaults?: Record<string, unknown>;
@@ -678,6 +716,25 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    BottomSheet: {
+      tokens: {
+        scrim: s.overlay.scrim,
+        bg: s.surface.overlay,
+        radius: radiusSteps(s),
+        padding: s.space.inset,
+        gap: s.space.stack,
+        handle: {
+          width: 36,
+          height: 4,
+          color: s.fill.strong,
+          marginVertical: 8,
+        },
+        maxHeightRatio: 0.9,
+        dismissRatio: 0.25,
+        dismissVelocity: 0.5,
+        elevation: s.elevation.modal,
+      } satisfies BottomSheetTokens,
     },
     Modal: {
       tokens: {

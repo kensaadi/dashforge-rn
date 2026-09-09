@@ -31,6 +31,8 @@ export { defaultComponentTokens } from './components';
 export type {
   ActionColor,
   SizeScale,
+  RadiusStep,
+  RadiusScale,
   ButtonTokens,
   IconButtonTokens,
   TextFieldTokens,

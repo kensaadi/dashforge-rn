@@ -910,6 +910,16 @@ adapter present.
 - **No `position: fixed`, no portals.** Overlays use RN `Modal`. A
   component cannot render outside its parent hierarchy by any other
   means.
+- **Inside a `Modal`, the responder negotiation only happens at
+  touch-down.** A `PanResponder` that waits for the first move, the
+  usual way to tell a press from a drag, is never asked: measured on
+  iOS with a counter rendered on screen, `onStartShouldSet…` fires and
+  `onMoveShouldSet…` fires zero times across a full drag. Grant at
+  touch-down instead, in the bubble phase and not the capture one, so
+  the deepest view under the finger still wins its own press and only
+  the inert space between controls reaches the drag target. This is
+  what `BottomSheet` does; anything else that drags inside an overlay
+  has to do the same.
 - **Android clips overflow.** A child cannot paint outside its parent's
   bounds. Designs relying on visible overflow need a different
   structure.

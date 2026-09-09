@@ -21,6 +21,7 @@ export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
 export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
+export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
@@ -74,6 +75,11 @@ export type {
   SnackbarSx,
 } from './components/Snackbar/snackbar.types';
 export type { ModalProps, ModalSx } from './components/Modal/modal.types';
+export type {
+  BottomSheetProps,
+  BottomSheetRadius,
+  BottomSheetSx,
+} from './components/BottomSheet/bottomSheet.types';
 export type {
   Ask,
   DialogAction,

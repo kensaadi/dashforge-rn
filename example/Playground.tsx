@@ -24,6 +24,7 @@ import {
   CardSection,
   IconButtonSection,
   ModalSection,
+  BottomSheetSection,
   DialogSection,
   StackSection,
   CheckboxSection,
@@ -67,6 +68,7 @@ const SECTIONS = [
   { key: 'select', label: 'Select', render: () => <SelectSection /> },
   { key: 'surface', label: 'Surface', render: () => <SurfaceSection /> },
   { key: 'modal', label: 'Modal', render: () => <ModalSection /> },
+  { key: 'sheet', label: 'BottomSheet', render: () => <BottomSheetSection /> },
   { key: 'dialog', label: 'ask()', render: () => <DialogSection /> },
   { key: 'tokens', label: 'Token', render: () => <TokensSection /> },
 ] as const;
@@ -90,6 +92,7 @@ const GROUPS = [
       'card',
       'surface',
       'modal',
+      'sheet',
       'dialog',
     ],
   },
