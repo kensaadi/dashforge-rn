@@ -412,6 +412,17 @@ export interface SwipeActionStyle {
   fg: string;
 }
 
+/**
+ * The pull-to-refresh indicator, which is the platform's own and takes
+ * exactly two colours, one per platform.
+ */
+export interface RefreshTokens {
+  /** iOS: the spinner. Android: the arc inside the disc. */
+  tint: string;
+  /** Android only: the disc the arc turns inside. */
+  background: string;
+}
+
 export interface SwipeableRowTokens {
   /** How wide one action is. */
   actionWidth: number;
@@ -740,6 +751,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: SwipeableRowTokens;
     };
+    Refresh?: {
+      defaults?: Record<string, unknown>;
+      tokens?: RefreshTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -968,6 +983,12 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Refresh: {
+      tokens: {
+        tint: s.text.muted,
+        background: s.surface.raised,
+      } satisfies RefreshTokens,
     },
     SwipeableRow: {
       tokens: {

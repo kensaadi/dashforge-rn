@@ -41,6 +41,7 @@ export type {
   EmptyStateTokens,
   IconButtonTokens,
   ListItemTokens,
+  RefreshTokens,
   SkeletonTokens,
   SpinnerTokens,
   SwipeableRowTokens,

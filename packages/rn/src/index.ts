@@ -18,6 +18,7 @@ export { Textarea } from './components/Textarea/Textarea';
 export { NumberField } from './components/NumberField/NumberField';
 export { Surface } from './components/Surface/Surface';
 export { SurfaceViewport } from './components/Surface/SurfaceViewport';
+export { KeyboardAvoidingContainer } from './components/KeyboardAvoidingContainer/KeyboardAvoidingContainer';
 export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
@@ -139,8 +140,13 @@ export type {
   SelectOptionProps,
   SelectSx,
 } from './components/Select/select.types';
+export type {
+  KeyboardAvoidingContainerProps,
+  KeyboardAvoidingContainerSx,
+} from './components/KeyboardAvoidingContainer/keyboardAvoidingContainer.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';
+export { useRefreshControl, type RefreshOptions } from './hooks/useRefreshControl';
 export { useVisibility, type VisibleWhen } from './hooks/useVisibility';
 
 export type {

@@ -924,6 +924,16 @@ adapter present.
   nowhere else, because a row inside a scroll view that took every touch
   would swallow the taps and stop the list. The two components make
   opposite calls for the same reason, which is where the gesture is.
+- **`KeyboardAvoidingView` measures itself in JavaScript, and inside a
+  `Modal` it measures against the wrong window.** A form in a
+  `BottomSheet` stayed exactly where it was, under the keyboard, with the
+  avoiding view doing nothing at all. On iOS a scroll view's
+  `automaticallyAdjustKeyboardInsets` asks UIKit for the inset instead,
+  which needs no measurement and additionally scrolls the caret into
+  view, which the avoiding view never did. `KeyboardAvoidingContainer`
+  uses both: the avoiding view for the case with no scrolling, and the
+  native inset for the case with one. Found on a device, with the
+  software keyboard turned on, which is the only way to find it.
 - **Android clips overflow.** A child cannot paint outside its parent's
   bounds. Designs relying on visible overflow need a different
   structure.
@@ -1007,6 +1017,13 @@ SegmentedControl.
 **Structure** — List and ListItem (the fundamental mobile layout unit,
 in place of a table), SwipeableRow, Accordion, Tabs, EmptyState,
 PullToRefresh, KeyboardAvoidingContainer.
+
+Pull-to-refresh ships as a **hook**, `useRefreshControl`, and not as a
+component. React Native makes the refresh control a *prop* of a scroll
+view, so a wrapper could never reach the list it was wrapping, and a
+component owning a scroll view of its own would have been a third scroll
+container here and would have left `FlatList`, the shape a long list is
+required to use, with nothing.
 
 **Overlay** — BottomSheet (the primary mobile overlay pattern), Modal,
 ActionSheet, Snackbar, ConfirmDialog, Popover.
