@@ -406,6 +406,36 @@ export interface SelectTokens {
   };
 }
 
+export interface SpinnerTokens {
+  size: SizeScale;
+  /** How heavy the ring is, one per step. */
+  thickness: SizeScale;
+  /** How long one turn takes, in milliseconds. */
+  duration: number;
+  /** The arc, one per role. There is no track: see `Spinner`. */
+  color: Record<ActionColor, string>;
+}
+
+export interface SkeletonTokens {
+  /** The block itself. Never `fill.subtle`, which equals a raised surface in dark. */
+  color: string;
+  radius: RadiusScale;
+  /** The two ends of the pulse. */
+  opacity: { from: number; to: number };
+  /** How long one breath takes, in milliseconds. */
+  duration: number;
+  /** A stand-in for a line of body text. */
+  line: {
+    height: number;
+    gap: number;
+    /**
+     * How wide the last line is. A paragraph does not end at the right
+     * margin, and a block of identical bars does not read as text.
+     */
+    lastWidth: `${number}%`;
+  };
+}
+
 /** How much air a `Divider` keeps around itself. */
 export interface DividerSpacing {
   none: number;
@@ -638,6 +668,14 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: DividerTokens;
     };
+    Spinner?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SpinnerTokens;
+    };
+    Skeleton?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SkeletonTokens;
+    };
     Avatar?: {
       defaults?: Record<string, unknown>;
       tokens?: AvatarTokens;
@@ -862,6 +900,32 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Spinner: {
+      tokens: {
+        // Small enough to sit in a button's label line, then a step for a
+        // card and one for a page.
+        size: { sm: 16, md: 24, lg: 40 },
+        thickness: { sm: 2, md: 2, lg: 3 },
+        duration: 900,
+        color: {
+          primary: s.action.primary.bg,
+          secondary: s.text.secondary,
+          danger: s.action.danger.bg,
+          success: s.action.success.bg,
+          warning: s.action.warning.bg,
+        },
+      } satisfies SpinnerTokens,
+    },
+    Skeleton: {
+      tokens: {
+        color: s.fill.default,
+        radius: radiusSteps(s),
+        opacity: { from: 1, to: 0.4 },
+        // Slow. A skeleton that flashes reads as something going wrong.
+        duration: 1000,
+        line: { height: 12, gap: s.space.inline, lastWidth: '60%' },
+      } satisfies SkeletonTokens,
     },
     Divider: {
       tokens: {

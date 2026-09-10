@@ -1,10 +1,11 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
 import {
   useComponentDefaults,
   useComponentTokens,
 } from '../../theme/useComponentTokens';
+import { Spinner } from '../Spinner/Spinner';
 import { buttonRecipe } from './button.variants';
 import type { ButtonProps, DashPressState } from './button.types';
 
@@ -104,7 +105,10 @@ export function Button(props: ButtonProps) {
             {loading ? (
               // Takes the leading icon's place rather than adding to it,
               // so the button does not change width mid-interaction.
-              <ActivityIndicator size="small" color={iconColor} />
+              // The library's own ring and not `ActivityIndicator`: two
+              // spinners in one application is one too many, and the
+              // platform one cannot take a size off the token scale.
+              <Spinner size="sm" tint={iconColor} />
             ) : StartIcon ? (
               <StartIcon size={iconSize} color={iconColor} />
             ) : null}

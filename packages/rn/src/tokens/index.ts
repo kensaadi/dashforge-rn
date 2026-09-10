@@ -40,6 +40,8 @@ export type {
   DividerTokens,
   IconButtonTokens,
   ListItemTokens,
+  SkeletonTokens,
+  SpinnerTokens,
   TextFieldTokens,
 } from './components';
 
