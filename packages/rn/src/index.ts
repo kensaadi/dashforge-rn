@@ -146,6 +146,7 @@ export type {
 } from './components/KeyboardAvoidingContainer/keyboardAvoidingContainer.types';
 export type { DashforgeProps } from './components/_shared/dashforge.types';
 export { useAccessState } from './hooks/useAccessState';
+export { useKeyboardHeight } from './hooks/useKeyboardHeight';
 export { useRefreshControl, type RefreshOptions } from './hooks/useRefreshControl';
 export { useVisibility, type VisibleWhen } from './hooks/useVisibility';
 

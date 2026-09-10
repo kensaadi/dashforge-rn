@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingContainer,
   ListItem,
   NumberField,
-  Skeleton,
   Stack,
   TextField,
   Textarea,
@@ -121,8 +120,6 @@ export function KeyboardSection() {
               <Typography variant="title">Nuova nota</Typography>
               <TextField name="titolo" label="Titolo" fullWidth />
               <NumberField name="pezzi" label="Pezzi" min={1} integer steppers />
-              <Skeleton height={80} />
-              <Skeleton height={80} />
               <Textarea
                 name="corpo"
                 label="Corpo"

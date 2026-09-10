@@ -4,6 +4,7 @@ import {
   Easing,
   Modal as RNModal,
   PanResponder,
+  Platform,
   Pressable,
   StyleSheet,
   useWindowDimensions,
@@ -11,6 +12,7 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
+import { useKeyboardHeight } from '../../hooks/useKeyboardHeight';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
@@ -150,6 +152,17 @@ export function BottomSheet(props: BottomSheetProps) {
   const isVisible = useVisibility(visibleWhen);
   const accessState = useAccessState(access);
   const reduceMotion = useReduceMotion();
+
+  /**
+   * How far the sheet has to get out of the keyboard's way.
+   *
+   * iOS only. On Android the window under a modal is resized by
+   * `adjustResize` and the sheet, which is anchored to the bottom of
+   * that window, has already moved: lifting it again would lift it
+   * twice.
+   */
+  const keyboard = useKeyboardHeight();
+  const lift = Platform.OS === 'ios' ? keyboard : 0;
 
   const hidden = !isVisible || !accessState.visible;
   const wanted = open && !hidden;
@@ -422,7 +435,16 @@ export function BottomSheet(props: BottomSheetProps) {
       onRequestClose={dismiss}
       statusBarTranslucent
     >
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      {/*
+        The sheet sits on the keyboard rather than under it.
+        
+        Scrolling the content inside was not enough and is not what the
+        platform does: iOS brings the caret into view and no more, so a
+        four-line field showed one line and going to a new line pushed
+        the text back out of sight. A sheet with a field in it has to
+        move, which is what every native compose sheet does.
+      */}
+      <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: lift }}>
         <Animated.View
           style={[
             StyleSheet.absoluteFill,
@@ -463,12 +485,20 @@ export function BottomSheet(props: BottomSheetProps) {
               ...(snapPoints
                 ? { height: expanded }
                 : { maxHeight: screenHeight * tokens.maxHeightRatio }),
+              // The cap is applied again over the top of a detent's
+              // height: a sheet at nine tenths of the screen with the
+              // keyboard up does not fit, and the half that would not
+              // fit is its heading.
+              maxHeight: screenHeight * tokens.maxHeightRatio - lift,
               backgroundColor: tokens.bg,
               // Only the top corners: the bottom is the screen's edge.
               borderTopLeftRadius: corner,
               borderTopRightRadius: corner,
               paddingHorizontal: tokens.padding,
-              paddingBottom: tokens.padding + bottomInset,
+              // The safe-area inset is for the home indicator, and while
+              // the keyboard is up the keyboard is over it. Keeping both
+              // would leave a band of empty sheet on top of the keys.
+              paddingBottom: tokens.padding + (lift > 0 ? 0 : bottomInset),
               gap: tokens.gap,
               ...tokens.elevation,
               transform: [{ translateY: travel }],

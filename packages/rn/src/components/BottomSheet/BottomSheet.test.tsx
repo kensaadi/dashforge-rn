@@ -1,5 +1,5 @@
-import { Modal as RNModal, StyleSheet, Text, View } from 'react-native';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { Keyboard, Modal as RNModal, StyleSheet, Text, View } from 'react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { setMode } from '../../theme/store';
 import { defaultComponentTokens } from '../../tokens/components';
 import { semanticLight } from '../../tokens/semantic';
@@ -343,7 +343,10 @@ describe('resizing', () => {
       </BottomSheet>,
     );
     expect(sheet().height).toBe(SCREEN * 0.9);
-    expect(sheet().maxHeight).toBeUndefined();
+    // The cap is there too, and with the keyboard away it is simply the
+    // token's own ratio: a detent taller than the cap would put its
+    // heading off the top of the screen.
+    expect(sheet().maxHeight).toBe(SCREEN * TOKENS.maxHeightRatio);
   });
 
   it('stays content-sized when nobody asked for detents', () => {
@@ -427,6 +430,98 @@ describe('resizing', () => {
       </BottomSheet>,
     );
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('outside snapPoints'));
+  });
+});
+
+describe('the keyboard', () => {
+  const sheet = () =>
+    screen
+      .UNSAFE_getAllByType(View)
+      .map((v) => flat(v.props.style))
+      .find((st) => st.backgroundColor === TOKENS.bg && st.maxHeight !== undefined)!;
+
+  /** The container that holds the sheet against the bottom edge. */
+  const floor = () =>
+    screen
+      .UNSAFE_getAllByType(View)
+      .map((v) => flat(v.props.style))
+      .find((st) => st.justifyContent === 'flex-end' && st.flex === 1)!;
+
+  // The preset's `Keyboard` has no way to emit, so the listeners are
+  // caught as they are registered and called by hand. `willShow` and not
+  // `didShow`: iOS announces the keyboard before it animates, which is
+  // what lets the sheet travel with it instead of jumping after it.
+  const listeners = new Map<string, (event: unknown) => void>();
+  let addListener: jest.SpyInstance;
+
+  beforeEach(() => {
+    listeners.clear();
+    addListener = jest
+      .spyOn(Keyboard, 'addListener')
+      .mockImplementation(((event: string, handler: (e: unknown) => void) => {
+        listeners.set(event, handler);
+        return { remove: () => listeners.delete(event) };
+      }) as never);
+  });
+
+  afterEach(() => addListener.mockRestore());
+
+  const raise = (height: number) =>
+    act(() => {
+      listeners.get('keyboardWillShow')?.({ endCoordinates: { height } });
+    });
+
+  const lower = () =>
+    act(() => {
+      listeners.get('keyboardWillHide')?.({});
+    });
+
+  it('sits on the keyboard rather than under it', () => {
+    // Scrolling the content was not enough and is not what the platform
+    // does: iOS brings the caret into view and no more, so a four-line
+    // field showed one line and going to a new line pushed the text back
+    // out of sight.
+    render(
+      <BottomSheet open>
+        <Text>dentro</Text>
+      </BottomSheet>,
+    );
+    expect(floor().paddingBottom).toBe(0);
+    raise(336);
+    expect(floor().paddingBottom).toBe(336);
+  });
+
+  it('gives back the height it borrowed', () => {
+    render(
+      <BottomSheet open>
+        <Text>dentro</Text>
+      </BottomSheet>,
+    );
+    raise(336);
+    lower();
+    expect(floor().paddingBottom).toBe(0);
+  });
+
+  it('shrinks its cap by as much, or its heading goes off the top', () => {
+    render(
+      <BottomSheet open snapPoints={[0.9]}>
+        <Text>dentro</Text>
+      </BottomSheet>,
+    );
+    raise(336);
+    expect(sheet().maxHeight).toBe(1334 * TOKENS.maxHeightRatio - 336);
+  });
+
+  it('drops the safe-area inset, which the keyboard is standing on', () => {
+    // Keeping both would leave a band of empty sheet on top of the keys.
+    render(
+      <BottomSheet open bottomInset={34}>
+        <Text>dentro</Text>
+      </BottomSheet>,
+    );
+    expect(sheet().paddingBottom).toBe(TOKENS.padding + 34);
+    raise(336);
+    expect(sheet().paddingBottom).toBe(TOKENS.padding);
   });
 });
 
