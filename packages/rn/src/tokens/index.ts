@@ -38,6 +38,7 @@ export type {
   BadgeTokens,
   ButtonTokens,
   DividerTokens,
+  EmptyStateTokens,
   IconButtonTokens,
   ListItemTokens,
   SkeletonTokens,

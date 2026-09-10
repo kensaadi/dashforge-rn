@@ -406,6 +406,28 @@ export interface SelectTokens {
   };
 }
 
+export interface EmptyStateTokens {
+  /** Between the mark, the words and the action. */
+  gap: number;
+  padding: number;
+  iconSize: number;
+  /**
+   * How wide the words are allowed to get.
+   *
+   * A line of text that runs the width of a tablet is a line nobody
+   * finishes, and an empty state is the one screen where the words are
+   * the whole content.
+   */
+  maxWidth: number;
+  typography: { title: TypeStyle; description: TypeStyle };
+  color: {
+    title: string;
+    description: string;
+    /** The tone lives here and nowhere else: see `EmptyState`. */
+    icon: Record<'neutral' | CardTone, string>;
+  };
+}
+
 export interface SpinnerTokens {
   size: SizeScale;
   /** How heavy the ring is, one per step. */
@@ -672,6 +694,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: SpinnerTokens;
     };
+    EmptyState?: {
+      defaults?: Record<string, unknown>;
+      tokens?: EmptyStateTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -900,6 +926,26 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    EmptyState: {
+      tokens: {
+        gap: s.space.stack,
+        padding: s.space.section,
+        iconSize: 40,
+        maxWidth: 320,
+        typography: { title: s.typography.title, description: s.typography.body },
+        color: {
+          title: s.text.primary,
+          description: s.text.secondary,
+          icon: {
+            neutral: s.text.muted,
+            success: s.feedback.success.fg,
+            warning: s.feedback.warning.fg,
+            danger: s.feedback.danger.fg,
+            info: s.feedback.info.fg,
+          },
+        },
+      } satisfies EmptyStateTokens,
     },
     Spinner: {
       tokens: {

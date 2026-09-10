@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Divider,
+  EmptyState,
   List,
   ListItem,
   Skeleton,
@@ -12,6 +13,7 @@ import {
   Typography,
 } from '@dashforge/rn';
 import { Card, Caption, Row } from '../ui';
+import { Plus, Search, Close } from '../icons';
 
 const PEOPLE = [
   { name: 'Kenjy Saadi', role: 'Amministratore', unread: 3 },
@@ -31,8 +33,19 @@ function RowSkeleton() {
   );
 }
 
+type State = 'loading' | 'data' | 'empty' | 'noresults' | 'error';
+
+const STATES: { key: State; label: string }[] = [
+  { key: 'loading', label: 'Carica' },
+  { key: 'data', label: 'Dati' },
+  { key: 'empty', label: 'Vuoto' },
+  { key: 'noresults', label: 'Nessun risultato' },
+  { key: 'error', label: 'Errore' },
+];
+
 export function LoadingSection() {
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<State>('loading');
+  const loading = state === 'loading';
 
   return (
     <>
@@ -101,21 +114,62 @@ export function LoadingSection() {
 
       <Card>
         <Card.Header
-          title="La stessa lista, nei due stati"
+          title="La stessa lista, in tutti i suoi stati"
           subtitle="È il motivo per cui sono nati adesso"
         />
-        <Button
-          size="sm"
-          variant="outline"
-          color="secondary"
-          onPress={() => setLoading(v => !v)}
-        >
-          {loading ? 'Mostra i dati' : 'Torna a caricare'}
-        </Button>
+        <Row gap="inline">
+          {STATES.map(s => (
+            <Button
+              key={s.key}
+              size="sm"
+              variant={s.key === state ? 'solid' : 'outline'}
+              color="secondary"
+              onPress={() => setState(s.key)}
+            >
+              {s.label}
+            </Button>
+          ))}
+        </Row>
+        <Caption>
+          Vuoto, nessun risultato ed errore sono la stessa forma con un tono e
+          un'azione diversi. Il tono sta nel segno e non nelle parole: una
+          richiesta fallita non è un allarme, e una pagina di testo rosso lo
+          sembra.
+        </Caption>
       </Card>
 
       <Card padding="none">
-        {loading ? (
+        {state === 'empty' ? (
+          <EmptyState
+            icon={Plus}
+            title="Nessun contatto"
+            description="Quando aggiungerai il primo lo vedrai qui."
+            action={<Button size="sm">Aggiungi un contatto</Button>}
+          />
+        ) : state === 'noresults' ? (
+          <EmptyState
+            icon={Search}
+            title="Nessun risultato"
+            description="Nessun contatto per questi filtri."
+            action={
+              <Button size="sm" variant="outline" color="secondary">
+                Azzera i filtri
+              </Button>
+            }
+          />
+        ) : state === 'error' ? (
+          <EmptyState
+            icon={Close}
+            tone="danger"
+            title="Non sono riuscito a caricare"
+            description="Controlla la connessione e riprova."
+            action={
+              <Button size="sm" variant="outline" color="secondary">
+                Riprova
+              </Button>
+            }
+          />
+        ) : loading ? (
           <Stack sx={{ paddingHorizontal: 16 }}>
             <RowSkeleton />
             <RowSkeleton />
