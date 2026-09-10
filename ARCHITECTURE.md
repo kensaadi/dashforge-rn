@@ -919,7 +919,11 @@ adapter present.
   the deepest view under the finger still wins its own press and only
   the inert space between controls reaches the drag target. This is
   what `BottomSheet` does; anything else that drags inside an overlay
-  has to do the same.
+  has to do the same. **Outside a modal the move phase does run**, which
+  is measured too: `SwipeableRow` claims on the first sideways move and
+  nowhere else, because a row inside a scroll view that took every touch
+  would swallow the taps and stop the list. The two components make
+  opposite calls for the same reason, which is where the gesture is.
 - **Android clips overflow.** A child cannot paint outside its parent's
   bounds. Designs relying on visible overflow need a different
   structure.

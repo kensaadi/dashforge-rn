@@ -13,6 +13,8 @@ export { CardSection } from './CardSection';
 export { ListItemSection } from './ListItemSection';
 export { FoundationSection } from './FoundationSection';
 export { LoadingSection } from './LoadingSection';
+export { FieldsSection } from './FieldsSection';
+export { SwipeSection } from './SwipeSection';
 export { CheckboxSection } from './CheckboxSection';
 export { SwitchSection } from './SwitchSection';
 export { RadioGroupSection } from './RadioGroupSection';

@@ -43,6 +43,7 @@ export type {
   ListItemTokens,
   SkeletonTokens,
   SpinnerTokens,
+  SwipeableRowTokens,
   TextFieldTokens,
 } from './components';
 

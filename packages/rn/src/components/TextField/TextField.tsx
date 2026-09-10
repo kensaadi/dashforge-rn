@@ -1,8 +1,6 @@
-import { useContext, useEffect, useId, useRef, useState } from 'react';
+import { useId, useState } from 'react';
 import { Platform, Text, TextInput, View } from 'react-native';
-import { DashFormContext } from '@dashforge/ui-core';
-import type { DashFormBridge, FieldRegistration } from '@dashforge/ui-core';
-import { useDashFieldMeta } from '@dashforge/forms';
+import type { FieldRegistration } from '@dashforge/ui-core';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useStandaloneFieldWarning } from '../../hooks/useStandaloneFieldWarning';
 import { useVisibility } from '../../hooks/useVisibility';
@@ -11,6 +9,7 @@ import {
   useComponentTokens,
 } from '../../theme/useComponentTokens';
 import { resolveValidationState } from '../_shared/resolveValidationState';
+import { useFormField } from '../_shared/useFormField';
 import { textFieldRecipe } from './textField.variants';
 import type { TextFieldProps } from './textField.types';
 
@@ -80,13 +79,8 @@ export function TextField(props: TextFieldProps) {
     ...rest
   } = { ...themeDefaults, ...props } as TextFieldProps;
 
-  const bridge = useContext(DashFormContext) as DashFormBridge | null;
-  const isFormMode = Boolean(name && bridge?.register);
-
-  // Every hook runs unconditionally and above the early returns. The
-  // field-meta subscription is a no-op without a bridge, so the
-  // standalone case costs nothing rather than needing a branch.
-  const fieldMeta = useDashFieldMeta(name ?? '');
+  // Every hook runs unconditionally and above the early returns.
+  const { bridge, isFormMode, fieldMeta, register, commit } = useFormField(name, rules);
   const isVisible = useVisibility(visibleWhen);
   const accessState = useAccessState(access);
   const [focused, setFocused] = useState(false);
@@ -98,28 +92,6 @@ export function TextField(props: TextFieldProps) {
     controlledValue,
     onChangeText,
   );
-
-  // StrictMode-safe unregister. The double invoke in development mounts,
-  // unmounts and mounts again, so an eager unregister on the first
-  // teardown would drop a field that is about to be alive. Deferring to
-  // a microtask lets the remount win.
-  const unregisterRef = useRef({ bridge, name });
-  unregisterRef.current = { bridge, name };
-  const mountedRef = useRef(false);
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      const { bridge: b, name: n } = unregisterRef.current;
-      if (!n) return;
-      // `Promise.resolve().then` rather than `queueMicrotask`: same
-      // timing, and it needs no ambient global that the DOM-free lib
-      // config does not have.
-      void Promise.resolve().then(() => {
-        if (!mountedRef.current) b?.unregister?.(n);
-      });
-    };
-  }, []);
 
   if (!isVisible || !accessState.visible) return null;
 
@@ -135,7 +107,7 @@ export function TextField(props: TextFieldProps) {
   let text = controlledValue;
 
   if (isFormMode && bridge && name) {
-    registration = bridge.register(name, rules);
+    registration = register();
     const validation = resolveValidationState(name, bridge, error, helperText);
     invalid = validation.invalid;
     helper = validation.helperText;
@@ -159,10 +131,7 @@ export function TextField(props: TextFieldProps) {
   });
 
   const handleChangeText = (next: string) => {
-    if (isFormMode && bridge && name) {
-      bridge.setValue?.(name, next);
-      void registration?.onChange?.({ target: { name, value: next } });
-    }
+    commit(registration, next);
     onChangeText?.(next);
   };
 

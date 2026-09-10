@@ -406,6 +406,44 @@ export interface SelectTokens {
   };
 }
 
+/** One action's colours, in the two treatments a swipe uses. */
+export interface SwipeActionStyle {
+  bg: string;
+  fg: string;
+}
+
+export interface SwipeableRowTokens {
+  /** How wide one action is. */
+  actionWidth: number;
+  /** Between an action's icon and its word. */
+  actionGap: number;
+  /**
+   * How far across the revealed width a release has to be before the
+   * row stays open.
+   */
+  openRatio: number;
+  /** Sideways speed, in points per millisecond, that opens whatever the distance. */
+  openVelocity: number;
+  /**
+   * Enough sideways movement to be a swipe rather than a scroll that
+   * wandered. Below this the gesture is left to whatever is scrolling.
+   */
+  slop: number;
+  typography: { label: TypeStyle };
+  /**
+   * The ground the row travels on.
+   *
+   * A `ListItem` deliberately has none, so that it is right on a card, a
+   * sheet and the page alike. A row that slides over its own actions
+   * cannot afford that: transparent, it shows them through itself while
+   * closed. So the swipe layer paints one, and `surface.raised` is the
+   * guess that is right for a list inside a card, which is where a list
+   * usually is. `sx.content` is the escape for the other grounds.
+   */
+  contentBg: string;
+  color: Record<ActionColor, SwipeActionStyle>;
+}
+
 export interface EmptyStateTokens {
   /** Between the mark, the words and the action. */
   gap: number;
@@ -698,6 +736,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: EmptyStateTokens;
     };
+    SwipeableRow?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SwipeableRowTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -926,6 +968,27 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    SwipeableRow: {
+      tokens: {
+        actionWidth: 80,
+        actionGap: 4,
+        openRatio: 0.4,
+        openVelocity: 0.4,
+        // Ten and not four: a finger travelling down a list wanders
+        // sideways, and a row that opened at four points would open
+        // while somebody was scrolling past it.
+        slop: 10,
+        typography: { label: s.typography.caption },
+        contentBg: s.surface.raised,
+        color: {
+          primary: { bg: s.action.primary.bg, fg: s.action.primary.fg },
+          secondary: { bg: s.fill.strong, fg: s.text.primary },
+          danger: { bg: s.action.danger.bg, fg: s.action.danger.fg },
+          success: { bg: s.action.success.bg, fg: s.action.success.fg },
+          warning: { bg: s.action.warning.bg, fg: s.action.warning.fg },
+        },
+      } satisfies SwipeableRowTokens,
     },
     EmptyState: {
       tokens: {

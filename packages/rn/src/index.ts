@@ -14,6 +14,8 @@
 export { Button } from './components/Button/Button';
 export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
+export { Textarea } from './components/Textarea/Textarea';
+export { NumberField } from './components/NumberField/NumberField';
 export { Surface } from './components/Surface/Surface';
 export { SurfaceViewport } from './components/Surface/SurfaceViewport';
 export { IconButton } from './components/IconButton/IconButton';
@@ -23,6 +25,7 @@ export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { List, ListItem } from './components/ListItem/ListItem';
+export { SwipeableRow } from './components/SwipeableRow/SwipeableRow';
 export { Divider } from './components/Divider/Divider';
 export { Avatar } from './components/Avatar/Avatar';
 export { Badge } from './components/Badge/Badge';
@@ -44,6 +47,11 @@ export type {
   TextFieldProps,
   TextFieldSx,
 } from './components/TextField/textField.types';
+export type { TextareaProps, TextareaSx } from './components/Textarea/textarea.types';
+export type {
+  NumberFieldProps,
+  NumberFieldSx,
+} from './components/NumberField/numberField.types';
 export type {
   CardProps,
   CardCoverProps,
@@ -101,6 +109,11 @@ export type {
   SkeletonTextProps,
   SkeletonTextSx,
 } from './components/Skeleton/skeleton.types';
+export type {
+  SwipeAction,
+  SwipeableRowProps,
+  SwipeableRowSx,
+} from './components/SwipeableRow/swipeableRow.types';
 export type {
   ListDivider,
   ListItemProps,
