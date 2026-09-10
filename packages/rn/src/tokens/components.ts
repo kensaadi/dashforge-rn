@@ -406,6 +406,79 @@ export interface SelectTokens {
   };
 }
 
+/** How much air a `Divider` keeps around itself. */
+export interface DividerSpacing {
+  none: number;
+  sm: number;
+  md: number;
+  lg: number;
+}
+
+export interface DividerTokens {
+  thickness: number;
+  /**
+   * The translucent separator and not a border colour: a divider is
+   * dropped onto whatever ground the screen already has, and a solid
+   * hairline picked for one of them is wrong on the others.
+   */
+  color: string;
+  spacing: DividerSpacing;
+  /** Between the label in the break and the lines either side of it. */
+  labelGap: number;
+  typography: { label: TypeStyle };
+  labelColor: string;
+}
+
+/**
+ * Five steps and not the usual three.
+ *
+ * A control's scale has three because a control has three roles. An
+ * avatar is a picture of a person: it appears as a thumbnail in a row,
+ * as a face in a header and as a portrait on a profile, and those are
+ * further apart than any three numbers can cover.
+ */
+export interface AvatarSizeScale {
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+}
+
+export interface AvatarTokens {
+  size: AvatarSizeScale;
+  /** The initials, one per step: a bigger circle needs bigger letters. */
+  fontSize: AvatarSizeScale;
+  /** The fallback glyph, when there is neither a picture nor a name. */
+  iconSize: AvatarSizeScale;
+  radius: RadiusScale;
+  fontWeight: TypeStyle['fontWeight'];
+  color: {
+    /** The ground the initials sit on while there is no picture. */
+    bg: string;
+    fg: string;
+  };
+}
+
+/** One badge colour, in both treatments. */
+export interface BadgeToneStyle {
+  solidBg: string;
+  solidFg: string;
+  softBg: string;
+  softFg: string;
+}
+
+export interface BadgeTokens {
+  height: number;
+  /** So a single digit is a disc rather than a sliver. */
+  minWidth: number;
+  paddingHorizontal: number;
+  radius: number;
+  dotSize: number;
+  typography: { label: TypeStyle };
+  tone: Record<ActionColor, BadgeToneStyle>;
+}
+
 /**
  * The row that is a mobile application's table.
  *
@@ -560,6 +633,18 @@ declare module './types' {
     ListItem?: {
       defaults?: Record<string, unknown>;
       tokens?: ListItemTokens;
+    };
+    Divider?: {
+      defaults?: Record<string, unknown>;
+      tokens?: DividerTokens;
+    };
+    Avatar?: {
+      defaults?: Record<string, unknown>;
+      tokens?: AvatarTokens;
+    };
+    Badge?: {
+      defaults?: Record<string, unknown>;
+      tokens?: BadgeTokens;
     };
   }
 }
@@ -777,6 +862,84 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Divider: {
+      tokens: {
+        thickness: s.borderWidth.hairline,
+        color: s.separator.default,
+        spacing: {
+          none: 0,
+          sm: s.space.inline,
+          md: s.space.stack,
+          lg: s.space.section,
+        },
+        labelGap: s.space.stack,
+        typography: { label: s.typography.caption },
+        labelColor: s.text.muted,
+      } satisfies DividerTokens,
+    },
+    Avatar: {
+      tokens: {
+        // Thumbnail, row, header, profile, portrait. The gaps widen
+        // because the eye reads size logarithmically: two steps of four
+        // points apart look like the same avatar twice.
+        size: { xs: 24, sm: 32, md: 40, lg: 56, xl: 96 },
+        fontSize: { xs: 10, sm: 13, md: 16, lg: 22, xl: 36 },
+        iconSize: { xs: 14, sm: 18, md: 22, lg: 30, xl: 52 },
+        radius: radiusSteps(s),
+        fontWeight: '700',
+        color: {
+          // Not `fill.subtle`: in dark that is the same value as a
+          // raised surface, and an avatar on a card would disappear.
+          bg: s.fill.default,
+          fg: s.text.secondary,
+        },
+      } satisfies AvatarTokens,
+    },
+    Badge: {
+      tokens: {
+        height: 18,
+        minWidth: 18,
+        paddingHorizontal: 6,
+        radius: s.radius.full,
+        dotSize: 8,
+        typography: { label: s.typography.caption },
+        tone: {
+          primary: {
+            solidBg: s.action.primary.bg,
+            solidFg: s.action.primary.fg,
+            softBg: s.action.primary.bgSubtlePressed,
+            softFg: s.action.primary.fgSubtle,
+          },
+          // The neutral one. `fill.default` and not `subtle`, for the
+          // same reason the avatar uses it: subtle equals a raised
+          // surface in dark.
+          secondary: {
+            solidBg: s.action.secondary.bg,
+            solidFg: s.action.secondary.fg,
+            softBg: s.fill.default,
+            softFg: s.text.secondary,
+          },
+          danger: {
+            solidBg: s.action.danger.bg,
+            solidFg: s.action.danger.fg,
+            softBg: s.feedback.danger.bg,
+            softFg: s.feedback.danger.fg,
+          },
+          success: {
+            solidBg: s.action.success.bg,
+            solidFg: s.action.success.fg,
+            softBg: s.feedback.success.bg,
+            softFg: s.feedback.success.fg,
+          },
+          warning: {
+            solidBg: s.action.warning.bg,
+            solidFg: s.action.warning.fg,
+            softBg: s.feedback.warning.bg,
+            softFg: s.feedback.warning.fg,
+          },
+        },
+      } satisfies BadgeTokens,
     },
     ListItem: {
       tokens: {

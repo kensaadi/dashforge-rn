@@ -23,6 +23,9 @@ export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { List, ListItem } from './components/ListItem/ListItem';
+export { Divider } from './components/Divider/Divider';
+export { Avatar } from './components/Avatar/Avatar';
+export { Badge } from './components/Badge/Badge';
 export { createDialogs } from './components/Modal/createDialogs';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
@@ -81,6 +84,9 @@ export type {
   BottomSheetRadius,
   BottomSheetSx,
 } from './components/BottomSheet/bottomSheet.types';
+export type { DividerProps, DividerSx } from './components/Divider/divider.types';
+export type { AvatarProps, AvatarSize, AvatarSx } from './components/Avatar/avatar.types';
+export type { BadgeProps, BadgeSx } from './components/Badge/badge.types';
 export type {
   ListDivider,
   ListItemProps,
