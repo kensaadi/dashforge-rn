@@ -37,7 +37,17 @@ export const badgeRecipe: (
         root: {
           alignItems: 'center',
           justifyContent: 'center',
-          alignSelf: 'flex-start',
+          // `center` and not `flex-start`.
+          //
+          // It has to state something, or a badge dropped into a column
+          // stretches to the full width under React Native's default
+          // `alignItems: 'stretch'`. `flex-start` stopped that and
+          // introduced a worse one: a child's `alignSelf` beats its
+          // parent's `alignItems`, so in a **row** it pinned the badge
+          // to the top and it floated above the words beside it. That is
+          // every trailing slot and every tab, which is where a badge
+          // actually lives. Found by looking at a tab strip.
+          alignSelf: 'center',
           borderRadius: t.radius,
         } as ViewStyle,
         label: {

@@ -28,6 +28,7 @@ import {
   FieldsSection,
   SwipeSection,
   KeyboardSection,
+  TabsSection,
   IconButtonSection,
   ModalSection,
   BottomSheetSection,
@@ -83,6 +84,7 @@ const SECTIONS = [
     label: 'Textarea / NumberField',
     render: () => <FieldsSection />,
   },
+  { key: 'tabs', label: 'Tabs', render: () => <TabsSection /> },
   { key: 'swipe', label: 'SwipeableRow', render: () => <SwipeSection /> },
   {
     key: 'keyboard',
@@ -120,6 +122,7 @@ const GROUPS = [
       'typography',
       'card',
       'list',
+      'tabs',
       'swipe',
       'keyboard',
       'foundation',

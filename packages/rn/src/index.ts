@@ -26,6 +26,7 @@ export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { List, ListItem } from './components/ListItem/ListItem';
+export { Tabs } from './components/Tabs/Tabs';
 export { SwipeableRow } from './components/SwipeableRow/SwipeableRow';
 export { Divider } from './components/Divider/Divider';
 export { Avatar } from './components/Avatar/Avatar';
@@ -110,6 +111,16 @@ export type {
   SkeletonTextProps,
   SkeletonTextSx,
 } from './components/Skeleton/skeleton.types';
+export type {
+  TabPanelProps,
+  TabProps,
+  TabSx,
+  TabValue,
+  TabsListProps,
+  TabsListSx,
+  TabsProps,
+  TabsSx,
+} from './components/Tabs/tabs.types';
 export type {
   SwipeAction,
   SwipeableRowProps,

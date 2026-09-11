@@ -416,6 +416,37 @@ export interface SwipeActionStyle {
  * The pull-to-refresh indicator, which is the platform's own and takes
  * exactly two colours, one per platform.
  */
+export interface TabsTokens {
+  /** The floor a tab cannot go under, so it stays a touch target. */
+  minHeight: number;
+  /** Between the strip and the panel under it. */
+  gap: number;
+  paddingHorizontal: number;
+  /** Between a tab's icon, its word and its count. */
+  tabGap: number;
+  /** The mark under the selected tab. */
+  indicator: { thickness: number; radius: number };
+  /**
+   * The hairline the whole strip stands on.
+   *
+   * Separate from the indicator: one says where the strip ends and the
+   * other says which tab you are in, and a design that used one line for
+   * both has a strip that appears to be missing a piece.
+   */
+  rail: { thickness: number; color: string };
+  /** How long the mark takes to travel between two tabs. */
+  duration: number;
+  typography: { label: TypeStyle };
+  color: {
+    label: string;
+    labelSelected: string;
+    labelDisabled: string;
+    indicator: string;
+    /** The ground a tab paints while it is held. */
+    bgPressed: string;
+  };
+}
+
 export interface RefreshTokens {
   /** iOS: the spinner. Android: the arc inside the disc. */
   tint: string;
@@ -755,6 +786,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: RefreshTokens;
     };
+    Tabs?: {
+      defaults?: Record<string, unknown>;
+      tokens?: TabsTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -983,6 +1018,25 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Tabs: {
+      tokens: {
+        minHeight: TOUCH_TARGET,
+        gap: s.space.stack,
+        paddingHorizontal: s.space.stack,
+        tabGap: s.space.inline,
+        indicator: { thickness: 2, radius: s.radius.full },
+        rail: { thickness: s.borderWidth.hairline, color: s.separator.default },
+        duration: s.motion.standard,
+        typography: { label: s.typography.label },
+        color: {
+          label: s.text.secondary,
+          labelSelected: s.action.primary.fgSubtle,
+          labelDisabled: s.text.disabled,
+          indicator: s.action.primary.fgSubtle,
+          bgPressed: s.fill.subtle,
+        },
+      } satisfies TabsTokens,
     },
     Refresh: {
       tokens: {

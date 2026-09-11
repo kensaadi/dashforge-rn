@@ -94,9 +94,12 @@ describe('the shape', () => {
     expect(rootStyle().borderRadius).toBe(TOKENS.radius);
   });
 
-  it('does not stretch to whatever it was put in', () => {
+  it('does not stretch to whatever it was put in, and does not float in a row', () => {
+    // `center` and not `flex-start`: the second stops the stretch in a
+    // column and pins the badge to the top of a row, which is every
+    // trailing slot and every tab.
     render(<Badge testID="badge" count={3} />);
-    expect(rootStyle().alignSelf).toBe('flex-start');
+    expect(rootStyle().alignSelf).toBe('center');
   });
 });
 

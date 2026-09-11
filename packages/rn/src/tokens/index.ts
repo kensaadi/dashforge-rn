@@ -45,6 +45,7 @@ export type {
   SkeletonTokens,
   SpinnerTokens,
   SwipeableRowTokens,
+  TabsTokens,
   TextFieldTokens,
 } from './components';
 
