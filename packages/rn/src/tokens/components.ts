@@ -416,6 +416,41 @@ export interface SwipeActionStyle {
  * The pull-to-refresh indicator, which is the platform's own and takes
  * exactly two colours, one per platform.
  */
+export interface SegmentedControlTokens {
+  height: SizeScale;
+  /** The track's corners. The thumb's are this less the inset. */
+  radius: number;
+  /**
+   * How far inside the track the thumb sits, on every side. The thumb's
+   * radius is derived from it, so a track and a thumb cannot fall out of
+   * step.
+   */
+  inset: number;
+  /** Between the strip and the label or the helper around it. */
+  gap: number;
+  /** How long the thumb takes to slide between two segments. */
+  duration: number;
+  typography: { label: TypeStyle; groupLabel: TypeStyle; helper: TypeStyle };
+  /** The lift that says the thumb is on top of the track. */
+  elevation: ElevationStyle;
+  color: {
+    /** The recessed strip the thumb slides in. */
+    track: string;
+    trackDisabled: string;
+    /** The raised block under the chosen segment. */
+    thumb: string;
+    label: string;
+    labelSelected: string;
+    labelDisabled: string;
+    groupLabel: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+    /** The edge that appears when the answer is wrong. */
+    borderInvalid: string;
+  };
+}
+
 export interface TabsTokens {
   /** The floor a tab cannot go under, so it stays a touch target. */
   minHeight: number;
@@ -790,6 +825,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: TabsTokens;
     };
+    SegmentedControl?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SegmentedControlTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -1018,6 +1057,40 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    SegmentedControl: {
+      tokens: {
+        height: s.control.minHeight,
+        radius: s.radius.md,
+        inset: 2,
+        gap: 6,
+        duration: s.motion.quick,
+        typography: {
+          label: s.typography.label,
+          groupLabel: s.typography.label,
+          helper: s.typography.caption,
+        },
+        elevation: s.elevation.raised,
+        color: {
+          // The library's own surface language, and it is worth saying
+          // out loud because it is the opposite of iOS: in this palette
+          // a well is *lighter* in dark and a raised surface is darker,
+          // which is how `Card variant="filled"` already behaves. The
+          // thumb carries an elevation as well, so it reads as lifted
+          // whichever way the two greys fall.
+          track: s.surface.sunken,
+          trackDisabled: s.fill.subtle,
+          thumb: s.surface.raised,
+          label: s.text.secondary,
+          labelSelected: s.text.primary,
+          labelDisabled: s.text.disabled,
+          groupLabel: s.text.secondary,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.feedback.danger.fg,
+          borderInvalid: s.feedback.danger.border,
+        },
+      } satisfies SegmentedControlTokens,
     },
     Tabs: {
       tokens: {

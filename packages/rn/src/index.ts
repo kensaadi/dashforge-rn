@@ -27,6 +27,7 @@ export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { List, ListItem } from './components/ListItem/ListItem';
 export { Tabs } from './components/Tabs/Tabs';
+export { SegmentedControl } from './components/SegmentedControl/SegmentedControl';
 export { SwipeableRow } from './components/SwipeableRow/SwipeableRow';
 export { Divider } from './components/Divider/Divider';
 export { Avatar } from './components/Avatar/Avatar';
@@ -111,6 +112,12 @@ export type {
   SkeletonTextProps,
   SkeletonTextSx,
 } from './components/Skeleton/skeleton.types';
+export type {
+  SegmentOption,
+  SegmentValue,
+  SegmentedControlProps,
+  SegmentedControlSx,
+} from './components/SegmentedControl/segmentedControl.types';
 export type {
   TabPanelProps,
   TabProps,

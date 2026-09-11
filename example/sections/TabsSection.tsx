@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DashFormProvider } from '@dashforge/forms';
 import {
   Avatar,
   Badge,
@@ -6,12 +7,13 @@ import {
   EmptyState,
   List,
   ListItem,
+  SegmentedControl,
   Skeleton,
   Stack,
   Tabs,
   Typography,
 } from '@dashforge/rn';
-import type { TabValue } from '@dashforge/rn';
+import type { SegmentValue, TabValue } from '@dashforge/rn';
 import { Card, Caption } from '../ui';
 import { Search, Plus, Trash } from '../icons';
 
@@ -36,6 +38,7 @@ const REGIONS = [
 export function TabsSection() {
   const [box, setBox] = useState<TabValue>('all');
   const [region, setRegion] = useState<TabValue>('Abruzzo');
+  const [billing, setBilling] = useState<SegmentValue>('monthly');
 
   const unread = INBOX.filter(m => m.unread);
 
@@ -143,6 +146,82 @@ export function TabsSection() {
             <Typography>{`Hai scelto: ${region}`}</Typography>
           </Tabs.Panel>
         </Tabs>
+      </Card>
+
+      <Card>
+        <Card.Header
+          title="SegmentedControl"
+          subtitle="La stessa domanda, ma dall'altra parte del confine"
+        />
+        <Caption>
+          Un tab sceglie una vista di qualcosa, e al motore delle form non
+          interessa quale sia aperta. Questo sceglie una risposta: privato o
+          azienda, mensile o annuale. Quindi prende un name, si registra, e
+          quello che tiene finisce nel payload. È la forma di RadioGroup, non
+          quella di Tabs.
+        </Caption>
+        <SegmentedControl
+          label="Fatturazione"
+          options={[
+            { value: 'monthly', label: 'Mensile' },
+            { value: 'yearly', label: 'Annuale' },
+          ]}
+          value={billing}
+          onValueChange={setBilling}
+        />
+        <Typography color="muted">{`Valore: ${String(billing)}`}</Typography>
+        <SegmentedControl
+          label="Tre segmenti"
+          size="sm"
+          options={[
+            { value: 'day', label: 'Giorno' },
+            { value: 'week', label: 'Settimana' },
+            { value: 'month', label: 'Mese' },
+          ]}
+          defaultValue="week"
+          onValueChange={() => {}}
+        />
+        <SegmentedControl
+          label="Con uno spento, e senza risposta"
+          options={[
+            { value: 'a', label: 'Uno' },
+            { value: 'b', label: 'Due' },
+            { value: 'c', label: 'Tre', disabled: true },
+          ]}
+          helperText="Niente è scelto: la traccia si vede tutta."
+          onValueChange={() => {}}
+        />
+        <SegmentedControl
+          label="Spento"
+          disabled
+          options={[
+            { value: 'a', label: 'Uno' },
+            { value: 'b', label: 'Due' },
+          ]}
+          defaultValue="a"
+          onValueChange={() => {}}
+        />
+      </Card>
+
+      <Card>
+        <Card.Header title="Dentro una form" />
+        <DashFormProvider>
+          <SegmentedControl
+            name="tipo"
+            label="Tipo di cliente"
+            required
+            options={[
+              { value: 'private', label: 'Privato' },
+              { value: 'business', label: 'Azienda' },
+            ]}
+          />
+          <Caption>
+            Non si semina da solo, come RadioGroup: nessun segmento scelto è
+            l'assenza di una risposta, e un controllo che scrivesse la sua prima
+            opzione nel payload al montaggio trasformerebbe una domanda a cui
+            nessuno ha risposto in una a cui qualcuno ha risposto.
+          </Caption>
+        </DashFormProvider>
       </Card>
 
       <Card>

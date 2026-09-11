@@ -44,6 +44,7 @@ export type {
   RefreshTokens,
   SkeletonTokens,
   SpinnerTokens,
+  SegmentedControlTokens,
   SwipeableRowTokens,
   TabsTokens,
   TextFieldTokens,
