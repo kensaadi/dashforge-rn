@@ -30,6 +30,7 @@ export type { MakePaletteOptions, ContractViolation } from './makePalette';
 export { defaultComponentTokens } from './components';
 export type {
   AccordionTokens,
+  ActionSheetTokens,
   ActionColor,
   SizeScale,
   RadiusStep,
@@ -44,6 +45,7 @@ export type {
   IconButtonTokens,
   ListItemTokens,
   OTPFieldTokens,
+  PopoverTokens,
   RefreshTokens,
   SkeletonTokens,
   SpinnerTokens,

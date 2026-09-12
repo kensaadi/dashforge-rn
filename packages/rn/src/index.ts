@@ -41,6 +41,8 @@ export { Spinner } from './components/Spinner/Spinner';
 export { Skeleton } from './components/Skeleton/Skeleton';
 export { EmptyState } from './components/EmptyState/EmptyState';
 export { createDialogs } from './components/Modal/createDialogs';
+export { createActionSheet } from './components/ActionSheet/createActionSheet';
+export { Popover } from './components/Popover/Popover';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
 export { RadioGroup } from './components/RadioGroup/RadioGroup';
@@ -104,6 +106,12 @@ export type {
   SnackbarSx,
 } from './components/Snackbar/snackbar.types';
 export type { ModalProps, ModalSx } from './components/Modal/modal.types';
+export type {
+  ActionSheetApi,
+  SheetChoice,
+  SheetRequest,
+} from './components/ActionSheet/actionSheet.types';
+export type { PopoverProps, PopoverSx } from './components/Popover/popover.types';
 export type {
   BottomSheetProps,
   BottomSheetRadius,

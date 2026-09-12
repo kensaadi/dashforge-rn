@@ -430,6 +430,31 @@ export interface ChipToneStyle {
   bgPressed: string;
 }
 
+export interface ActionSheetTokens {
+  /** Between the title block and the choices, and between the choices. */
+  gap: number;
+  /** Around the title and message. */
+  headerPadding: number;
+  typography: { title: TypeStyle; message: TypeStyle };
+  color: { title: string; message: string };
+}
+
+export interface PopoverTokens {
+  radius: number;
+  padding: number;
+  bg: string;
+  /** What darkens the page behind it. Transparent: a popover is not a dialog. */
+  scrim: string;
+  /** How far from the edge of the screen it refuses to go. */
+  screenMargin: number;
+  /** How far from its anchor it sits. */
+  offset: number;
+  /** The point that ties it to what it came from. */
+  arrow: { size: number };
+  maxWidth: number;
+  elevation: ElevationStyle;
+}
+
 export interface SliderTokens {
   /** The rail the thumb travels along. */
   track: { height: number; radius: number; color: string; colorFilled: string };
@@ -966,6 +991,14 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: SliderTokens;
     };
+    ActionSheet?: {
+      defaults?: Record<string, unknown>;
+      tokens?: ActionSheetTokens;
+    };
+    Popover?: {
+      defaults?: Record<string, unknown>;
+      tokens?: PopoverTokens;
+    };
     OTPField?: {
       defaults?: Record<string, unknown>;
       tokens?: OTPFieldTokens;
@@ -1217,6 +1250,30 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    ActionSheet: {
+      tokens: {
+        gap: s.space.inline,
+        headerPadding: s.space.inset,
+        typography: { title: s.typography.label, message: s.typography.bodySmall },
+        color: { title: s.text.primary, message: s.text.secondary },
+      } satisfies ActionSheetTokens,
+    },
+    Popover: {
+      tokens: {
+        radius: s.radius.surface,
+        padding: s.space.inset,
+        bg: s.surface.overlay,
+        // Transparent, and deliberately. A popover is not a dialog: it
+        // sits beside what it came from and the page behind it stays
+        // readable. The layer is there to catch the tap that closes it.
+        scrim: 'transparent',
+        screenMargin: s.space.stack,
+        offset: s.space.inline,
+        arrow: { size: 8 },
+        maxWidth: 320,
+        elevation: s.elevation.floating,
+      } satisfies PopoverTokens,
     },
     Slider: {
       tokens: {
