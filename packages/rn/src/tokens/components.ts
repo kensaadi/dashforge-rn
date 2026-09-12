@@ -430,6 +430,57 @@ export interface ChipToneStyle {
   bgPressed: string;
 }
 
+export interface SliderTokens {
+  /** The rail the thumb travels along. */
+  track: { height: number; radius: number; color: string; colorFilled: string };
+  thumb: { size: number; radius: number; color: string; borderWidth: number; borderColor: string };
+  /** How much the thumb grows while it is held. */
+  thumbPressedScale: number;
+  /**
+   * How tall the touch target is, whatever the rail's own height.
+   *
+   * A four-point rail is a four-point target, and a four-point target
+   * is one nobody can hit.
+   */
+  hitHeight: number;
+  /** Between the label, the rail and the helper. */
+  gap: number;
+  typography: { label: TypeStyle; value: TypeStyle; helper: TypeStyle };
+  color: {
+    label: string;
+    value: string;
+    helper: string;
+    trackDisabled: string;
+    thumbDisabled: string;
+  };
+}
+
+export interface OTPFieldTokens {
+  /** One box. */
+  box: { width: number; height: number; radius: number; borderWidth: number };
+  /** Between the boxes. */
+  gap: number;
+  /** Between the label, the boxes and the helper. */
+  stackGap: number;
+  typography: { digit: TypeStyle; label: TypeStyle; helper: TypeStyle };
+  /** The bar that says where the next character goes. */
+  caret: { width: number; height: number; color: string };
+  color: {
+    bg: string;
+    border: string;
+    /** The box the next character goes into. */
+    borderActive: string;
+    borderInvalid: string;
+    borderDisabled: string;
+    digit: string;
+    digitDisabled: string;
+    label: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+  };
+}
+
 export interface AccordionTokens {
   /** The floor a header cannot go under, so it stays a touch target. */
   minHeight: number;
@@ -911,6 +962,14 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: AccordionTokens;
     };
+    Slider?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SliderTokens;
+    };
+    OTPField?: {
+      defaults?: Record<string, unknown>;
+      tokens?: OTPFieldTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -1158,6 +1217,64 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Slider: {
+      tokens: {
+        track: {
+          height: 4,
+          radius: s.radius.full,
+          color: s.fill.default,
+          colorFilled: s.action.primary.bg,
+        },
+        thumb: {
+          size: 24,
+          radius: s.radius.full,
+          color: s.surface.raised,
+          borderWidth: s.borderWidth.default,
+          borderColor: s.border.default,
+        },
+        thumbPressedScale: 1.15,
+        hitHeight: TOUCH_TARGET,
+        gap: 6,
+        typography: {
+          label: s.typography.label,
+          value: s.typography.label,
+          helper: s.typography.caption,
+        },
+        color: {
+          label: s.text.secondary,
+          value: s.text.primary,
+          helper: s.text.muted,
+          trackDisabled: s.fill.subtle,
+          thumbDisabled: s.fill.default,
+        },
+      } satisfies SliderTokens,
+    },
+    OTPField: {
+      tokens: {
+        box: { width: 44, height: 52, radius: s.radius.md, borderWidth: s.borderWidth.default },
+        gap: s.space.inline,
+        stackGap: 6,
+        typography: {
+          digit: s.typography.title,
+          label: s.typography.label,
+          helper: s.typography.caption,
+        },
+        caret: { width: 2, height: 22, color: s.action.primary.bg },
+        color: {
+          bg: s.surface.raised,
+          border: s.border.default,
+          borderActive: s.action.primary.bg,
+          borderInvalid: s.feedback.danger.border,
+          borderDisabled: s.border.subtle,
+          digit: s.text.primary,
+          digitDisabled: s.text.disabled,
+          label: s.text.secondary,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.feedback.danger.fg,
+        },
+      } satisfies OTPFieldTokens,
     },
     Accordion: {
       tokens: {
