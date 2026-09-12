@@ -16,6 +16,7 @@ export { Typography } from './components/Typography/Typography';
 export { TextField } from './components/TextField/TextField';
 export { Textarea } from './components/Textarea/Textarea';
 export { NumberField } from './components/NumberField/NumberField';
+export { SearchField } from './components/SearchField/SearchField';
 export { Surface } from './components/Surface/Surface';
 export { SurfaceViewport } from './components/Surface/SurfaceViewport';
 export { KeyboardAvoidingContainer } from './components/KeyboardAvoidingContainer/KeyboardAvoidingContainer';
@@ -27,11 +28,13 @@ export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
 export { List, ListItem } from './components/ListItem/ListItem';
 export { Tabs } from './components/Tabs/Tabs';
+export { Accordion } from './components/Accordion/Accordion';
 export { SegmentedControl } from './components/SegmentedControl/SegmentedControl';
 export { SwipeableRow } from './components/SwipeableRow/SwipeableRow';
 export { Divider } from './components/Divider/Divider';
 export { Avatar } from './components/Avatar/Avatar';
 export { Badge } from './components/Badge/Badge';
+export { Chip } from './components/Chip/Chip';
 export { Spinner } from './components/Spinner/Spinner';
 export { Skeleton } from './components/Skeleton/Skeleton';
 export { EmptyState } from './components/EmptyState/EmptyState';
@@ -55,6 +58,10 @@ export type {
   NumberFieldProps,
   NumberFieldSx,
 } from './components/NumberField/numberField.types';
+export type {
+  SearchFieldProps,
+  SearchFieldSx,
+} from './components/SearchField/searchField.types';
 export type {
   CardProps,
   CardCoverProps,
@@ -101,6 +108,7 @@ export type {
 export type { DividerProps, DividerSx } from './components/Divider/divider.types';
 export type { AvatarProps, AvatarSize, AvatarSx } from './components/Avatar/avatar.types';
 export type { BadgeProps, BadgeSx } from './components/Badge/badge.types';
+export type { ChipProps, ChipSx } from './components/Chip/chip.types';
 export type { SpinnerProps, SpinnerSx } from './components/Spinner/spinner.types';
 export type {
   EmptyStateProps,
@@ -112,6 +120,13 @@ export type {
   SkeletonTextProps,
   SkeletonTextSx,
 } from './components/Skeleton/skeleton.types';
+export type {
+  AccordionItemProps,
+  AccordionItemSx,
+  AccordionProps,
+  AccordionSx,
+  AccordionValue,
+} from './components/Accordion/accordion.types';
 export type {
   SegmentOption,
   SegmentValue,

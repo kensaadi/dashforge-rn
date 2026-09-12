@@ -416,6 +416,76 @@ export interface SwipeActionStyle {
  * The pull-to-refresh indicator, which is the platform's own and takes
  * exactly two colours, one per platform.
  */
+/** One chip colour, in the two treatments and the two states. */
+export interface ChipToneStyle {
+  /** Not chosen. */
+  bg: string;
+  border: string;
+  fg: string;
+  /** Chosen. */
+  bgSelected: string;
+  borderSelected: string;
+  fgSelected: string;
+  /** Held. */
+  bgPressed: string;
+}
+
+export interface AccordionTokens {
+  /** The floor a header cannot go under, so it stays a touch target. */
+  minHeight: number;
+  paddingVertical: number;
+  paddingHorizontal: number;
+  /** Between the title and the mark that turns. */
+  gap: number;
+  /** Around the panel's own content. */
+  panelPadding: number;
+  /** The mark that turns when the item opens. */
+  chevron: { size: number; thickness: number; color: string };
+  /** The hairline between one item and the next. */
+  separator: { thickness: number; color: string };
+  /** How long the panel takes to open. */
+  duration: number;
+  typography: { title: TypeStyle; subtitle: TypeStyle };
+  color: {
+    /** Nothing at rest: an accordion is dropped onto whatever ground it finds. */
+    bg: string;
+    bgPressed: string;
+    title: string;
+    titleDisabled: string;
+    subtitle: string;
+  };
+}
+
+export interface SearchFieldTokens {
+  /**
+   * The magnifier, drawn from views.
+   *
+   * This package ships no icon set and imports no drawing library, so a
+   * magnifier is a ring and a bar and its proportions have to be
+   * themeable like anything else.
+   */
+  glyph: { size: number; thickness: number; handle: number; color: string };
+  /** The cross that empties the field. */
+  clear: { size: number; thickness: number; hitSlop: number; color: string };
+  /** How long the field waits before it is worth running a query. */
+  debounce: number;
+}
+
+export interface ChipTokens {
+  height: SizeScale;
+  paddingHorizontal: SizeScale;
+  /** Between the icon, the word and the cross. */
+  gap: SizeScale;
+  iconSize: SizeScale;
+  radius: RadiusScale;
+  borderWidth: number;
+  /** The cross that takes the chip away. */
+  remove: { size: SizeScale; thickness: number; hitSlop: number };
+  typography: { label: TypeStyle };
+  tone: Record<ActionColor, ChipToneStyle>;
+  color: { labelDisabled: string; bgDisabled: string; borderDisabled: string };
+}
+
 export interface SegmentedControlTokens {
   height: SizeScale;
   /** The track's corners. The thumb's are this less the inset. */
@@ -829,6 +899,18 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: SegmentedControlTokens;
     };
+    Chip?: {
+      defaults?: Record<string, unknown>;
+      tokens?: ChipTokens;
+    };
+    SearchField?: {
+      defaults?: Record<string, unknown>;
+      tokens?: SearchFieldTokens;
+    };
+    Accordion?: {
+      defaults?: Record<string, unknown>;
+      tokens?: AccordionTokens;
+    };
     Skeleton?: {
       defaults?: Record<string, unknown>;
       tokens?: SkeletonTokens;
@@ -880,6 +962,25 @@ function hitSlopFor(heights: SizeScale): SizeScale {
 }
 
 /** Default component tokens, derived from a semantic layer. */
+/**
+ * One chip's colours, from the action role of the same name.
+ *
+ * Unchosen a chip is an outline on the page, chosen it is the role's own
+ * fill. The two states are far enough apart that a row of them can be
+ * read at a glance, which is the whole job of a filter chip.
+ */
+function chipTone(s: SemanticTokens, role: ActionRole): ChipToneStyle {
+  return {
+    bg: 'transparent',
+    border: s.border.default,
+    fg: s.text.primary,
+    bgSelected: role.bg,
+    borderSelected: role.bg,
+    fgSelected: role.fg,
+    bgPressed: role.bgSubtlePressed,
+  };
+}
+
 /** Build one tinted ground from the feedback role of the same name. */
 function toneOf(s: SemanticTokens, role: CardTone): CardToneStyle {
   const r = s.feedback[role];
@@ -1057,6 +1158,59 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Accordion: {
+      tokens: {
+        minHeight: TOUCH_TARGET,
+        paddingVertical: 12,
+        paddingHorizontal: s.space.inset,
+        gap: s.space.stack,
+        panelPadding: s.space.inset,
+        chevron: { size: 8, thickness: s.borderWidth.strong, color: s.text.muted },
+        separator: { thickness: s.borderWidth.hairline, color: s.separator.default },
+        duration: s.motion.standard,
+        typography: { title: s.typography.body, subtitle: s.typography.bodySmall },
+        color: {
+          bg: 'transparent',
+          bgPressed: s.surface.sunken,
+          title: s.text.primary,
+          titleDisabled: s.text.disabled,
+          subtitle: s.text.secondary,
+        },
+      } satisfies AccordionTokens,
+    },
+    SearchField: {
+      tokens: {
+        glyph: { size: 13, thickness: 1.5, handle: 6, color: s.text.muted },
+        clear: { size: 12, thickness: 1.5, hitSlop: 10, color: s.text.muted },
+        // Long enough that a fast typist sends one query and not eight,
+        // short enough that the results do not feel late.
+        debounce: 300,
+      } satisfies SearchFieldTokens,
+    },
+    Chip: {
+      tokens: {
+        height: { sm: 26, md: 32, lg: 38 },
+        paddingHorizontal: { sm: 8, md: 12, lg: 14 },
+        gap: { sm: 4, md: 6, lg: 6 },
+        iconSize: { sm: 14, md: 16, lg: 18 },
+        radius: radiusSteps(s),
+        borderWidth: s.borderWidth.default,
+        remove: { size: { sm: 10, md: 12, lg: 14 }, thickness: 1.5, hitSlop: 8 },
+        typography: { label: s.typography.label },
+        tone: {
+          primary: chipTone(s, s.action.primary),
+          secondary: chipTone(s, s.action.secondary),
+          danger: chipTone(s, s.action.danger),
+          success: chipTone(s, s.action.success),
+          warning: chipTone(s, s.action.warning),
+        },
+        color: {
+          labelDisabled: s.text.disabled,
+          bgDisabled: s.fill.subtle,
+          borderDisabled: s.border.subtle,
+        },
+      } satisfies ChipTokens,
     },
     SegmentedControl: {
       tokens: {
