@@ -12,6 +12,7 @@ import { useAccessState } from '../../hooks/useAccessState';
 import { useStandaloneFieldWarning } from '../../hooks/useStandaloneFieldWarning';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -132,7 +133,7 @@ export function OTPField(props: OTPFieldProps) {
   return (
     <View {...rest} style={[{ gap: tokens.stackGap }, sx?.root]}>
       {label ? (
-        <Text style={[{ ...tokens.typography.label, color: tokens.color.label }, sx?.label]}>
+        <Text style={[{ ...resolveTypeStyle(tokens.typography.label), color: tokens.color.label }, sx?.label]}>
           {label}
           {required ? (
             <Text style={{ color: tokens.color.required }} accessibilityElementsHidden>
@@ -186,7 +187,7 @@ export function OTPField(props: OTPFieldProps) {
                 <Text
                   style={[
                     {
-                      ...tokens.typography.digit,
+                      ...resolveTypeStyle(tokens.typography.digit),
                       color: inert ? tokens.color.digitDisabled : tokens.color.digit,
                     },
                     sx?.digit,
@@ -241,7 +242,7 @@ export function OTPField(props: OTPFieldProps) {
         <Text
           style={[
             {
-              ...tokens.typography.helper,
+              ...resolveTypeStyle(tokens.typography.helper),
               color: invalid ? tokens.color.helperInvalid : tokens.color.helper,
             },
             sx?.helper,

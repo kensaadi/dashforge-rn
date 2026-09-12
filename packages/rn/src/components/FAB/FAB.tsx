@@ -2,6 +2,7 @@ import { Pressable, Text } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -106,7 +107,7 @@ export function FAB(props: FABProps) {
         <Text
           numberOfLines={1}
           style={[
-            { ...tokens.typography.label, color: inert ? role.fgDisabled : role.fg },
+            { ...resolveTypeStyle(tokens.typography.label), color: inert ? role.fgDisabled : role.fg },
             sx?.label,
           ]}
         >

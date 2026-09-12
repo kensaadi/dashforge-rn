@@ -10,6 +10,7 @@ import { useAccessState } from '../../hooks/useAccessState';
 import { useStandaloneFieldWarning } from '../../hooks/useStandaloneFieldWarning';
 import { useVisibility } from '../../hooks/useVisibility';
 import { useTheme } from '../../theme/useTheme';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -224,14 +225,14 @@ export function Slider(props: SliderProps) {
       {label || showValue ? (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           {label ? (
-            <Text style={[{ ...tokens.typography.label, color: tokens.color.label }, sx?.label]}>
+            <Text style={[{ ...resolveTypeStyle(tokens.typography.label), color: tokens.color.label }, sx?.label]}>
               {label}
             </Text>
           ) : (
             <View />
           )}
           {showValue ? (
-            <Text style={[{ ...tokens.typography.value, color: tokens.color.value }, sx?.value]}>
+            <Text style={[{ ...resolveTypeStyle(tokens.typography.value), color: tokens.color.value }, sx?.value]}>
               {formatValue(value)}
             </Text>
           ) : null}
@@ -288,7 +289,7 @@ export function Slider(props: SliderProps) {
       </View>
 
       {helperText ? (
-        <Text style={[{ ...tokens.typography.helper, color: tokens.color.helper }, sx?.helper]}>
+        <Text style={[{ ...resolveTypeStyle(tokens.typography.helper), color: tokens.color.helper }, sx?.helper]}>
           {helperText}
         </Text>
       ) : null}

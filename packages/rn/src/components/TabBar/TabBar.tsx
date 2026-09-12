@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -110,11 +111,25 @@ export function TabBar(props: TabBarProps) {
               {item.icon ? <item.icon size={tokens.iconSize} color={color} /> : null}
               <Text
                 numberOfLines={1}
-                style={[{ ...tokens.typography.label, color }, sx?.label]}
+                style={[{ ...resolveTypeStyle(tokens.typography.label), color }, sx?.label]}
               >
                 {item.label}
               </Text>
-              {item.badge}
+              {item.badge ? (
+                // Over the icon's corner and not under the word. Laid
+                // out in the column it would push the label down and
+                // read as a second line, which is what it did before
+                // anybody looked at it.
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: tokens.badge.top,
+                    right: tokens.badge.right,
+                  }}
+                >
+                  {item.badge}
+                </View>
+              ) : null}
             </Pressable>
           );
         })}

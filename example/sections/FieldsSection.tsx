@@ -4,6 +4,9 @@ import {
   Button,
   Divider,
   NumberField,
+  OTPField,
+  SearchField,
+  Slider,
   Textarea,
   Typography,
 } from '@dashforge/rn';
@@ -13,6 +16,12 @@ export function FieldsSection() {
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState<number | undefined>(2);
   const [price, setPrice] = useState<number | undefined>(undefined);
+  const [query, setQuery] = useState('');
+  const [ran, setRan] = useState<string | null>(null);
+  const [radius, setRadius] = useState(10);
+  const [settled, setSettled] = useState(10);
+  const [code, setCode] = useState('');
+  const [verified, setVerified] = useState<string | null>(null);
 
   return (
     <>
@@ -79,6 +88,77 @@ export function FieldsSection() {
         />
         <Typography color="muted">
           {`Valore: ${price === undefined ? 'undefined' : price} (${typeof price})`}
+        </Typography>
+      </Card>
+
+      <Card>
+        <Card.Header
+          title="SearchField"
+          subtitle="onSearch è quello con cui lanciare una query"
+        />
+        <Caption>
+          Un campo che interrogasse a ogni tasto manda otto richieste per una
+          parola di otto lettere e mostra la risposta alla settima. L'attesa sta
+          qui e non a ogni chiamata, perché sono le stesse quattro righe ogni
+          volta e due si dimenticano: annullare allo smontaggio e annullare
+          quando si preme cerca.
+        </Caption>
+        <SearchField
+          placeholder="Cerca una città"
+          value={query}
+          onChangeText={setQuery}
+          onSearch={q => setRan(q)}
+        />
+        <Typography color="muted">
+          {ran === null
+            ? 'Nessuna query ancora. Scrivi e fermati un attimo.'
+            : `Query lanciata: "${ran}"`}
+        </Typography>
+      </Card>
+
+      <Card>
+        <Card.Header title="Slider" subtitle="onSlidingComplete è quello costoso" />
+        <Caption>
+          Un trascinamento riporta ogni passo che attraversa, e una richiesta
+          per passo sono cento richieste per una risposta sola. Prende il tocco
+          al down-press, come il BottomSheet: dentro una guida non c'è niente da
+          premere, quindi non c'è niente da arbitrare, ed è quello che fa sì che
+          un tap sulla guida ci porti il cursore invece di richiedere un
+          trascinamento.
+        </Caption>
+        <Slider
+          label="Raggio"
+          min={1}
+          max={50}
+          value={radius}
+          onValueChange={setRadius}
+          onSlidingComplete={setSettled}
+          formatValue={v => `${v} km`}
+        />
+        <Typography color="muted">{`Mentre trascini: ${radius} km. Rilasciato: ${settled} km.`}</Typography>
+        <Divider spacing="sm" />
+        <Slider label="A passi di cinque" max={100} step={5} defaultValue={25} onValueChange={() => {}} />
+        <Slider label="Spento" value={30} disabled onValueChange={() => {}} />
+      </Card>
+
+      <Card>
+        <Card.Header title="OTPField" subtitle="Un campo dietro sei caselle" />
+        <Caption>
+          Sei campi sembrerebbero uguali e si comporterebbero in modo
+          completamente diverso: il backspace in una casella vuota deve tornare
+          alla precedente e cancellare quello che c'è, un incolla deve riempirle
+          tutte, e la tastiera deve restare su mentre il fuoco si sposta. Ognuna
+          è una lotta con sei campi e gratis con uno.
+        </Caption>
+        <OTPField
+          label="Codice"
+          value={code}
+          onChangeText={setCode}
+          onComplete={setVerified}
+          autoFocus={false}
+        />
+        <Typography color="muted">
+          {verified ? `Completo: ${verified}` : 'Scrivi sei cifre.'}
         </Typography>
       </Card>
 

@@ -457,6 +457,14 @@ export interface TabBarTokens {
   /** The bar's own height, above the safe-area inset. */
   height: number;
   iconSize: number;
+  /**
+   * Where a count sits, measured from the item's own top-right corner.
+   *
+   * Inside the item and not hanging off it: Android clips a child to its
+   * parent's bounds, so a badge placed over the corner would lose a
+   * piece of itself on one platform and not the other.
+   */
+  badge: { top: number; right: number };
   /** Between an item's icon and its word. */
   gap: number;
   typography: { label: TypeStyle };
@@ -1349,6 +1357,7 @@ export function defaultComponentTokens(s: SemanticTokens) {
       tokens: {
         height: 52,
         iconSize: 24,
+        badge: { top: 2, right: 12 },
         gap: 2,
         typography: { label: s.typography.caption },
         border: { thickness: s.borderWidth.hairline, color: s.separator.opaque },

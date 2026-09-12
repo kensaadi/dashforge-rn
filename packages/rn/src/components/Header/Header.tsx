@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { useAccessState } from '../../hooks/useAccessState';
 import { useVisibility } from '../../hooks/useVisibility';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -100,7 +101,7 @@ export function Header(props: HeaderProps) {
         <Text
           numberOfLines={1}
           accessibilityRole="header"
-          style={[{ ...tokens.typography.title, color: tokens.color.title }, sx?.title]}
+          style={[{ ...resolveTypeStyle(tokens.typography.title), color: tokens.color.title }, sx?.title]}
         >
           {title}
         </Text>
@@ -111,7 +112,7 @@ export function Header(props: HeaderProps) {
         <Text
           numberOfLines={1}
           style={[
-            { ...tokens.typography.subtitle, color: tokens.color.subtitle },
+            { ...resolveTypeStyle(tokens.typography.subtitle), color: tokens.color.subtitle },
             sx?.subtitle,
           ]}
         >

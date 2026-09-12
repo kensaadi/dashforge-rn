@@ -11,6 +11,7 @@ import {
   Stack,
   TextField,
   Typography,
+  createActionSheet,
   createDialogs,
 } from '@dashforge/rn';
 import type { DialogComponent } from '@dashforge/rn';
@@ -68,3 +69,13 @@ const RenameProject: DialogComponent<{ current: string }, string> = ({
 export const { DialogHost, ask, notify, useDialog } = createDialogs({
   renameProject: RenameProject,
 });
+
+/**
+ * The application's one sheet of choices.
+ *
+ * A channel of its own rather than a second registry on `createDialogs`:
+ * a dialog is a thing this application drew and a sheet is, on iOS, a
+ * thing the platform drew. They are answered by different machinery even
+ * though they are asked the same way.
+ */
+export const { ActionSheetHost, showActionSheet } = createActionSheet();

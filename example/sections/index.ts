@@ -17,6 +17,7 @@ export { FieldsSection } from './FieldsSection';
 export { SwipeSection } from './SwipeSection';
 export { KeyboardSection } from './KeyboardSection';
 export { TabsSection } from './TabsSection';
+export { ShellSection } from './ShellSection';
 export { CheckboxSection } from './CheckboxSection';
 export { SwitchSection } from './SwitchSection';
 export { RadioGroupSection } from './RadioGroupSection';

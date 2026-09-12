@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import {
   Avatar,
   Badge,
+  Chip,
   Divider,
+  Image,
   List,
   ListItem,
   Stack,
@@ -18,7 +21,15 @@ const PEOPLE = [
   { name: 'Grace Hopper', role: 'Ospite', unread: 142 },
 ];
 
+const CITIES = ['Milano', 'Roma', 'Napoli', 'Torino'];
+
 export function FoundationSection() {
+  const [picked, setPicked] = useState<string[]>(['Milano']);
+  const [removed, setRemoved] = useState<string[]>([]);
+
+  const toggle = (city: string) =>
+    setPicked(p => (p.includes(city) ? p.filter(c => c !== city) : [...p, city]));
+
   return (
     <>
       <Card>
@@ -116,6 +127,77 @@ export function FoundationSection() {
           <Badge dot color="success" />
           <Badge dot color="secondary" />
         </Row>
+      </Card>
+
+      <Card>
+        <Card.Header title="Chip" subtitle="Annunciato per quello che è davvero" />
+        <Caption>
+          Con uno stato scelto e un onPress è un interruttore, perché ha un
+          acceso e uno spento e chi legge deve sentire quale. Con solo un
+          onPress è un pulsante. Senza nessuno dei due è testo: niente in lui è
+          premibile, e chiamarlo pulsante sarebbe una promessa che non mantiene.
+        </Caption>
+        <Row gap="inline">
+          {CITIES.map(city => (
+            <Chip
+              key={city}
+              label={city}
+              selected={picked.includes(city)}
+              onPress={() => toggle(city)}
+            />
+          ))}
+        </Row>
+        <Caption>
+          {`Scelte: ${picked.length ? picked.join(', ') : 'nessuna'}`}
+        </Caption>
+        <Divider spacing="sm" />
+        <Caption>
+          La croce è un bersaglio suo con un nome suo, e quel nome porta la
+          parola del chip: undici chip che annunciano "Rimuovi" undici volte
+          sono un elenco inutilizzabile.
+        </Caption>
+        <Row gap="inline">
+          {CITIES.filter(c => !removed.includes(c)).map(city => (
+            <Chip
+              key={city}
+              label={city}
+              color="secondary"
+              onRemove={() => setRemoved(r => [...r, city])}
+            />
+          ))}
+        </Row>
+        <Divider spacing="sm" />
+        <Row gap="inline">
+          <Chip label="Bozza" color="warning" selected />
+          <Chip label="Pubblicato" color="success" selected />
+          <Chip label="Solo testo" />
+          <Chip label="Spento" onPress={() => {}} disabled />
+        </Row>
+      </Card>
+
+      <Card>
+        <Card.Header title="Image" subtitle="Si comporta anche quando non arriva" />
+        <Caption>
+          La scatola tiene la forma qualunque cosa faccia la foto, così la
+          pagina non salta quando atterra. La seconda qui sotto punta a un URL
+          che non esiste: mostra un segno invece di un buco.
+        </Caption>
+        <Stack direction="row" gap="stack">
+          <Stack sx={{ flex: 1 }}>
+            <Image
+              source={{ uri: 'https://picsum.photos/id/1015/400/300' }}
+              aspectRatio={4 / 3}
+              radius="md"
+            />
+          </Stack>
+          <Stack sx={{ flex: 1 }}>
+            <Image
+              source={{ uri: 'https://example.invalid/nope.png' }}
+              aspectRatio={4 / 3}
+              radius="md"
+            />
+          </Stack>
+        </Stack>
       </Card>
 
       <Card padding="none">

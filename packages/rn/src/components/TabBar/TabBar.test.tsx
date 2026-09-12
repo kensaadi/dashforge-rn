@@ -66,7 +66,9 @@ describe('the bar', () => {
     );
   });
 
-  it('makes room for a badge without knowing what it is', () => {
+  it('puts a badge over the icon rather than under the word', () => {
+    // Laid out in the column it pushes the label down and reads as a
+    // second line, which is what it did until somebody looked at it.
     render(
       <TabBar
         testID="bar"
@@ -74,6 +76,12 @@ describe('the bar', () => {
         value="inbox"
       />,
     );
+    const holder = screen
+      .UNSAFE_getAllByType(View)
+      .map((v) => flat(v.props.style))
+      .find((st) => st.position === 'absolute' && st.top === TOKENS.badge.top);
+    expect(holder).toBeTruthy();
+    expect(holder!.right).toBe(TOKENS.badge.right);
     expect(screen.getByTestId('count')).toBeTruthy();
   });
 });

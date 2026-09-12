@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { ActionSheetIOS, Platform, Text, View } from 'react-native';
+import { resolveTypeStyle } from '../../theme/typography';
 import { useComponentTokens } from '../../theme/useComponentTokens';
 import { BottomSheet } from '../BottomSheet/BottomSheet';
 import { Button } from '../Button/Button';
@@ -148,12 +149,12 @@ export function createActionSheet(): ActionSheetApi {
         {request?.title || request?.message ? (
           <View style={{ padding: tokens.headerPadding, gap: 4 }}>
             {request.title ? (
-              <Text style={{ ...tokens.typography.title, color: tokens.color.title }}>
+              <Text style={{ ...resolveTypeStyle(tokens.typography.title), color: tokens.color.title }}>
                 {request.title}
               </Text>
             ) : null}
             {request.message ? (
-              <Text style={{ ...tokens.typography.message, color: tokens.color.message }}>
+              <Text style={{ ...resolveTypeStyle(tokens.typography.message), color: tokens.color.message }}>
                 {request.message}
               </Text>
             ) : null}

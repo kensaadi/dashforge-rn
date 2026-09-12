@@ -29,6 +29,7 @@ import {
   SwipeSection,
   KeyboardSection,
   TabsSection,
+  ShellSection,
   IconButtonSection,
   ModalSection,
   BottomSheetSection,
@@ -44,7 +45,7 @@ import {
   VisibleWhenSection,
 } from './sections';
 import { SurfaceViewport } from '@dashforge/rn';
-import { DialogHost } from './dialogs';
+import { ActionSheetHost, DialogHost } from './dialogs';
 import { THEMES, type ThemeKey } from './themes';
 
 const SECTIONS = [
@@ -85,6 +86,7 @@ const SECTIONS = [
     render: () => <FieldsSection />,
   },
   { key: 'tabs', label: 'Tabs', render: () => <TabsSection /> },
+  { key: 'shell', label: 'Header / TabBar / FAB', render: () => <ShellSection /> },
   { key: 'swipe', label: 'SwipeableRow', render: () => <SwipeSection /> },
   {
     key: 'keyboard',
@@ -123,6 +125,7 @@ const GROUPS = [
       'card',
       'list',
       'tabs',
+      'shell',
       'swipe',
       'keyboard',
       'foundation',
@@ -164,6 +167,12 @@ export function Playground() {
     // Mounted once, at the root, empty until something asks. It renders
     // its children through, so it is a wrapper and not a place.
     <DialogHost bottomInset={insets.bottom}>
+      {/*
+        Mounted once, beside the dialog host. On iOS it draws nothing:
+        the sheet there is the platform's own, and the host exists so
+        that the same call works on Android too.
+      */}
+      <ActionSheetHost bottomInset={insets.bottom} />
       <View style={{ flex: 1, backgroundColor: s.surface.base }}>
         <View
           style={{

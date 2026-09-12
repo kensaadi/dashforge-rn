@@ -10,6 +10,7 @@ import {
 import { useAccessState } from '../../hooks/useAccessState';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useVisibility } from '../../hooks/useVisibility';
+import { resolveTypeStyle } from '../../theme/typography';
 import {
   useComponentDefaults,
   useComponentTokens,
@@ -270,7 +271,7 @@ export function AccordionItem(props: AccordionItemProps) {
             <Text
               style={[
                 {
-                  ...tokens.typography.title,
+                  ...resolveTypeStyle(tokens.typography.title),
                   color: inactive ? tokens.color.titleDisabled : tokens.color.title,
                 },
                 sx?.title,
@@ -284,7 +285,7 @@ export function AccordionItem(props: AccordionItemProps) {
           {typeof subtitle === 'string' ? (
             <Text
               style={[
-                { ...tokens.typography.subtitle, color: tokens.color.subtitle },
+                { ...resolveTypeStyle(tokens.typography.subtitle), color: tokens.color.subtitle },
                 sx?.subtitle,
               ]}
             >
