@@ -430,6 +430,47 @@ export interface ChipToneStyle {
   bgPressed: string;
 }
 
+export interface HeaderTokens {
+  /** The bar's own height, under the safe-area inset. */
+  height: number;
+  paddingHorizontal: number;
+  /** Between the back affordance, the title and the actions. */
+  gap: number;
+  /** The arrow that goes back. */
+  back: { size: number; thickness: number };
+  typography: { title: TypeStyle; subtitle: TypeStyle };
+  /** The hairline along the bottom edge. */
+  border: { thickness: number; color: string };
+  color: { bg: string; title: string; subtitle: string; tint: string };
+  elevation: ElevationStyle;
+}
+
+export interface TabBarTokens {
+  /** The bar's own height, above the safe-area inset. */
+  height: number;
+  iconSize: number;
+  /** Between an item's icon and its word. */
+  gap: number;
+  typography: { label: TypeStyle };
+  /** The hairline along the top edge. */
+  border: { thickness: number; color: string };
+  color: { bg: string; label: string; labelSelected: string; labelDisabled: string };
+}
+
+export interface FABTokens {
+  size: SizeScale;
+  iconSize: SizeScale;
+  /** Between the icon and the word, when there is one. */
+  gap: number;
+  /** Extra width on either side once it carries a word. */
+  paddingHorizontal: number;
+  radius: number;
+  /** How far from the edges it sits. */
+  margin: number;
+  typography: { label: TypeStyle };
+  elevation: ElevationStyle;
+}
+
 export interface ActionSheetTokens {
   /** Between the title block and the choices, and between the choices. */
   gap: number;
@@ -995,6 +1036,18 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: ActionSheetTokens;
     };
+    Header?: {
+      defaults?: Record<string, unknown>;
+      tokens?: HeaderTokens;
+    };
+    TabBar?: {
+      defaults?: Record<string, unknown>;
+      tokens?: TabBarTokens;
+    };
+    FAB?: {
+      defaults?: Record<string, unknown>;
+      tokens?: FABTokens;
+    };
     Popover?: {
       defaults?: Record<string, unknown>;
       tokens?: PopoverTokens;
@@ -1250,6 +1303,53 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Header: {
+      tokens: {
+        height: 56,
+        paddingHorizontal: s.space.inline,
+        gap: s.space.inline,
+        back: { size: 12, thickness: s.borderWidth.strong },
+        typography: { title: s.typography.title, subtitle: s.typography.caption },
+        // The opaque separator and not the translucent one: a bar sits
+        // over content that scrolls under it, and a hairline you can see
+        // through stops being a hairline as the page moves.
+        border: { thickness: s.borderWidth.hairline, color: s.separator.opaque },
+        color: {
+          bg: s.surface.raised,
+          title: s.text.primary,
+          subtitle: s.text.secondary,
+          tint: s.action.primary.fgSubtle,
+        },
+        elevation: s.elevation.flat,
+      } satisfies HeaderTokens,
+    },
+    TabBar: {
+      tokens: {
+        height: 52,
+        iconSize: 24,
+        gap: 2,
+        typography: { label: s.typography.caption },
+        border: { thickness: s.borderWidth.hairline, color: s.separator.opaque },
+        color: {
+          bg: s.surface.raised,
+          label: s.text.secondary,
+          labelSelected: s.action.primary.fgSubtle,
+          labelDisabled: s.text.disabled,
+        },
+      } satisfies TabBarTokens,
+    },
+    FAB: {
+      tokens: {
+        size: { sm: 40, md: 56, lg: 64 },
+        iconSize: { sm: 18, md: 24, lg: 28 },
+        gap: s.space.inline,
+        paddingHorizontal: s.space.inset,
+        radius: s.radius.full,
+        margin: s.space.inset,
+        typography: { label: s.typography.label },
+        elevation: s.elevation.floating,
+      } satisfies FABTokens,
     },
     ActionSheet: {
       tokens: {

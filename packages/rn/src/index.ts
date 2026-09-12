@@ -43,6 +43,9 @@ export { EmptyState } from './components/EmptyState/EmptyState';
 export { createDialogs } from './components/Modal/createDialogs';
 export { createActionSheet } from './components/ActionSheet/createActionSheet';
 export { Popover } from './components/Popover/Popover';
+export { Header } from './components/Header/Header';
+export { TabBar } from './components/TabBar/TabBar';
+export { FAB } from './components/FAB/FAB';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { Switch } from './components/Switch/Switch';
 export { RadioGroup } from './components/RadioGroup/RadioGroup';
@@ -112,6 +115,14 @@ export type {
   SheetRequest,
 } from './components/ActionSheet/actionSheet.types';
 export type { PopoverProps, PopoverSx } from './components/Popover/popover.types';
+export type { HeaderProps, HeaderSx } from './components/Header/header.types';
+export type {
+  TabBarItem,
+  TabBarProps,
+  TabBarSx,
+  TabBarValue,
+} from './components/TabBar/tabBar.types';
+export type { FABProps, FABSx } from './components/FAB/fab.types';
 export type {
   BottomSheetProps,
   BottomSheetRadius,
