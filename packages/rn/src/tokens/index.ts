@@ -45,6 +45,7 @@ export type {
   EmptyStateTokens,
   HeaderTokens,
   IconButtonTokens,
+  ImageTokens,
   ListItemTokens,
   OTPFieldTokens,
   PopoverTokens,

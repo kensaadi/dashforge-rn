@@ -1007,8 +1007,8 @@ is a hard requirement.
 Derived from what a mobile application needs. Not from any web
 catalog, and not by assuming a web component has a mobile equivalent.
 
-**Foundation** — Text, Box, Stack, Divider, Icon slot, Spinner,
-Skeleton, Avatar, Badge, Chip, Image, Card, Surface.
+**Foundation** — Text, Stack, Divider, Icon slot, Spinner, Skeleton,
+Avatar, Badge, Chip, Image, Card, Surface.
 
 **Input** — Button, IconButton, TextField, Textarea, NumberField,
 OTPField, Checkbox, Switch, RadioGroup, Select, Slider, SearchField,
@@ -1036,6 +1036,14 @@ react-navigation and we do not reimplement a router.
 the platform picker for single date and time. DateRangePicker is the
 exception and ships a calendar on `calendar-core`.
 
+**Still to build, and deliberately last.** It is the first thing in the
+catalog that needs a native module, and rule 5.1 says a native capability
+is injected and never imported: the field takes the picker rather than
+depending on `@react-native-community/datetimepicker`, so an application
+that has no dates does not carry one. That is an architecture
+conversation before it is a component, which is why it is not being
+squeezed in beside the rest.
+
 ### Deliberately not shipped
 
 - **Data grid.** Column resize, reorder and virtualisation assume a
@@ -1046,6 +1054,14 @@ exception and ships a calendar on `calendar-core`.
   long press or a helper line, both of which we ship.
 - **Breadcrumbs.** Meaningless in a stack navigator.
 - **Grid, Container.** Mobile is single column. Stack covers it.
+- **Box.** Planned here and then refused, after the rest of the catalog
+  was built. A `Box` is a `View` with a long tail of token-aware style
+  props, and that is Restyle's design language rather than this one:
+  here a component states what it *is* through named props and reaches
+  `sx` for the rest, and a second way to write a padding would mean two
+  answers to every styling question. `Stack` covers layout, `Card` and
+  `Surface` cover the grounds, and `sx` covers the one-off. Nothing was
+  found that needed it.
 - **Link.** Navigation, plus `Linking` for external URLs.
 - **VisuallyHidden.** Replaced by the accessibility props above.
 

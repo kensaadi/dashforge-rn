@@ -430,6 +430,14 @@ export interface ChipToneStyle {
   bgPressed: string;
 }
 
+export interface ImageTokens {
+  radius: RadiusScale;
+  /** The block shown while the picture is on its way, and where it failed. */
+  placeholder: string;
+  /** The mark drawn where a picture could not be loaded. */
+  broken: { size: number; thickness: number; color: string };
+}
+
 export interface HeaderTokens {
   /** The bar's own height, under the safe-area inset. */
   height: number;
@@ -1040,6 +1048,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: HeaderTokens;
     };
+    Image?: {
+      defaults?: Record<string, unknown>;
+      tokens?: ImageTokens;
+    };
     TabBar?: {
       defaults?: Record<string, unknown>;
       tokens?: TabBarTokens;
@@ -1303,6 +1315,15 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    Image: {
+      tokens: {
+        radius: radiusSteps(s),
+        // Not `fill.subtle`: in dark that is the same value as a raised
+        // surface, and a placeholder on a card would be invisible.
+        placeholder: s.fill.default,
+        broken: { size: 20, thickness: s.borderWidth.strong, color: s.text.muted },
+      } satisfies ImageTokens,
     },
     Header: {
       tokens: {

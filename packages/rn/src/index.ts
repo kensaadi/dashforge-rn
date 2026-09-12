@@ -25,6 +25,7 @@ export { KeyboardAvoidingContainer } from './components/KeyboardAvoidingContaine
 export { IconButton } from './components/IconButton/IconButton';
 export { Stack } from './components/Stack/Stack';
 export { Card } from './components/Card/Card';
+export { Image } from './components/Image/Image';
 export { Snackbar } from './components/Snackbar/Snackbar';
 export { Modal } from './components/Modal/Modal';
 export { BottomSheet } from './components/BottomSheet/BottomSheet';
@@ -132,6 +133,7 @@ export type { DividerProps, DividerSx } from './components/Divider/divider.types
 export type { AvatarProps, AvatarSize, AvatarSx } from './components/Avatar/avatar.types';
 export type { BadgeProps, BadgeSx } from './components/Badge/badge.types';
 export type { ChipProps, ChipSx } from './components/Chip/chip.types';
+export type { ImageProps, ImageSx } from './components/Image/image.types';
 export type { SpinnerProps, SpinnerSx } from './components/Spinner/spinner.types';
 export type {
   EmptyStateProps,
