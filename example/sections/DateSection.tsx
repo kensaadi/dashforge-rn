@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { DashFormProvider } from '@dashforge/forms';
-import { DateField, Divider, SegmentedControl, Typography } from '@dashforge/rn';
-import type { SegmentValue } from '@dashforge/rn';
+import {
+  DateField,
+  DateRangeField,
+  Divider,
+  SegmentedControl,
+  Typography,
+} from '@dashforge/rn';
+import type { DateRangeValue, SegmentValue } from '@dashforge/rn';
 import { Card, Caption } from '../ui';
 import { setFakePicker } from '../nativePicker';
 
@@ -12,6 +18,7 @@ export function DateSection() {
   const [when, setWhen] = useState<string | undefined>(undefined);
   const [at, setAt] = useState<string | undefined>('09:30');
   const [source, setSource] = useState<SegmentValue>('none');
+  const [stay, setStay] = useState<DateRangeValue>({ start: null, end: null });
 
   return (
     <>
@@ -95,6 +102,38 @@ export function DateSection() {
       </Card>
 
       <Card>
+        <Card.Header
+          title="Un periodo"
+          subtitle="L'eccezione: qui il calendario nostro è la prima risposta"
+        />
+        <Caption>
+          ARCHITECTURE.md dice che una griglia nostra è giustificata solo dove
+          la piattaforma non ha niente di buono, e in pratica vuol dire gli
+          intervalli: iOS e Android hanno entrambi un picker per una data e
+          nessuno dei due ne ha uno per due. Non c'è niente a cui delegare, e
+          questo infatti non prende nessun datePicker.
+        </Caption>
+        <DateRangeField
+          label="Soggiorno"
+          placeholder="Da quando a quando"
+          value={stay}
+          onValueChange={setStay}
+          min={todayISO()}
+          fullWidth
+        />
+        <Typography color="muted">
+          {stay.start
+            ? `Nel payload: { start: "${stay.start}", end: ${stay.end ? `"${stay.end}"` : 'null'} }`
+            : 'Niente ancora.'}
+        </Typography>
+        <Caption>
+          Riporta anche l'intervallo a metà, non solo quello finito. Far vedere
+          "dal 14" mentre uno cerca l'altro capo è quello che gli dice che la
+          prima pressione è arrivata.
+        </Caption>
+      </Card>
+
+      <Card>
         <Card.Header title="Dentro una form" />
         <DashFormProvider>
           <DateField name="nascita" label="Data di nascita" required fullWidth />
@@ -106,9 +145,13 @@ export function DateSection() {
             minuteStep={15}
             fullWidth
           />
+          <Divider spacing="sm" />
+          <DateRangeField name="soggiorno" label="Soggiorno" fullWidth />
           <Caption>
             Stesso ponte di ogni altro campo: si registra, legge dal motore e
-            scrive la stringa ISO nel payload.
+            scrive la stringa ISO nel payload. L'intervallo scrive un campo solo
+            con dentro i due capi, perché è una risposta sola con due estremi e
+            non due risposte.
           </Caption>
         </DashFormProvider>
       </Card>
