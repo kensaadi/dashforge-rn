@@ -40,6 +40,7 @@ export type {
   BadgeTokens,
   ButtonTokens,
   ChipTokens,
+  DateFieldTokens,
   DividerTokens,
   FABTokens,
   EmptyStateTokens,

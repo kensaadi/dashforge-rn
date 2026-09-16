@@ -430,6 +430,57 @@ export interface ChipToneStyle {
   bgPressed: string;
 }
 
+export interface DateFieldTokens {
+  radius: RadiusScale;
+  borderWidth: number;
+  borderWidthFocused: number;
+  /** Between the label, the trigger and the helper. */
+  gap: number;
+  minHeight: SizeScale;
+  paddingHorizontal: SizeScale;
+  /** The little calendar drawn beside the value. */
+  glyph: { size: number; thickness: number };
+  /** How tall the fallback's grid and time list may get. */
+  panelMaxHeight: number;
+  /** One day in the fallback grid. */
+  cell: { size: number; radius: number };
+  typography: {
+    label: TypeStyle;
+    value: TypeStyle;
+    helper: TypeStyle;
+    /** The month and the weekday headers in the fallback. */
+    monthLabel: TypeStyle;
+    weekday: TypeStyle;
+    day: TypeStyle;
+  };
+  color: {
+    bg: string;
+    bgDisabled: string;
+    border: string;
+    borderOpen: string;
+    borderInvalid: string;
+    borderDisabled: string;
+    value: string;
+    /** The value when nothing has been chosen yet. */
+    placeholder: string;
+    valueDisabled: string;
+    glyph: string;
+    label: string;
+    labelDisabled: string;
+    helper: string;
+    helperInvalid: string;
+    required: string;
+    /** The fallback grid. */
+    day: string;
+    dayMuted: string;
+    dayDisabled: string;
+    daySelectedBg: string;
+    daySelectedFg: string;
+    todayBorder: string;
+    weekday: string;
+  };
+}
+
 export interface ImageTokens {
   radius: RadiusScale;
   /** The block shown while the picture is on its way, and where it failed. */
@@ -1060,6 +1111,10 @@ declare module './types' {
       defaults?: Record<string, unknown>;
       tokens?: ImageTokens;
     };
+    DateField?: {
+      defaults?: Record<string, unknown>;
+      tokens?: DateFieldTokens;
+    };
     TabBar?: {
       defaults?: Record<string, unknown>;
       tokens?: TabBarTokens;
@@ -1323,6 +1378,54 @@ export function defaultComponentTokens(s: SemanticTokens) {
           fgOnTone: s.text.primary,
         },
       } satisfies SnackbarTokens,
+    },
+    DateField: {
+      tokens: {
+        radius: radiusSteps(s),
+        borderWidth: s.borderWidth.default,
+        borderWidthFocused: s.borderWidth.strong,
+        gap: 6,
+        minHeight: s.control.minHeight,
+        paddingHorizontal: { sm: 10, md: 12, lg: 14 },
+        glyph: { size: 14, thickness: s.borderWidth.hairline },
+        panelMaxHeight: 360,
+        cell: { size: 40, radius: s.radius.full },
+        typography: {
+          label: s.typography.label,
+          value: s.typography.body,
+          helper: s.typography.caption,
+          monthLabel: s.typography.label,
+          weekday: s.typography.caption,
+          day: s.typography.body,
+        },
+        color: {
+          bg: s.surface.raised,
+          bgDisabled: s.fill.subtle,
+          border: s.border.default,
+          borderOpen: s.border.focus,
+          borderInvalid: s.feedback.danger.border,
+          borderDisabled: s.border.subtle,
+          value: s.text.primary,
+          placeholder: s.text.muted,
+          valueDisabled: s.text.disabled,
+          glyph: s.text.secondary,
+          label: s.text.secondary,
+          labelDisabled: s.text.disabled,
+          helper: s.text.muted,
+          helperInvalid: s.feedback.danger.fg,
+          required: s.feedback.danger.fg,
+          day: s.text.primary,
+          // A day from the month either side. Still readable, because a
+          // grid of six rows that goes blank at both ends reads as
+          // broken rather than as context.
+          dayMuted: s.text.muted,
+          dayDisabled: s.text.disabled,
+          daySelectedBg: s.action.primary.bg,
+          daySelectedFg: s.action.primary.fg,
+          todayBorder: s.action.primary.bg,
+          weekday: s.text.muted,
+        },
+      } satisfies DateFieldTokens,
     },
     Image: {
       tokens: {

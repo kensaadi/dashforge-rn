@@ -17,6 +17,7 @@ export { TextField } from './components/TextField/TextField';
 export { Textarea } from './components/Textarea/Textarea';
 export { NumberField } from './components/NumberField/NumberField';
 export { SearchField } from './components/SearchField/SearchField';
+export { DateField } from './components/DateField/DateField';
 export { Slider } from './components/Slider/Slider';
 export { OTPField } from './components/OTPField/OTPField';
 export { Surface } from './components/Surface/Surface';
@@ -70,6 +71,10 @@ export type {
   SearchFieldProps,
   SearchFieldSx,
 } from './components/SearchField/searchField.types';
+export type {
+  DateFieldProps,
+  DateFieldSx,
+} from './components/DateField/dateField.types';
 export type { SliderProps, SliderSx } from './components/Slider/slider.types';
 export type { OTPFieldProps, OTPFieldSx } from './components/OTPField/otpField.types';
 export type {

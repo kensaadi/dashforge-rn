@@ -67,3 +67,44 @@ export type HapticIntent =
 export interface HapticsAdapter {
   trigger(intent: HapticIntent): void;
 }
+
+/**
+ * What a date field asks the platform picker for.
+ *
+ * **Strings and never a `Date`.** A `Date` is a moment in time and most
+ * of what a form asks for is not: a birthday is the same day in every
+ * timezone, and putting one through a `Date` is how it becomes the day
+ * before for anybody east of the meridian. `calendar-core` speaks ISO
+ * throughout, the payload carries ISO, and so does this.
+ */
+export interface DatePickerRequest {
+  /** What is being asked for. */
+  mode: 'date' | 'time';
+  /** The current answer: `YYYY-MM-DD` for a date, `HH:mm` for a time. */
+  value?: string;
+  /** The earliest and latest answers, in the same shape. */
+  min?: string;
+  max?: string;
+  /** What the field is called, for a picker that shows a title. */
+  label?: string;
+  /** BCP-47, for a picker that reads it. */
+  locale?: string;
+}
+
+/**
+ * The platform's date and time picker, supplied by the application.
+ *
+ * Every real one is a native module, so the library declares the shape
+ * and the app plugs in what it already has. Without one, date fields
+ * fall back to the calendar `calendar-core` powers: not the platform's
+ * own, and said out loud in development, because a field nobody can
+ * answer would be worse than one answered by a calendar of ours.
+ */
+export interface DatePickerAdapter {
+  /**
+   * Opens it, and resolves with the chosen value or `null` when it was
+   * dismissed. Cancelling is an answer, not an error, as everywhere
+   * else here.
+   */
+  open(request: DatePickerRequest): Promise<string | null>;
+}

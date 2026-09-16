@@ -38,6 +38,8 @@ export type {
   Palette,
   DeepPartial,
   ModeStorage,
+  DatePickerAdapter,
+  DatePickerRequest,
   HapticsAdapter,
   HapticIntent,
 } from './theme.types';

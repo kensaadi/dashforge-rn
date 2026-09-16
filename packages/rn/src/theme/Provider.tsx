@@ -9,7 +9,12 @@ import {
   themeStore,
   writeStoredMode,
 } from './store';
-import type { HapticsAdapter, ModeStorage, Theme } from './theme.types';
+import type {
+  DatePickerAdapter,
+  HapticsAdapter,
+  ModeStorage,
+  Theme,
+} from './theme.types';
 
 /**
  * Runtime capabilities the host app supplies. Everything here needs
@@ -20,9 +25,11 @@ import type { HapticsAdapter, ModeStorage, Theme } from './theme.types';
  */
 export const runtime = proxy<{
   haptics: HapticsAdapter | null;
+  datePicker: DatePickerAdapter | null;
   reduceMotion: boolean;
 }>({
   haptics: null,
+  datePicker: null,
   reduceMotion: false,
 });
 
@@ -63,6 +70,16 @@ export interface DashforgeNativeProviderProps {
    * @default undefined
    */
   haptics?: HapticsAdapter;
+  /**
+   * The platform's date and time picker.
+   *
+   * Every real one is a native module, so it is injected rather than
+   * depended on. Without it a `DateField` falls back to the calendar
+   * this library draws itself, and says so in development.
+   *
+   * @default undefined
+   */
+  datePicker?: DatePickerAdapter;
 }
 
 /**
@@ -80,6 +97,7 @@ export function DashforgeNativeProvider({
   followSystem = true,
   storage,
   haptics,
+  datePicker,
 }: DashforgeNativeProviderProps) {
   // One-shot seeding, guarded against StrictMode's double invoke.
   const seeded = useRef(false);
@@ -99,6 +117,7 @@ export function DashforgeNativeProvider({
   }
 
   runtime.haptics = haptics ?? null;
+  runtime.datePicker = datePicker ?? null;
 
   // Persisted mode wins over the system default, but never over an
   // explicit prop: the caller has already decided in that case.
