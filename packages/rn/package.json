@@ -43,8 +43,6 @@
   },
   "files": [
     "dist",
-    "theme",
-    "tokens",
     "README.md",
     "CHANGELOG.md"
   ],

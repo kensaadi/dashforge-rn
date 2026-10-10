@@ -322,11 +322,30 @@ Splitting later stays possible without breaking imports: a real
 `@dashforge/rn-tokens` package can be extracted and re-exported from
 the subpath.
 
-**Resolver note.** Metro only honours the `exports` field on recent
-versions, so the subpaths also ship as directory stubs
-(`theme/package.json`, `tokens/package.json` pointing into `dist`).
-Both mechanisms, because one of them costs two files and removes a
-class of resolution bug on the supported floor.
+**Resolver note, and a mistake that cost a day.** The subpaths used to
+ship *twice*: through `exports`, and as directory stubs
+(`theme/package.json`, `tokens/package.json` pointing into `dist`). The
+reasoning was belt and braces, for a Metro old enough not to honour
+`exports`. It did the opposite.
+
+The two mechanisms do not agree on **which build** they point at. Metro
+resolves the root through `exports` and lands in `dist/module`; it
+resolves `@dashforge/rn/theme` as a *directory*, reads the stub's
+`main`, and lands in `dist/commonjs`. One bundle, two copies of
+`theme/store.js`, two valtio stores. `DashforgeNativeProvider` wrote the
+theme into one and `Button` read from the other.
+
+**It fails silently and it hits every consumer**, because the provider
+lives only on `/theme` and the components only on the root, so there is
+no way to import both from the same place. Measured in a real app: the
+theme resolved correctly (`action.primary.bg` was the ink, and
+`useComponentTokens('Button')` returned it), and the button painted the
+shipped indigo. No error, no warning. The playground never saw it
+because its Metro config maps the subpaths straight to `src`, which is
+one copy by construction.
+
+The stubs are gone. `exports` alone, which Metro has honoured since
+0.76 and the peer floor here is 0.78.
 
 ### 5.1 Native capabilities are injected, never imported
 

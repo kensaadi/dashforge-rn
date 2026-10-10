@@ -1,6 +1,0 @@
-{
-  "main": "../dist/commonjs/tokens/index.js",
-  "module": "../dist/module/tokens/index.js",
-  "types": "../dist/typescript/commonjs/src/tokens/index.d.ts",
-  "sideEffects": false
-}

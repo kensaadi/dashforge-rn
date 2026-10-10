@@ -1,6 +1,0 @@
-{
-  "main": "../dist/commonjs/theme/index.js",
-  "module": "../dist/module/theme/index.js",
-  "types": "../dist/typescript/commonjs/src/theme/index.d.ts",
-  "sideEffects": false
-}
