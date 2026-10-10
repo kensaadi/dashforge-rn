@@ -10,10 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@dashforge/forms": "^1.0.0",
-    "@dashforge/rbac": "^1.0.0",
+    "@dashforge/forms": "^2.0.1",
+    "@dashforge/rbac": "^2.0.1",
     "@dashforge/rn": "workspace:*",
-    "@dashforge/ui-core": "^1.0.0",
+    "@dashforge/ui-core": "^2.0.1",
     "@react-native/new-app-screen": "0.87.1",
     "react": "19.2.3",
     "react-native": "0.87.1",

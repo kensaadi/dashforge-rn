@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 import {
@@ -94,6 +94,9 @@ export function DateField(props: DateFieldProps) {
   const [open, setOpen] = useState(false);
   const labelId = useId();
   useStandaloneFieldWarning('DateField', name, isFormMode, controlledValue, onValueChange);
+  // Once per mount, like `useStandaloneFieldWarning`: the situation is
+  // the same on every open, so saying it on every open is noise.
+  const warnedNoPicker = useRef(false);
 
   let registration: FieldRegistration | null = null;
   let invalid = error ?? false;
@@ -144,7 +147,8 @@ export function DateField(props: DateFieldProps) {
 
     const picker = native.datePicker;
     if (!picker) {
-      if (__DEV__) {
+      if (__DEV__ && !warnedNoPicker.current) {
+        warnedNoPicker.current = true;
         console.warn(
           '[@dashforge/rn] <DateField> opened with no `datePicker` on <DashforgeNativeProvider>, ' +
             'so it is showing the calendar this library draws rather than the platform’s own. ' +

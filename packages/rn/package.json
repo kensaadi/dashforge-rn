@@ -58,18 +58,18 @@
     "valtio": "^2.3.0"
   },
   "peerDependencies": {
-    "@dashforge/calendar-core": "^1.0.0",
-    "@dashforge/forms": "^1.0.0",
-    "@dashforge/rbac": "^1.0.0",
-    "@dashforge/ui-core": "^1.0.0",
+    "@dashforge/calendar-core": "^2.0.1",
+    "@dashforge/forms": "^2.0.1",
+    "@dashforge/rbac": "^2.0.1",
+    "@dashforge/ui-core": "^2.0.1",
     "react": ">=19.2.3",
     "react-native": ">=0.78.0"
   },
   "devDependencies": {
-    "@dashforge/calendar-core": "^1.0.0",
-    "@dashforge/forms": "^1.0.0",
-    "@dashforge/rbac": "^1.0.0",
-    "@dashforge/ui-core": "^1.0.0",
+    "@dashforge/calendar-core": "^2.0.1",
+    "@dashforge/forms": "^2.0.1",
+    "@dashforge/rbac": "^2.0.1",
+    "@dashforge/ui-core": "^2.0.1",
     "@react-native/babel-preset": "^0.87.0",
     "@react-native/jest-preset": "^0.87.1",
     "@testing-library/react-native": "^13.0.0",

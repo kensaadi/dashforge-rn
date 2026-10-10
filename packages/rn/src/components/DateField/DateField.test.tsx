@@ -150,6 +150,21 @@ describe('without one', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('no `datePicker`'));
   });
 
+  it('says it once and not on every open', async () => {
+    // The situation does not change between one open and the next, so
+    // repeating it only buries whatever else is in the console.
+    render(<DateField label="Data" onValueChange={jest.fn()} />);
+    for (let i = 0; i < 3; i += 1) {
+      await act(async () => {
+        fireEvent.press(trigger());
+      });
+      await act(async () => {
+        fireEvent.press(screen.getByRole('button', { name: 'Chiudi' }));
+      });
+    }
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
   it('answers with the day that was pressed', async () => {
     const onValueChange = jest.fn();
     render(

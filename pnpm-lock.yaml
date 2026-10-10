@@ -16,17 +16,17 @@ importers:
   example:
     dependencies:
       '@dashforge/forms':
-        specifier: ^1.0.0
-        version: 1.0.0(@dashforge/ui-core@1.0.0(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(@dashforge/ui-core@2.0.1(@types/react@19.2.18)(react@19.2.3))(@types/react@19.2.18)(react@19.2.3)
       '@dashforge/rbac':
-        specifier: ^1.0.0
-        version: 1.0.0(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(react@19.2.3)
       '@dashforge/rn':
         specifier: workspace:*
         version: link:../packages/rn
       '@dashforge/ui-core':
-        specifier: ^1.0.0
-        version: 1.0.0(@types/react@19.2.18)(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(@types/react@19.2.18)(react@19.2.3)
       '@react-native/new-app-screen':
         specifier: 0.87.1
         version: 0.87.1(@types/react@19.2.18)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
@@ -105,17 +105,17 @@ importers:
         version: 2.3.2(@types/react@19.2.18)(react@19.2.3)
     devDependencies:
       '@dashforge/calendar-core':
-        specifier: ^1.0.0
-        version: 1.0.0(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(react@19.2.3)
       '@dashforge/forms':
-        specifier: ^1.0.0
-        version: 1.0.0(@dashforge/ui-core@1.0.0(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(@dashforge/ui-core@2.0.1(@types/react@19.2.18)(react@19.2.3))(@types/react@19.2.18)(react@19.2.3)
       '@dashforge/rbac':
-        specifier: ^1.0.0
-        version: 1.0.0(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(react@19.2.3)
       '@dashforge/ui-core':
-        specifier: ^1.0.0
-        version: 1.0.0(@types/react@19.2.18)(react@19.2.3)
+        specifier: ^2.0.1
+        version: 2.0.1(@types/react@19.2.18)(react@19.2.3)
       '@react-native/babel-preset':
         specifier: ^0.87.0
         version: 0.87.1(@babel/core@7.29.7)
@@ -852,24 +852,24 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@dashforge/calendar-core@1.0.0':
-    resolution: {integrity: sha512-3/2A4/1NXlGTfVBHHPxDyRXnNfWvlE2VXUSDnOqXBKLc2g4BSZUbw1GfEeAttDseUtepuUa/HV/FlHTUrsn9EA==}
+  '@dashforge/calendar-core@2.0.1':
+    resolution: {integrity: sha512-YpNr/G8cph3n/9m1Ofys3/9UICR1kMHzdZd7mdvsq5BymfFMVMYboENYkJHNyVfQFVgyb6KfG07Ekif9zllizQ==}
     peerDependencies:
       react: 19.2.3
 
-  '@dashforge/forms@1.0.0':
-    resolution: {integrity: sha512-TegMPdrDa7TgHg5/+iZCr9aPFcARQoaVArqEUz+su9MYa58cmqKBG0Ops5s7fJjnE9K99Hkm6ttZlbUoQqJlBw==}
+  '@dashforge/forms@2.0.1':
+    resolution: {integrity: sha512-6crhfYfSzeUY50n0XIvoVjXndPilqsCn+vn3+MwkxRUmbK1QZviBqywJe37+zxTIVK/U4rpd6/ahlf/BxfL86Q==}
     peerDependencies:
-      '@dashforge/ui-core': 1.0.0
+      '@dashforge/ui-core': 2.0.1
       react: 19.2.3
 
-  '@dashforge/rbac@1.0.0':
-    resolution: {integrity: sha512-8BelWrMtBgpXn56mLuh8XdKj1jDdnTlXV7d6u3BxKm4gJXB4WCqAWIa04Ek4MFXmz+UKyfO4/IuIHOKoOwABBQ==}
+  '@dashforge/rbac@2.0.1':
+    resolution: {integrity: sha512-BMLoMo9PCAwQSMYqQzPP0V1HGVAkEB9o12ndbYDoEt68wJ+l7hNhD/ozsdoxfVSZo6e85mDUnnboaN3sM9As0g==}
     peerDependencies:
       react: 19.2.3
 
-  '@dashforge/ui-core@1.0.0':
-    resolution: {integrity: sha512-FnbgfbjqGYNeWgZd99NfuuSIzz0nbLOWZ65Ax7hw37PcmlXVH9Iu9QUHm7ne8Yz9DAmgSIK+K4LpHAElNN0Xig==}
+  '@dashforge/ui-core@2.0.1':
+    resolution: {integrity: sha512-RInWrObgybnD7UlDuwwqssEqDewCs9Q+eRRsHFK5YD0cL8/To3IVv0VLSVaLc0u/i/VN5jAF3KEyb35r39brwA==}
     peerDependencies:
       react: 19.2.3
 
@@ -4813,21 +4813,24 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@dashforge/calendar-core@1.0.0(react@19.2.3)':
+  '@dashforge/calendar-core@2.0.1(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@dashforge/forms@1.0.0(@dashforge/ui-core@1.0.0(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)':
+  '@dashforge/forms@2.0.1(@dashforge/ui-core@2.0.1(@types/react@19.2.18)(react@19.2.3))(@types/react@19.2.18)(react@19.2.3)':
     dependencies:
-      '@dashforge/ui-core': 1.0.0(@types/react@19.2.18)(react@19.2.3)
+      '@dashforge/ui-core': 2.0.1(@types/react@19.2.18)(react@19.2.3)
       react: 19.2.3
       react-hook-form: 7.87.0(react@19.2.3)
+      valtio: 2.3.0(@types/react@19.2.18)(react@19.2.3)
+    transitivePeerDependencies:
+      - '@types/react'
 
-  '@dashforge/rbac@1.0.0(react@19.2.3)':
+  '@dashforge/rbac@2.0.1(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@dashforge/ui-core@1.0.0(@types/react@19.2.18)(react@19.2.3)':
+  '@dashforge/ui-core@2.0.1(@types/react@19.2.18)(react@19.2.3)':
     dependencies:
       react: 19.2.3
       tslib: 2.8.1
