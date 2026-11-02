@@ -1,8 +1,27 @@
 {
   "name": "@dashforge/rn",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Token-first React Native UI library. Props, not styles.",
   "license": "MIT",
+  "author": "kensaadi",
+  "homepage": "https://github.com/kensaadi/dashforge-rn#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kensaadi/dashforge-rn.git",
+    "directory": "packages/rn"
+  },
+  "bugs": {
+    "url": "https://github.com/kensaadi/dashforge-rn/issues"
+  },
+  "keywords": [
+    "react-native",
+    "ui",
+    "components",
+    "design-tokens",
+    "theming",
+    "dark-mode",
+    "dashforge"
+  ],
   "private": false,
   "sideEffects": false,
   "main": "./dist/commonjs/index.js",
@@ -43,9 +62,14 @@
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "bob build",
     "typecheck": "tsc --noEmit",
